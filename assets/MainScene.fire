@@ -84,8 +84,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 0,
-      "height": 0
+      "width": 960,
+      "height": 640
     },
     "_children": [],
     "_rotationX": 0,
@@ -623,7 +623,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "Label",
+    "_name": "Label_2",
     "_objFlags": 0,
     "_opacity": 255,
     "_color": {
@@ -718,7 +718,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "Label",
+    "_name": "Label_1",
     "_objFlags": 0,
     "_opacity": 255,
     "_color": {
