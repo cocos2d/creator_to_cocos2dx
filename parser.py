@@ -14,66 +14,58 @@ from pprint import pprint
 
 __docformat__ = 'restructuredtext'
 
+# Some globals (yeah!)
+__components_idx = []
+__nodes_idx = []
+__filename = ""
+__json_data = []
 
-class Node:
-    def __init__(self, data, parser):
-        self._position = data["_position"]
-        self._anchor_point = data["_anchorPoint"]
-        self._color = data["_color"]
-        self._content_size = data["_contentSize"]
+class Node(object):
+    def __init__(self, data):
+        self._node_data = data
+        try:
+            self._position = data["_position"]
+        except KeyError, e:
+            self._position = {'x':0, 'y':0}
 
-    def parse_properties(self, data):
-        pass
+        try:
+            self._anchor_point = data["_anchorPoint"]
+        except KeyError, e:
+            self._anchor_point = {'x':0, 'y':0}
+        try:
+            self._color = data["_color"]
+        except KeyError, e:
+            self._color = {'r':255, 'g':255, 'b':255, 'a':255}
+
+        try:
+            self._content_size = data["_contentSize"]
+        except KeyError, e:
+            self._content_size = {'width':0, 'height':0}
+
+    def parse_properties(self):
+        for child in self._node_data["_children"]:
+            print(child)
 
 class Scene(Node):
-    def __init__(self, data, parser):
-        super.__init__(self, data, parser)
+    def __init__(self, data):
+        super(Scene, self).__init__(data)
 
 class Sprite(Node):
-    def __init__(self, data, parser):
-        super.__init__(self, data, parser)
-
-class ParticleSystem(Node):
-    def __init__(self, data, parser):
-        super.__init__(self, data, parser)
-
-class Label(Node):
-    def __init__(self, data, parser):
-        super.__init__(self, data, parser)
-
-class TiledMap(Node):
-    def __init__(self, data, parser):
-        super.__init__(self, data, parser)
-
-
-class FireParser:
-    def __init__(self, filename)
-        self.components_idx = []
-        self.nodes_idx = []
-        self.filename = filename
-        self.json_data = []
-
-    def parse(self):
-        with open(self.filename) as data_file:
-            self.json_data = json.load(data_file)
-
-        print("total elements: %d" % len(data))
-        for i,obj in enumerate(self.json_data):
-            if obj["__type__"] == "cc.SceneAsset":
-                scene_idx = parse_scene_asset(obj)
-                self.create_scene(scene_idx)
-
-    def parse_scene_asset(self, obj):
-        scenes = obj["scene"]
-        return scenes["__id__"]
-
-    def create_scene(self, scene_idx):
-        scene = Scene(self.json_data[scene_idx], self)
+    def __init__(self, data):
+        super(Sprite, self).__init__(data)
 
 
 def run(filename):
-    a = FileParser(filename)
-    a.parse()
+    with open(filename) as data_file:
+        __json_data = json.load(data_file)
+
+    print("total elements: %d" % len(__json_data))
+    for i,obj in enumerate(__json_data):
+        if obj["__type__"] == "cc.SceneAsset":
+            scenes = obj["scene"]
+            scene_idx = scenes["__id__"]
+            scene_obj = Scene(__json_data[scene_idx])
+            scene_obj.parse_properties()
 
 
 def help():
