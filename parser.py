@@ -30,11 +30,15 @@ class Node(object):
 
     @classmethod
     def guess_type_from_components(cls, components):
-        known_components = ['cc.Label', 'cc.Sprite', 'cc.ParticleSystem', 'cc.TiledMap']
+        known_components = ['cc.Label', 'cc.Sprite', 'cc.ParticleSystem', 'cc.TiledMap', 'cc.Canvas']
         for component in components:
             t = component['__type__']
             if t in known_components:
+                l = [x['__type__'] for x in components]
+                print("Choosen %s from %s" % (t,l))
                 return t
+            else:
+                print("Component not found: %s" % component['__type__'])
         return 'unknown'
 
     @classmethod
@@ -47,7 +51,9 @@ class Node(object):
         elif node_type == 'cc.ParticleSystem':
             n = ParticleSystem(g_json_data[node_idx])
         elif node_type == 'cc.TiledMap':
-            n = ParticleSystem(g_json_data[node_idx])
+            n = TiledMap(g_json_data[node_idx])
+        elif node_type == 'cc.Canvas':
+            n = Canvas(g_json_data[node_idx])
         if n is not None:
             n.parse_properties()
         return n
@@ -73,6 +79,11 @@ class Node(object):
             self._content_size = data["_contentSize"]
         except KeyError, e:
             self._content_size = {'width':0, 'height':0}
+
+        try:
+            self._local_z_order = data["_localZOrder"]
+        except KeyError, e:
+            self._local_z_order = 0
 
     def parse_properties(self):
         for child_idx in self._node_data["_children"]:
@@ -124,6 +135,11 @@ class ParticleSystem(Node):
 class TiledMap(Node):
     def __init__(self, data):
         super(TiledMap, self).__init__(data)
+
+
+class Canvas(Node):
+    def __init__(self, data):
+        super(Canvas, self).__init__(data)
 
 
 def run(filename):
