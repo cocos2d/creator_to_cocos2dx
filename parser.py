@@ -15,12 +15,36 @@ from pprint import pprint
 __docformat__ = 'restructuredtext'
 
 # Some globals (yeah!)
-__components_idx = []
-__nodes_idx = []
-__filename = ""
-__json_data = []
+g_json_data = []
+
 
 class Node(object):
+    @classmethod
+    def parse_child(cls, node_idx):
+        node = g_json_data[node_idx]
+        if node['__type__'] == 'cc.Node':
+            components = Node.get_node_components(node)
+            node_type = Node.guess_type_from_components(components)
+            print(node_type)
+
+    @classmethod
+    def get_node_components(cls, node):
+        idxs = node['_components']
+        components = []
+        for idx in idxs:
+            idx_num = idx['__id__']
+            components.append(g_json_data[idx_num])
+        return components
+
+    @classmethod
+    def guess_type_from_components(cls, components):
+        known_components = ['cc.Label', 'cc.Sprite', 'cc.ParticleSystem', 'cc.TiledMap']
+        for component in components:
+            t = component['__type__']
+            if t in known_components:
+                return t
+        return 'unknown'
+
     def __init__(self, data):
         self._node_data = data
         try:
@@ -43,12 +67,14 @@ class Node(object):
             self._content_size = {'width':0, 'height':0}
 
     def parse_properties(self):
-        for child in self._node_data["_children"]:
-            print(child)
+        for child_idx in self._node_data["_children"]:
+            Node.parse_child(child_idx['__id__'])
+
 
 class Scene(Node):
     def __init__(self, data):
         super(Scene, self).__init__(data)
+
 
 class Sprite(Node):
     def __init__(self, data):
@@ -56,15 +82,16 @@ class Sprite(Node):
 
 
 def run(filename):
+    global g_json_data
     with open(filename) as data_file:
-        __json_data = json.load(data_file)
+        g_json_data = json.load(data_file)
 
-    print("total elements: %d" % len(__json_data))
-    for i,obj in enumerate(__json_data):
+    print("total elements: %d" % len(g_json_data))
+    for i,obj in enumerate(g_json_data):
         if obj["__type__"] == "cc.SceneAsset":
             scenes = obj["scene"]
             scene_idx = scenes["__id__"]
-            scene_obj = Scene(__json_data[scene_idx])
+            scene_obj = Scene(g_json_data[scene_idx])
             scene_obj.parse_properties()
 
 
