@@ -129,13 +129,12 @@ class Node(object):
         self._children.append(node)
 
     def print_scene_graph(self, tab):
-        self.print_description(tab)
+        print(self.get_description(tab))
         for child in self._children:
             child.print_scene_graph(tab+2)
 
-    def print_description(self, tab):
-        print('-' * tab, end="")
-        print(type(self).__name__)
+    def get_description(self, tab):
+        return "%s%s" % ('-' * tab, type(self).__name__)
 
 
 class Scene(Node):
@@ -154,12 +153,26 @@ class Sprite(Node):
         # search for sprite frame name
         component = Node.get_node_component_of_type(self._node_data, 'cc.Sprite')
         sprite_frame_uuid = component['_spriteFrame']['__uuid__']
+        self._sprite_frame = g_sprite_frames[sprite_frame_uuid]
 
+    def get_description(self, tab):
+        return "%s%s('%s')" % ('-' * tab, type(self).__name__, self._sprite_frame['frameName'])
 
 
 class Label(Node):
     def __init__(self, data):
         super(Label, self).__init__(data)
+        self._label_text = ""
+
+    def parse_properties(self):
+        super(Label, self).parse_properties()
+
+        # search for sprite frame name
+        component = Node.get_node_component_of_type(self._node_data, 'cc.Label')
+        self._label_text= component['_N$string']
+
+    def get_description(self, tab):
+        return "%s%s('%s')" % ('-' * tab, type(self).__name__, self._label_text)
 
 
 class ParticleSystem(Node):
