@@ -9,13 +9,31 @@ from __future__ import division, unicode_literals, print_function
 import sys
 import os
 import json
+import glob
 from pprint import pprint
 
 
 __docformat__ = 'restructuredtext'
 
 # Some globals (yeah!)
+
+# the .fire file being parsed
 g_json_data = []
+
+# the .meta files that contain sprite frame info and other data
+g_meta_data = {}
+
+# contains the sprite frames: customized version of g_meta_data
+# key is the uuid. value is the json container
+g_sprite_frames = {}
+
+# contains the textures used
+# key is the uuid. value is the json container
+g_textures = {}
+
+# contains the data from library/uuid-to-mtime.json
+g_uuid = {}
+
 
 
 class Node(object):
@@ -27,6 +45,14 @@ class Node(object):
             idx_num = idx['__id__']
             components.append(g_json_data[idx_num])
         return components
+
+    @classmethod
+    def get_node_component_of_type(cls, node, t):
+        components = Node.get_node_components(node)
+        for c in components:
+            if c['__type__'] == t:
+                return c
+        return None
 
     @classmethod
     def guess_type_from_components(cls, components):
@@ -120,6 +146,15 @@ class Scene(Node):
 class Sprite(Node):
     def __init__(self, data):
         super(Sprite, self).__init__(data)
+        self._sprite_frame = ""
+
+    def parse_properties(self):
+        super(Sprite, self).parse_properties()
+
+        # search for sprite frame name
+        component = Node.get_node_component_of_type(self._node_data, 'cc.Sprite')
+        sprite_frame_uuid = component['_spriteFrame']['__uuid__']
+
 
 
 class Label(Node):
@@ -142,7 +177,43 @@ class Canvas(Node):
         super(Canvas, self).__init__(data)
 
 
+def populate_meta_files(path):
+    global g_meta_data, g_sprite_frames, g_textures
+    metas = glob.glob(path + '/*.meta')
+    for meta_filename in metas:
+        with open(meta_filename) as fd:
+            basename = os.path.basename(meta_filename)
+            j_data = json.load(fd)
+            g_meta_data[basename] = j_data
+
+            # is this a sprite (.png) file ?
+            if 'type' in j_data and j_data['type'] == 'sprite':
+                # subMetas seems to contain all the sprite frame definitions
+                submetas = j_data['subMetas']
+                for spriteframename in submetas:
+                    # uuid will be used as the key
+                    uuid = submetas[spriteframename]['uuid']
+                    submetas[spriteframename]['frameName'] = spriteframename
+
+                    # populate g_sprite_frames
+                    g_sprite_frames[uuid] = submetas[spriteframename]
+
+                    # populate g_textures. The name is meta_filename - '.meta' (5 chars)
+                    texture_uuid = submetas[spriteframename]['rawTextureUuid']
+                    g_textures[texture_uuid] = os.path.basename(meta_filename[:-5])
+
+
+def populate_uuid_file(path):
+    global g_uuid
+    with open(path + '/../library/uuid-to-mtime.json') as data:
+        g_uuid = json.load(data)
+
+
 def run(filename):
+    path = os.path.dirname(filename)
+    populate_meta_files(path)
+    populate_uuid_file(path)
+
     global g_json_data
     with open(filename) as data_file:
         g_json_data = json.load(data_file)
