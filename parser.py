@@ -87,29 +87,25 @@ class Node(object):
     def __init__(self, data):
         self._node_data = data
         self._children = []
-        try:
-            self._position = data["_position"]
-        except KeyError, e:
-            self._position = {'x':0, 'y':0}
 
-        try:
-            self._anchor_point = data["_anchorPoint"]
-        except KeyError, e:
-            self._anchor_point = {'x':0, 'y':0}
-        try:
-            self._color = data["_color"]
-        except KeyError, e:
-            self._color = {'r':255, 'g':255, 'b':255, 'a':255}
+        self._contentSize = data.get("_contentSize", {'width':0, 'height':0})
+        self._enabled = data.get("_enabled", True)
+        self._name = data.get("_name", "")
+        self._anchorPoint = data.get("_anchorPoint", {'x':0, 'y':0})
+        self._cascadeOpacityEnabled= data.get("_cascadeOpacityEnabled", True)
+        self._color = data.get("_color", {'r':255, 'g':255, 'b':255, 'a':255})
+        self._globalZOrder = data.get("_globalZOrder", 0)
+        self._localZOrder = data.get("_localZOrder", 0)
+        self._opacity = data.get("_opacity", 255)
+        self._opacityModifyRGB = data.get("_opacityModifyRGB", False)
+        self._position = data.get("_position", {'x':0, 'y':0})
+        self._rotationX = data.get("_rotationX", 0)
+        self._rotationY = data.get("_rotationY", 0)
+        self._scaleX = data.get("_scaleX", 0)
+        self._scaleY = data.get("_scaleY", 0)
+        self._skewX = data.get("_skewX", 0)
+        self._tag = data.get("_tag", -1)
 
-        try:
-            self._content_size = data["_contentSize"]
-        except KeyError, e:
-            self._content_size = {'width':0, 'height':0}
-
-        try:
-            self._local_z_order = data["_localZOrder"]
-        except KeyError, e:
-            self._local_z_order = 0
 
     def parse_properties(self):
         for child_idx in self._node_data["_children"]:
