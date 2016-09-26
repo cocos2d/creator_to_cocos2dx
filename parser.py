@@ -87,25 +87,32 @@ class Node(object):
     def __init__(self, data):
         self._node_data = data
         self._children = []
+        self._properties = {}
 
-        self._contentSize = data.get("_contentSize", {'width':0, 'height':0})
-        self._enabled = data.get("_enabled", True)
-        self._name = data.get("_name", "")
-        self._anchorPoint = data.get("_anchorPoint", {'x':0, 'y':0})
-        self._cascadeOpacityEnabled= data.get("_cascadeOpacityEnabled", True)
-        self._color = data.get("_color", {'r':255, 'g':255, 'b':255, 'a':255})
-        self._globalZOrder = data.get("_globalZOrder", 0)
-        self._localZOrder = data.get("_localZOrder", 0)
-        self._opacity = data.get("_opacity", 255)
-        self._opacityModifyRGB = data.get("_opacityModifyRGB", False)
-        self._position = data.get("_position", {'x':0, 'y':0})
-        self._rotationX = data.get("_rotationX", 0)
-        self._rotationY = data.get("_rotationY", 0)
-        self._scaleX = data.get("_scaleX", 0)
-        self._scaleY = data.get("_scaleY", 0)
-        self._skewX = data.get("_skewX", 0)
-        self._tag = data.get("_tag", -1)
+        self.add_property('setContentSize', "_contentSize", {'width':0, 'height':0})
+        self.add_property('setEnabled', "_enabled", True)
+        self.add_property('setName', "_name", "")
+        self.add_property('setAnchorPoint', "_anchorPoint", {'x':0, 'y':0})
+        self.add_property('setCascadeOpacityEnabled', "_cascadeOpacityEnabled", True)
+        self.add_property('setColor', "_color", {'r':255, 'g':255, 'b':255, 'a':255})
+        self.add_property('setGlobalZOrder', "_globalZOrder", 0)
+        self.add_property('setLocalZOrder', "_localZOrder", 0)
+        self.add_property('setOpacity', "_opacity", 255)
+        self.add_property('setOpacityModifyRGB', "_opacityModifyRGB", False)
+        self.add_property('setPosition', "_position", {'x':0, 'y':0})
+        self.add_property('setRotationX', "_rotationX", 0)
+        self.add_property('setRotationY', "_rotationY", 0)
+        self.add_property('setScaleX', "_scaleX", 0)
+        self.add_property('setScaleY', "_scaleY", 0)
+        self.add_property('setSwewX', "_skewX", 0)
+        self.add_property('setTag', "_tag", -1)
 
+
+        self._cpp_node_name = ""
+        self._cpp_parent_name = ""
+
+    def add_property(self, key, value, default):
+        self._properties[key] = self._node_data.get(value, default)
 
     def parse_properties(self):
         for child_idx in self._node_data["_children"]:
@@ -131,6 +138,22 @@ class Node(object):
 
     def get_description(self, tab):
         return "%s%s" % ('-' * tab, type(self).__name__)
+
+    def to_cpp(self):
+        self.to_cpp_begin()
+        self.to_cpp_properties()
+        self.to_cpp_end()
+
+    def to_cpp_begin(self):
+        self._cpp_node_name = "%s_%d_%d" % (type(self).__name__.lower(), 1, 2)
+        print("    auto %s = %s::create();" % (self._cpp_node_name, type(self).__name__))
+
+    def to_cpp_properties(self):
+        for p in self._properties:
+            print("    %s->%s(%s)" % (self._cpp_node_name, p, self._properties[p]))
+
+    def to_cpp_end(self):
+        pass
 
 
 class Scene(Node):
@@ -235,6 +258,7 @@ def run(filename):
             scene_obj = Scene(g_json_data[scene_idx])
             scene_obj.parse_properties()
             scene_obj.print_scene_graph(0)
+            scene_obj.to_cpp()
 
 
 def help():
