@@ -89,30 +89,36 @@ class Node(object):
         self._children = []
         self._properties = {}
 
-        self.add_property('setContentSize', "_contentSize", {'width':0, 'height':0})
-        self.add_property('setEnabled', "_enabled", True)
-        self.add_property('setName', "_name", "")
-        self.add_property('setAnchorPoint', "_anchorPoint", {'x':0, 'y':0})
-        self.add_property('setCascadeOpacityEnabled', "_cascadeOpacityEnabled", True)
-        self.add_property('setColor', "_color", {'r':255, 'g':255, 'b':255, 'a':255})
-        self.add_property('setGlobalZOrder', "_globalZOrder", 0)
-        self.add_property('setLocalZOrder', "_localZOrder", 0)
-        self.add_property('setOpacity', "_opacity", 255)
-        self.add_property('setOpacityModifyRGB', "_opacityModifyRGB", False)
-        self.add_property('setPosition', "_position", {'x':0, 'y':0})
-        self.add_property('setRotationX', "_rotationX", 0)
-        self.add_property('setRotationY', "_rotationY", 0)
-        self.add_property('setScaleX', "_scaleX", 0)
-        self.add_property('setScaleY', "_scaleY", 0)
-        self.add_property('setSwewX', "_skewX", 0)
-        self.add_property('setTag', "_tag", -1)
+        self.add_property('setContentSize', "_contentSize", ['width','height'])
+        self.add_property('setEnabled', "_enabled", None) 
+        self.add_property('setName', "_name", None) 
+        self.add_property('setAnchorPoint', "_anchorPoint", ['x', 'y'])
+        self.add_property('setCascadeOpacityEnabled', "_cascadeOpacityEnabled", None)
+        self.add_property('setColor', "_color", ['r', 'g', 'b', 'a'])
+        self.add_property('setGlobalZOrder', "_globalZOrder", None)
+        self.add_property('setLocalZOrder', "_localZOrder", None)
+        self.add_property('setOpacity', "_opacity", None)
+        self.add_property('setOpacityModifyRGB', "_opacityModifyRGB", None)
+        self.add_property('setPosition', "_position", ['x', 'y'])
+        self.add_property('setRotationX', "_rotationX", None)
+        self.add_property('setRotationY', "_rotationY", None)
+        self.add_property('setScaleX', "_scaleX", None)
+        self.add_property('setScaleY', "_scaleY", None)
+        self.add_property('setSkewX', "_skewX", None)
+        self.add_property('setSkewY', "_skewY", None)
+        self.add_property('setTag', "_tag", None)
 
 
         self._cpp_node_name = ""
         self._cpp_parent_name = ""
 
-    def add_property(self, key, value, default):
-        self._properties[key] = self._node_data.get(value, default)
+    def add_property(self, newkey, value, keys_to_parse):
+        if value in self._node_data:
+            new_value = self._node_data.get(value)
+            if keys_to_parse is not None:
+                new_value = [new_value[k] for k in keys_to_parse]
+
+            self._properties[newkey] = new_value
 
     def parse_properties(self):
         for child_idx in self._node_data["_children"]:
@@ -139,21 +145,27 @@ class Node(object):
     def get_description(self, tab):
         return "%s%s" % ('-' * tab, type(self).__name__)
 
-    def to_cpp(self):
-        self.to_cpp_begin()
+    def to_cpp(self, parent, depth, sibling_idx):
+        self.to_cpp_begin(depth, sibling_idx)
         self.to_cpp_properties()
-        self.to_cpp_end()
+        self.to_cpp_end(parent)
 
-    def to_cpp_begin(self):
-        self._cpp_node_name = "%s_%d_%d" % (type(self).__name__.lower(), 1, 2)
+        for idx, child in enumerate(self._children):
+            child.to_cpp(self, depth+1, idx)
+
+    def to_cpp_begin(self, depth, sibling_idx):
+        print("    // New node")
+        self._cpp_node_name = "%s_%d_%d" % (type(self).__name__.lower(), depth, sibling_idx)
         print("    auto %s = %s::create();" % (self._cpp_node_name, type(self).__name__))
 
     def to_cpp_properties(self):
         for p in self._properties:
             print("    %s->%s(%s)" % (self._cpp_node_name, p, self._properties[p]))
 
-    def to_cpp_end(self):
-        pass
+    def to_cpp_end(self, parent):
+        if parent is not None:
+            print("    %s->addChild(%s);" % (parent._cpp_node_name, self._cpp_node_name))
+        print("")
 
 
 class Scene(Node):
@@ -258,7 +270,7 @@ def run(filename):
             scene_obj = Scene(g_json_data[scene_idx])
             scene_obj.parse_properties()
             scene_obj.print_scene_graph(0)
-            scene_obj.to_cpp()
+            scene_obj.to_cpp(None,0,0)
 
 
 def help():
