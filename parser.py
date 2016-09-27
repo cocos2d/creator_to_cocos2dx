@@ -94,14 +94,14 @@ class Node(object):
         self.add_property_str('setName', "_name")
         self.add_property_vec2('setAnchorPoint', "_anchorPoint")
         self.add_property_bool('setCascadeOpacityEnabled', "_cascadeOpacityEnabled")
-        self.add_property_rgba('setColor', "_color")
+        self.add_property_rgb('setColor', "_color")
         self.add_property_int('setGlobalZOrder', "_globalZOrder")
         self.add_property_int('setLocalZOrder', "_localZOrder")
         self.add_property_int('setOpacity', "_opacity" )
         self.add_property_bool('setOpacityModifyRGB', "_opacityModifyRGB" )
         self.add_property_vec2('setPosition', "_position")
-        self.add_property_int('setRotationX', "_rotationX")
-        self.add_property_int('setRotationY', "_rotationY")
+        self.add_property_int('setRotationSkewX', "_rotationX")
+        self.add_property_int('setRotationSkewY', "_rotationY")
         self.add_property_int('setScaleX', "_scaleX")
         self.add_property_int('setScaleY', "_scaleY")
         self.add_property_int('setSkewX', "_skewX")
@@ -128,7 +128,7 @@ class Node(object):
         if value in self._node_data:
             w = self._node_data.get(value)['width']
             h = self._node_data.get(value)['height']
-            self._properties[newkey] = '%ff, %ff' % (w,h)
+            self._properties[newkey] = 'Size(%ff, %ff)' % (w,h)
 
     def add_property_int(self, newkey, value):
         if value in self._node_data:
@@ -139,20 +139,22 @@ class Node(object):
         if value in self._node_data:
             x = self._node_data.get(value)['x']
             y = self._node_data.get(value)['y']
-            self._properties[newkey] = '%0.4ff, %0.4ff' % (x,y)
+            self._properties[newkey] = 'Vec2(%0.4ff, %0.4ff)' % (x,y)
 
-    def add_property_rgba(self, newkey, value):
+    def add_property_rgb(self, newkey, value):
         if value in self._node_data:
             r = self._node_data.get(value)['r']
             g = self._node_data.get(value)['g']
             b = self._node_data.get(value)['b']
-            a = self._node_data.get(value)['a']
-            self._properties[newkey] = '%d, %d, %d, %d' %(r,g,b,a)
+            self._properties[newkey] = 'Color3B(%d, %d, %d)' %(r,g,b)
 
     def add_property_bool(self, newkey, value):
         if value in self._node_data:
             b = str(self._node_data.get(value)).lower()
             self._properties[newkey] = b
+
+    def get_class_name(self):
+        return type(self).__name__
 
     def parse_properties(self):
         for child_idx in self._node_data["_children"]:
@@ -177,7 +179,7 @@ class Node(object):
             child.print_scene_graph(tab+2)
 
     def get_description(self, tab):
-        return "%s%s" % ('-' * tab, type(self).__name__)
+        return "%s%s" % ('-' * tab, self.get_class_name())
 
     def to_cpp(self, parent, depth, sibling_idx):
         self.to_cpp_begin(depth, sibling_idx)
@@ -189,8 +191,8 @@ class Node(object):
 
     def to_cpp_begin(self, depth, sibling_idx):
         print("    // New node")
-        self._cpp_node_name = "%s_%d_%d" % (type(self).__name__.lower(), depth, sibling_idx)
-        print("    auto %s = %s::create();" % (self._cpp_node_name, type(self).__name__))
+        self._cpp_node_name = "%s_%d_%d" % (self.get_class_name().lower(), depth, sibling_idx)
+        print("    auto %s = %s::create();" % (self._cpp_node_name, self.get_class_name()))
 
     def to_cpp_properties(self):
         for p in self._properties:
@@ -222,7 +224,7 @@ class Sprite(Node):
         self._properties['setSpriteFrame'] = '"' + g_sprite_frames[sprite_frame_uuid]['frameName'] + '"'
 
     def get_description(self, tab):
-        return "%s%s('%s')" % ('-' * tab, type(self).__name__, self._properties['setSpriteFrame'])
+        return "%s%s('%s')" % ('-' * tab, self.get_class_name(), self._properties['setSpriteFrame'])
 
 
 class Label(Node):
@@ -238,22 +240,34 @@ class Label(Node):
         self._label_text= component['_N$string']
 
     def get_description(self, tab):
-        return "%s%s('%s')" % ('-' * tab, type(self).__name__, self._label_text)
+        return "%s%s('%s')" % ('-' * tab, self.get_class_name(), self._label_text)
 
 
 class ParticleSystem(Node):
     def __init__(self, data):
         super(ParticleSystem, self).__init__(data)
 
+    def get_class_name(self):
+        return 'ParticleSystemQuad'
+
 
 class TiledMap(Node):
     def __init__(self, data):
         super(TiledMap, self).__init__(data)
 
+    def get_class_name(self):
+        return 'TMXTiledMap'
+
 
 class Canvas(Node):
     def __init__(self, data):
         super(Canvas, self).__init__(data)
+
+    # Canvas should be part of the big init
+    # but as as part of the scene graph
+    # since cocos2d-x doesn't have this concept
+    def to_cpp(self, parent, depth, sibling_idx):
+        pass
 
 
 def populate_meta_files(path):
