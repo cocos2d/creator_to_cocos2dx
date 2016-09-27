@@ -89,24 +89,24 @@ class Node(object):
         self._children = []
         self._properties = {}
 
-        self.add_property('setContentSize', "_contentSize", ['width','height'])
-        self.add_property('setEnabled', "_enabled", None) 
-        self.add_property('setName', "_name", None) 
-        self.add_property('setAnchorPoint', "_anchorPoint", ['x', 'y'])
-        self.add_property('setCascadeOpacityEnabled', "_cascadeOpacityEnabled", None)
-        self.add_property('setColor', "_color", ['r', 'g', 'b', 'a'])
-        self.add_property('setGlobalZOrder', "_globalZOrder", None)
-        self.add_property('setLocalZOrder', "_localZOrder", None)
-        self.add_property('setOpacity', "_opacity", None)
-        self.add_property('setOpacityModifyRGB', "_opacityModifyRGB", None)
-        self.add_property('setPosition', "_position", ['x', 'y'])
-        self.add_property('setRotationX', "_rotationX", None)
-        self.add_property('setRotationY', "_rotationY", None)
-        self.add_property('setScaleX', "_scaleX", None)
-        self.add_property('setScaleY', "_scaleY", None)
-        self.add_property('setSkewX', "_skewX", None)
-        self.add_property('setSkewY', "_skewY", None)
-        self.add_property('setTag', "_tag", None)
+        self.add_property_size('setContentSize', "_contentSize")
+        self.add_property_bool('setEnabled', "_enabled")
+        self.add_property_str('setName', "_name")
+        self.add_property_vec2('setAnchorPoint', "_anchorPoint")
+        self.add_property_bool('setCascadeOpacityEnabled', "_cascadeOpacityEnabled")
+        self.add_property_rgba('setColor', "_color")
+        self.add_property_int('setGlobalZOrder', "_globalZOrder")
+        self.add_property_int('setLocalZOrder', "_localZOrder")
+        self.add_property_int('setOpacity', "_opacity" )
+        self.add_property_bool('setOpacityModifyRGB', "_opacityModifyRGB" )
+        self.add_property_vec2('setPosition', "_position")
+        self.add_property_int('setRotationX', "_rotationX")
+        self.add_property_int('setRotationY', "_rotationY")
+        self.add_property_int('setScaleX', "_scaleX")
+        self.add_property_int('setScaleY', "_scaleY")
+        self.add_property_int('setSkewX', "_skewX")
+        self.add_property_int('setSkewY', "_skewY")
+        self.add_property_int('setTag', "_tag")
 
 
         self._cpp_node_name = ""
@@ -117,8 +117,42 @@ class Node(object):
             new_value = self._node_data.get(value)
             if keys_to_parse is not None:
                 new_value = [new_value[k] for k in keys_to_parse]
-
             self._properties[newkey] = new_value
+
+    def add_property_str(self, newkey, value):
+        if value in self._node_data:
+            new_value = self._node_data.get(value)
+            self._properties[newkey] = '"' + new_value + '"'
+
+    def add_property_size(self, newkey, value):
+        if value in self._node_data:
+            w = self._node_data.get(value)['width']
+            h = self._node_data.get(value)['height']
+            self._properties[newkey] = '%ff, %ff' % (w,h)
+
+    def add_property_int(self, newkey, value):
+        if value in self._node_data:
+            i = self._node_data.get(value)
+            self._properties[newkey] = i
+
+    def add_property_vec2(self, newkey, value):
+        if value in self._node_data:
+            x = self._node_data.get(value)['x']
+            y = self._node_data.get(value)['y']
+            self._properties[newkey] = '%ff, %ff' % (x,y)
+
+    def add_property_rgba(self, newkey, value):
+        if value in self._node_data:
+            r = self._node_data.get(value)['r']
+            g = self._node_data.get(value)['g']
+            b = self._node_data.get(value)['b']
+            a = self._node_data.get(value)['a']
+            self._properties[newkey] = '%d, %d, %d, %d' %(r,g,b,a)
+
+    def add_property_bool(self, newkey, value):
+        if value in self._node_data:
+            b = str(self._node_data.get(value)).lower()
+            self._properties[newkey] = b
 
     def parse_properties(self):
         for child_idx in self._node_data["_children"]:
@@ -160,7 +194,14 @@ class Node(object):
 
     def to_cpp_properties(self):
         for p in self._properties:
-            print("    %s->%s(%s)" % (self._cpp_node_name, p, self._properties[p]))
+            value = self._properties[p]
+            if type(value) == type([]):
+                # if it is a list, remove the "[" and "]" from it before printing it
+                value = str(value)[1:-1]
+            elif type(value) == type(False):
+                # convert True,False -> true,false
+                value = str(value).lower()
+            print("    %s->%s(%s);" % (self._cpp_node_name, p, value))
 
     def to_cpp_end(self, parent):
         if parent is not None:
@@ -176,7 +217,6 @@ class Scene(Node):
 class Sprite(Node):
     def __init__(self, data):
         super(Sprite, self).__init__(data)
-        self._sprite_frame = ""
 
     def parse_properties(self):
         super(Sprite, self).parse_properties()
@@ -184,10 +224,11 @@ class Sprite(Node):
         # search for sprite frame name
         component = Node.get_node_component_of_type(self._node_data, 'cc.Sprite')
         sprite_frame_uuid = component['_spriteFrame']['__uuid__']
-        self._sprite_frame = g_sprite_frames[sprite_frame_uuid]
+        # add name between ""
+        self._properties['setSpriteFrame'] = '"' + g_sprite_frames[sprite_frame_uuid]['frameName'] + '"'
 
     def get_description(self, tab):
-        return "%s%s('%s')" % ('-' * tab, type(self).__name__, self._sprite_frame['frameName'])
+        return "%s%s('%s')" % ('-' * tab, type(self).__name__, self._properties['setSpriteFrame'])
 
 
 class Label(Node):
