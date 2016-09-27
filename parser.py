@@ -192,7 +192,7 @@ class Node(object):
     def to_cpp_begin(self, depth, sibling_idx):
         print("    // New node")
         self._cpp_node_name = "%s_%d_%d" % (self.get_class_name().lower(), depth, sibling_idx)
-        print("    auto %s = %s::create();" % (self._cpp_node_name, self.get_class_name()))
+        print("    auto %s = %s::create(%s);" % (self._cpp_node_name, self.get_class_name(), self.to_cpp_create_params()))
 
     def to_cpp_properties(self):
         for p in self._properties:
@@ -203,6 +203,9 @@ class Node(object):
         if parent is not None:
             print("    %s->addChild(%s);" % (parent._cpp_node_name, self._cpp_node_name))
         print("")
+
+    def to_cpp_create_params(self):
+        return ""
 
 
 class Scene(Node):
@@ -247,16 +250,31 @@ class ParticleSystem(Node):
     def __init__(self, data):
         super(ParticleSystem, self).__init__(data)
 
+        component = Node.get_node_component_of_type(self._node_data, 'cc.ParticleSystem')
+        file_uuid = component['_file']['__uuid__']
+        # add name between ""
+        self._particle_system_file = g_uuid[file_uuid]['relativePath']
+
     def get_class_name(self):
         return 'ParticleSystemQuad'
 
+    def to_cpp_create_params(self):
+        return '"' + self._particle_system_file + '"'
 
 class TiledMap(Node):
     def __init__(self, data):
         super(TiledMap, self).__init__(data)
 
+        component = Node.get_node_component_of_type(self._node_data, 'cc.TiledMap')
+        file_uuid = component['_tmxFile']['__uuid__']
+        # add name between ""
+        self._tmx_file = g_uuid[file_uuid]['relativePath']
+
     def get_class_name(self):
         return 'TMXTiledMap'
+
+    def to_cpp_create_params(self):
+        return '"' + self._tmx_file + '"'
 
 
 class Canvas(Node):
