@@ -139,7 +139,7 @@ class Node(object):
         if value in self._node_data:
             x = self._node_data.get(value)['x']
             y = self._node_data.get(value)['y']
-            self._properties[newkey] = '%ff, %ff' % (x,y)
+            self._properties[newkey] = '%0.4ff, %0.4ff' % (x,y)
 
     def add_property_rgba(self, newkey, value):
         if value in self._node_data:
@@ -195,12 +195,6 @@ class Node(object):
     def to_cpp_properties(self):
         for p in self._properties:
             value = self._properties[p]
-            if type(value) == type([]):
-                # if it is a list, remove the "[" and "]" from it before printing it
-                value = str(value)[1:-1]
-            elif type(value) == type(False):
-                # convert True,False -> true,false
-                value = str(value).lower()
             print("    %s->%s(%s);" % (self._cpp_node_name, p, value))
 
     def to_cpp_end(self, parent):
