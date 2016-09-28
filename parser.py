@@ -402,10 +402,10 @@ def to_cpp_setup_sprite_frames():
         cpp_sprite_frame = '    auto sf_%s = SpriteFrame::create("%s", Rect(%g, %g, %g, %g), %s, Vec2(%g, %g), Size(%g, %g));\n' % (
                 sprite_frame_name,
                 texture_filename,
-                0,0,0,0,
+                sprite_frame['trimX'], sprite_frame['trimY'], sprite_frame['width'], sprite_frame['height'],
                 str(sprite_frame['rotated']).lower(),
                 sprite_frame['offsetX'], sprite_frame['offsetY'],
-                0,0)
+                sprite_frame['rawWidth'], sprite_frame['rawHeight'])
         g_file_cpp.write(cpp_sprite_frame)
         g_file_cpp.write('    SpriteFrameCache::getInstance()->addSpriteFrame(sf_%s, "%s");\n' % (sprite_frame_name, sprite_frame_name))
 
