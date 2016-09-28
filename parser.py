@@ -17,6 +17,9 @@ __docformat__ = 'restructuredtext'
 
 # Some globals (yeah!)
 
+# filename of the .fire file to parse
+g_filename = ""
+
 # the .fire file being parsed
 g_json_data = []
 
@@ -34,6 +37,7 @@ g_textures = {}
 # contains the data from library/uuid-to-mtime.json
 g_uuid = {}
 
+g_design_resolution = None
 
 
 class Node(object):
@@ -61,7 +65,7 @@ class Node(object):
             t = component['__type__']
             if t in known_components:
                 l = [x['__type__'] for x in components]
-                print("Choosen %s from %s" % (t,l))
+#                print("Choosen %s from %s" % (t,l))
                 return t
             else:
                 print("Component not found: %s" % component['__type__'])
@@ -281,6 +285,14 @@ class Canvas(Node):
     def __init__(self, data):
         super(Canvas, self).__init__(data)
 
+        component = Node.get_node_component_of_type(self._node_data, 'cc.Canvas')
+
+        global g_design_resolution, g_fit_height, g_fit_width
+        g_design_resolution = component['_designResolution']
+        g_fit_width = component['_fitWidth']
+        g_fit_height = component['_fitHeight']
+
+
     # Canvas should be part of the big init
     # but as as part of the scene graph
     # since cocos2d-x doesn't have this concept
@@ -320,7 +332,28 @@ def populate_uuid_file(path):
         g_uuid = json.load(data)
 
 
+def to_cpp_setup():
+    to_print = """
+bool %s_init()
+{
+    auto director = Director::getInstance();
+    auto glview = director->getOpenGLView();
+    glview->setDesignResolution(%d, %d, %s);
+
+    return true;
+}
+""" % ( g_filename,
+        g_design_resolution['width'],
+        g_design_resolution['height'],
+        "ResolutionPolicy::%s" % ("FIXED_HEIGHT" if g_fit_height else "FIXED_WIDTH")
+        )
+    print(to_print)
+
+
 def run(filename):
+    global g_filename
+
+    g_filename = os.path.splitext(os.path.basename(filename))[0]
     path = os.path.dirname(filename)
     populate_meta_files(path)
     populate_uuid_file(path)
@@ -336,8 +369,12 @@ def run(filename):
             scene_idx = scenes["__id__"]
             scene_obj = Scene(g_json_data[scene_idx])
             scene_obj.parse_properties()
-            scene_obj.print_scene_graph(0)
+#            scene_obj.print_scene_graph(0)
+
+            to_cpp_setup()
+            print("Node* %s_create()\n{\n" % g_filename)
             scene_obj.to_cpp(None,0,0)
+            print("    return scene_0_0;\n}\n")
 
 
 def help():
