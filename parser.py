@@ -19,6 +19,12 @@ __docformat__ = 'restructuredtext'
 
 # filename of the .fire file to parse
 g_filename = ""
+# File objects to dump the cpp/h data
+g_file_cpp = None
+g_file_h = None
+
+# Needed resources
+g_resources_needed = set()
 
 # the .fire file being parsed
 g_json_data = []
@@ -39,15 +45,13 @@ g_uuid = {}
 
 g_design_resolution = None
 
-# File objects to dump the cpp/h data
-g_file_cpp = None
-g_file_h = None
 
 
 def globals_init():
     global g_filename, g_json_data, g_meta_data
+    global g_file_cpp, g_file_h
     global g_sprite_frames, g_textures, g_uuid
-    global g_design_resolution
+    global g_design_resolution, g_resources_needed
 
     g_filename = ""
     g_json_data = []
@@ -58,6 +62,7 @@ def globals_init():
     g_design_resolution = None
     g_file_cpp = None
     g_file_h = None
+    g_resources_needed = set()
 
 
 class Node(object):
@@ -152,7 +157,7 @@ class Node(object):
         if value in self._node_data:
             w = self._node_data.get(value)['width']
             h = self._node_data.get(value)['height']
-            self._properties[newkey] = 'Size(%ff, %ff)' % (w,h)
+            self._properties[newkey] = 'Size(%g, %g)' % (w,h)
 
     def add_property_int(self, newkey, value):
         if value in self._node_data:
@@ -163,7 +168,7 @@ class Node(object):
         if value in self._node_data:
             x = self._node_data.get(value)['x']
             y = self._node_data.get(value)['y']
-            self._properties[newkey] = 'Vec2(%0.4ff, %0.4ff)' % (x,y)
+            self._properties[newkey] = 'Vec2(%g, %g)' % (x,y)
 
     def add_property_rgb(self, newkey, value):
         if value in self._node_data:
@@ -249,6 +254,7 @@ class Sprite(Node):
         sprite_frame_uuid = component['_spriteFrame']['__uuid__']
         # add name between ""
         self._properties['setSpriteFrame'] = '"' + g_sprite_frames[sprite_frame_uuid]['frameName'] + '"'
+        print(g_sprite_frames[sprite_frame_uuid])
 
     def get_description(self, tab):
         return "%s%s('%s')" % ('-' * tab, self.get_class_name(), self._properties['setSpriteFrame'])
@@ -276,8 +282,12 @@ class ParticleSystem(Node):
 
         component = Node.get_node_component_of_type(self._node_data, 'cc.ParticleSystem')
         file_uuid = component['_file']['__uuid__']
+
         # add name between ""
         self._particle_system_file = g_uuid[file_uuid]['relativePath']
+
+        # tag it as needed resourse
+        g_resources_needed.add(self._particle_system_file)
 
     def get_class_name(self):
         return 'ParticleSystemQuad'
@@ -293,6 +303,9 @@ class TiledMap(Node):
         file_uuid = component['_tmxFile']['__uuid__']
         # add name between ""
         self._tmx_file = g_uuid[file_uuid]['relativePath']
+
+        # tag it as needed resourse
+        g_resources_needed.add(self._tmx_file)
 
     def get_class_name(self):
         return 'TMXTiledMap'
@@ -353,23 +366,48 @@ def populate_uuid_file(path):
 
 
 def to_cpp_setup():
-    to_print = """
+    header = """
 USING_NS_CC;
 
 bool %s_init()
-{
+{""" % g_filename
+
+    design_resolution = """
     auto director = Director::getInstance();
     auto glview = director->getOpenGLView();
     glview->setDesignResolutionSize(%d, %d, %s);
-
-    return true;
-}
-""" % ( g_filename,
-        g_design_resolution['width'],
+""" % ( g_design_resolution['width'],
         g_design_resolution['height'],
         "ResolutionPolicy::%s" % ("FIXED_HEIGHT" if g_fit_height else "FIXED_WIDTH")
         )
-    g_file_cpp.write(to_print)
+
+    footer = """
+    return true;
+}
+"""
+    g_file_cpp.write(header)
+    g_file_cpp.write(design_resolution)
+    to_cpp_setup_sprite_frames()
+    g_file_cpp.write(footer)
+
+
+def to_cpp_setup_sprite_frames():
+
+    for k in g_sprite_frames:
+        sprite_frame = g_sprite_frames[k]
+        texture_uuid = sprite_frame['rawTextureUuid']
+        texture_filename = g_uuid[texture_uuid]['relativePath']
+        sprite_frame_name = sprite_frame['frameName']
+        sprite_frame_name = sprite_frame_name.replace('-','_')
+        cpp_sprite_frame = '    auto sf_%s = SpriteFrame::create("%s", Rect(%g, %g, %g, %g), %s, Vec2(%g, %g), Size(%g, %g));\n' % (
+                sprite_frame_name,
+                texture_filename,
+                0,0,0,0,
+                str(sprite_frame['rotated']).lower(),
+                sprite_frame['offsetX'], sprite_frame['offsetY'],
+                0,0)
+        g_file_cpp.write(cpp_sprite_frame)
+        g_file_cpp.write('    SpriteFrameCache::getInstance()->addSpriteFrame(sf_%s, "%s");\n' % (sprite_frame_name, sprite_frame_name))
 
 
 def create_file(filename):
