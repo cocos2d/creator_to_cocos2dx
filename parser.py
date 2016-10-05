@@ -277,7 +277,7 @@ class Label(Node):
 
         # search for sprite frame name
         component = Node.get_node_component_of_type(self._node_data, 'cc.Label')
-        self._label_text= component['_N$string']
+        self._properties['setString'] = '"' + component['_N$string'] + '"'
 
     def get_description(self, tab):
         return "%s%s('%s')" % ('-' * tab, self.get_class_name(), self._label_text)
