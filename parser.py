@@ -124,7 +124,7 @@ class Node(object):
         self._children = []
         self._properties = {}
 
-        self.add_property_size('setContentSize', "_contentSize")
+#        self.add_property_size('setContentSize', "_contentSize")
         self.add_property_bool('setEnabled', "_enabled")
         self.add_property_str('setName', "_name")
         self.add_property_vec2('setAnchorPoint', "_anchorPoint")
@@ -227,7 +227,7 @@ class Node(object):
     def to_cpp_begin(self, depth, sibling_idx):
         g_file_cpp.write("    // New node\n")
         self._cpp_node_name = "%s_%d_%d" % (self.get_class_name().lower(), depth, sibling_idx)
-        g_file_cpp.write("    auto %s = %s::create(%s);\n" % (self._cpp_node_name, self.get_class_name(), self.to_cpp_create_params()))
+        g_file_cpp.write("    auto %s = %s::%s;\n" % (self._cpp_node_name, self.get_class_name(), self.to_cpp_create_params()))
 
 
     def to_cpp_properties(self):
@@ -241,7 +241,7 @@ class Node(object):
         g_file_cpp.write("")
 
     def to_cpp_create_params(self):
-        return ""
+        return "create()"
 
 
 class Scene(Node):
@@ -277,7 +277,21 @@ class Label(Node):
 
         # search for sprite frame name
         component = Node.get_node_component_of_type(self._node_data, 'cc.Label')
-        self._properties['setString'] = '"' + component['_N$string'] + '"'
+
+        self._systemFont = component["_isSystemFontUsed"]
+
+        if not self._systemFont:
+            self._properties['setString'] = '"' + component['_N$string'] + '"'
+            self._properties['setLineHeight'] = component['_lineHeight']
+        else:
+            self._labelText = component['_N$string']
+            self._fontSize = component['_fontSize']
+
+    def to_cpp_create_params(self):
+        if self._systemFont:
+            return 'createWithSystemFont("' + self._labelText + '", "arial", ' + str(self._fontSize) + ')'
+        else:
+            return 'create()'
 
     def get_description(self, tab):
         return "%s%s('%s')" % ('-' * tab, self.get_class_name(), self._label_text)
@@ -300,7 +314,7 @@ class ParticleSystem(Node):
         return 'ParticleSystemQuad'
 
     def to_cpp_create_params(self):
-        return '"' + g_assetpath + self._particle_system_file + '"'
+        return 'create("' + g_assetpath + self._particle_system_file + '")'
 
 class TiledMap(Node):
     def __init__(self, data):
@@ -318,7 +332,7 @@ class TiledMap(Node):
         return 'TMXTiledMap'
 
     def to_cpp_create_params(self):
-        return '"' + g_assetpath + self._tmx_file + '"'
+        return 'create("' + g_assetpath + self._tmx_file + '")'
 
 
 class Canvas(Node):
