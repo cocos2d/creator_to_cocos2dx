@@ -445,23 +445,47 @@ USING_NS_CC;
 bool %s_init()
 {""" % g_filename
 
-    design_resolution = """
-    auto director = Director::getInstance();
-    auto glview = director->getOpenGLView();
-    glview->setDesignResolutionSize(%d, %d, %s);
-""" % ( g_design_resolution['width'],
-        g_design_resolution['height'],
-        "ResolutionPolicy::%s" % ("FIXED_HEIGHT" if g_fit_height else "FIXED_WIDTH")
-        )
-
     footer = """
     return true;
 }
 """
     g_file_cpp.write(header)
-    g_file_cpp.write(design_resolution)
+    to_cpp_setup_design_resolution()
     to_cpp_setup_sprite_frames()
     g_file_cpp.write(footer)
+
+
+def to_cpp_setup_design_resolution():
+    design_resolution_exact_fit = """
+    auto director = Director::getInstance();
+    auto glview = director->getOpenGLView();
+    glview->setDesignResolutionSize(%d, %d, ResolutionPolicy::EXACT_FIT);
+""" % ( g_design_resolution['width'], g_design_resolution['height'])
+
+    design_resolution = """
+    auto director = Director::getInstance();
+    auto glview = director->getOpenGLView();
+    auto frameSize = glview->getFrameSize();
+    glview->setDesignResolutionSize(%s, %s, ResolutionPolicy::NO_BORDER);
+"""
+
+    if g_fit_height and g_fit_width:
+        g_file_cpp.write(design_resolution_exact_fit)
+    elif g_fit_height:
+        expanded = design_resolution % (
+                "frameSize.width / (frameSize.height / %d)" % g_design_resolution['height'],
+                "frameSize.height / (frameSize.height / %d)" % g_design_resolution['height'])
+        g_file_cpp.write(expanded)
+    elif g_fit_width:
+        expanded = design_resolution % (
+                "frameSize.width / (frameSize.width / %d)" % g_design_resolution['width'],
+                "frameSize.height / (frameSize.width / %d)" % g_design_resolution['width'])
+        g_file_cpp.write(expanded)
+    else:
+        expanded = design_resolution % (
+                str(g_design_resolution['width']), 
+                str(g_design_resolution['height']))
+        g_file_cpp.write(expanded)
 
 
 def to_cpp_setup_sprite_frames():
