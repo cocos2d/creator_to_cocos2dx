@@ -12,6 +12,7 @@ import json
 import glob
 from pprint import pprint
 import getopt
+from sets import Set
 
 
 __docformat__ = 'restructuredtext'
@@ -37,6 +38,14 @@ g_meta_data = {}
 # key is the uuid. value is the json container
 g_sprite_frames = {}
 
+# sprites that don't belong to any atlas
+# should be added to the SpriteFrameCache manually
+g_sprite_without_atlas = {}
+
+# sprites that belong to atlas files
+# atlas file should be added to the SpriteFrameCache manually
+g_sprite_with_atlas = []
+
 # contains the textures used
 # key is the uuid. value is the json container
 g_textures = {}
@@ -55,6 +64,7 @@ def globals_init():
     global g_filename, g_json_data, g_meta_data
     global g_file_cpp, g_file_h
     global g_sprite_frames, g_textures, g_uuid
+    global g_sprite_without_atlas, g_sprite_with_atlas
     global g_design_resolution, g_resources_needed
     global g_assetpath
 
@@ -62,6 +72,8 @@ def globals_init():
     g_json_data = []
     g_meta_data = {}
     g_sprite_frames = {}
+    g_sprite_without_atlas = {}
+    g_sprite_with_atlas = []
     g_textures = {}
     g_uuid = {}
     g_design_resolution = None
@@ -259,6 +271,9 @@ class Sprite(Node):
         # search for sprite frame name
         component = Node.get_node_component_of_type(self._node_data, 'cc.Sprite')
         sprite_frame_uuid = component['_spriteFrame']['__uuid__']
+
+#        atlas = component['_atlas']
+
         # add name between ""
         self._properties['setSpriteFrame'] = '"' + g_sprite_frames[sprite_frame_uuid]['frameName'] + '"'
         print(g_sprite_frames[sprite_frame_uuid])
@@ -383,6 +398,7 @@ class Canvas(Node):
 
 def populate_meta_files(path):
     global g_meta_data, g_sprite_frames, g_textures
+    global g_sprite_with_atlas, g_sprite_without_atlas
     metas = glob.glob(path + '/*.meta')
     for meta_filename in metas:
         with open(meta_filename) as fd:
@@ -390,8 +406,10 @@ def populate_meta_files(path):
             j_data = json.load(fd)
             g_meta_data[basename] = j_data
 
+            meta_uuid = j_data['uuid']
+
             # is this a sprite (.png) file ?
-            if 'type' in j_data and j_data['type'] == 'sprite':
+            if 'type' in j_data and (j_data['type'] == 'sprite' or j_data['type'] == 'Texture Packer'):
                 # subMetas seems to contain all the sprite frame definitions
                 submetas = j_data['subMetas']
                 for spriteframename in submetas:
@@ -405,6 +423,13 @@ def populate_meta_files(path):
                     # populate g_textures. The name is meta_filename - '.meta' (5 chars)
                     texture_uuid = submetas[spriteframename]['rawTextureUuid']
                     g_textures[texture_uuid] = os.path.basename(meta_filename[:-5])
+
+                    if j_data['type'] == 'sprite':
+                        g_sprite_without_atlas[uuid] = submetas[spriteframename]
+                    elif j_data['type'] == 'Texture Packer':
+                        g_sprite_with_atlas.append(g_uuid[meta_uuid]['relativePath'])
+                    else:
+                        raise Exception("Invalid type: %s" % j_data['type'])
 
 
 def populate_uuid_file(path):
@@ -440,8 +465,10 @@ bool %s_init()
 
 
 def to_cpp_setup_sprite_frames():
+    for k in Set(g_sprite_with_atlas):
+        g_file_cpp.write('    SpriteFrameCache::getInstance()->addSpriteFramesWithFile("%s");\n' % (g_assetpath + k))
 
-    for k in g_sprite_frames:
+    for k in g_sprite_without_atlas:
         sprite_frame = g_sprite_frames[k]
         texture_uuid = sprite_frame['rawTextureUuid']
         texture_filename = g_uuid[texture_uuid]['relativePath']
@@ -483,8 +510,10 @@ def run(filename, assetpath):
     g_file_h = create_file(h_name)
 
     path = os.path.dirname(filename)
-    populate_meta_files(path)
+    # 1st
     populate_uuid_file(path)
+    # 2nd
+    populate_meta_files(path)
 
     global g_json_data
     with open(filename) as data_file:
