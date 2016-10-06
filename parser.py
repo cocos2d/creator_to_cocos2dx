@@ -270,6 +270,8 @@ class Sprite(Node):
 class Label(Node):
 
     FONT_SYSTEM, FONT_TTF, FONT_BM = range(3)
+    H_ALIGNMENTS = ('TextHAlignment::LEFT', 'TextHAlignment::CENTER', 'TextHAlignment::RIGHT')
+    V_ALIGNMENTS = ('TextVAlignment::TOP', 'TextVAlignment::CENTER', 'TextVAlignment::BOTTOM')
 
     def __init__(self, data):
         super(Label, self).__init__(data)
@@ -287,6 +289,13 @@ class Label(Node):
         self._font_size = component['_fontSize']
         self._label_text = component['_N$string']
 
+        # replace new lines with \n
+        self._label_text = self._label_text.replace('\n','\\n')
+
+        # alignments
+        self._properties['setHorizontalAlignment'] = Label.H_ALIGNMENTS[component['_N$horizontalAlign']]
+        self._properties['setVerticalAlignment'] = Label.V_ALIGNMENTS[component['_N$verticalAlign']]
+
         if is_system_font:
             self._font_type = Label.FONT_SYSTEM
         else:
@@ -300,7 +309,7 @@ class Label(Node):
             else:
                 raise Exception("Invalid label file: %s" % filename)
 
-            # needed?
+            # needed for multiline. lineHeight not supported in SystemFONT
             self._properties['setLineHeight'] = component['_lineHeight']
 
     def to_cpp_create_params(self):
