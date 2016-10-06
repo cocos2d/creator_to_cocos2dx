@@ -268,9 +268,14 @@ class Sprite(Node):
 
 
 class Label(Node):
+
+    FONT_SYSTEM, FONT_TTF, FONT_BM = range(3)
+
     def __init__(self, data):
         super(Label, self).__init__(data)
         self._label_text = ""
+        self._font_type = Label.FONT_SYSTEM
+        self._font_filename = None
 
     def parse_properties(self):
         super(Label, self).parse_properties()
@@ -278,20 +283,33 @@ class Label(Node):
         # search for sprite frame name
         component = Node.get_node_component_of_type(self._node_data, 'cc.Label')
 
-        self._systemFont = component["_isSystemFontUsed"]
+        is_system_font = component["_isSystemFontUsed"]
+        self._font_size = component['_fontSize']
+        self._label_text = component['_N$string']
 
-        if not self._systemFont:
-            self._properties['setString'] = '"' + component['_N$string'] + '"'
-            self._properties['setLineHeight'] = component['_lineHeight']
+        if is_system_font:
+            self._font_type = Label.FONT_SYSTEM
         else:
-            self._labelText = component['_N$string']
-            self._fontSize = component['_fontSize']
+            file_uuid = component['_N$file']['__uuid__']
+            self._font_filename = g_uuid[file_uuid]['relativePath']
+            if self._font_filename.endswith('.ttf'):
+                self._font_type = Label.FONT_TTF
+            elif self._font_filename.endswith('.fnt'):
+                self._font_type = Label.FONT_BM
+                self._properties['setBMFontSize'] = component['_fontSize']
+            else:
+                raise Exception("Invalid label file: %s" % filename)
+
+            # needed?
+            self._properties['setLineHeight'] = component['_lineHeight']
 
     def to_cpp_create_params(self):
-        if self._systemFont:
-            return 'createWithSystemFont("' + self._labelText + '", "arial", ' + str(self._fontSize) + ')'
-        else:
-            return 'create()'
+        if self._font_type == Label.FONT_SYSTEM:
+            return 'createWithSystemFont("' + self._label_text + '", "arial", ' + str(self._font_size) + ')'
+        elif self._font_type == Label.FONT_BM:
+            return 'createWithBMFont("' + g_assetpath + self._font_filename + '", "' + self._label_text + '")'
+        elif self._font_type == Label.FONT_TTF:
+            return 'createWithTTF("' + self._label_text + '", "'+ g_assetpath + self._font_filename + '", ' + str(self._font_size) + ')'
 
     def get_description(self, tab):
         return "%s%s('%s')" % ('-' * tab, self.get_class_name(), self._label_text)
