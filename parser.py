@@ -103,7 +103,8 @@ class Node(object):
 
     @classmethod
     def guess_type_from_components(cls, components):
-        known_components = ['cc.Label', 'cc.Sprite', 'cc.ParticleSystem', 'cc.TiledMap', 'cc.Canvas']
+        # Button should be before Sprite
+        known_components = ['cc.Button', 'cc.EditBox', 'cc.Label', 'cc.Sprite', 'cc.ParticleSystem', 'cc.TiledMap', 'cc.Canvas']
         for component in components:
             t = component['__type__']
             if t in known_components:
@@ -137,23 +138,24 @@ class Node(object):
         self._properties = {}
 
 #        self.add_property_size('setContentSize', "_contentSize")
-        self.add_property_bool('setEnabled', "_enabled")
-        self.add_property_str('setName', "_name")
-        self.add_property_vec2('setAnchorPoint', "_anchorPoint")
-        self.add_property_bool('setCascadeOpacityEnabled', "_cascadeOpacityEnabled")
-        self.add_property_rgb('setColor', "_color")
-        self.add_property_int('setGlobalZOrder', "_globalZOrder")
-        self.add_property_int('setLocalZOrder', "_localZOrder")
-        self.add_property_int('setOpacity', "_opacity" )
-        self.add_property_bool('setOpacityModifyRGB', "_opacityModifyRGB" )
-        self.add_property_vec2('setPosition', "_position")
-        self.add_property_int('setRotationSkewX', "_rotationX")
-        self.add_property_int('setRotationSkewY', "_rotationY")
-        self.add_property_int('setScaleX', "_scaleX")
-        self.add_property_int('setScaleY', "_scaleY")
-        self.add_property_int('setSkewX', "_skewX")
-        self.add_property_int('setSkewY', "_skewY")
-        self.add_property_int('setTag', "_tag")
+        data = self._node_data
+        self.add_property_bool('setEnabled', "_enabled", data)
+        self.add_property_str('setName', "_name", data)
+        self.add_property_vec2('setAnchorPoint', "_anchorPoint", data)
+        self.add_property_bool('setCascadeOpacityEnabled', "_cascadeOpacityEnabled", data)
+        self.add_property_rgb('setColor', "_color", data)
+        self.add_property_int('setGlobalZOrder', "_globalZOrder", data)
+        self.add_property_int('setLocalZOrder', "_localZOrder", data)
+        self.add_property_int('setOpacity', "_opacity" , data)
+        self.add_property_bool('setOpacityModifyRGB', "_opacityModifyRGB", data)
+        self.add_property_vec2('setPosition', "_position", data)
+        self.add_property_int('setRotationSkewX', "_rotationX", data)
+        self.add_property_int('setRotationSkewY', "_rotationY", data)
+        self.add_property_int('setScaleX', "_scaleX", data)
+        self.add_property_int('setScaleY', "_scaleY", data)
+        self.add_property_int('setSkewX', "_skewX", data)
+        self.add_property_int('setSkewY', "_skewY", data)
+        self.add_property_int('setTag', "_tag", data)
 
 
         self._cpp_node_name = ""
@@ -166,38 +168,38 @@ class Node(object):
                 new_value = [new_value[k] for k in keys_to_parse]
             self._properties[newkey] = new_value
 
-    def add_property_str(self, newkey, value):
-        if value in self._node_data:
-            new_value = self._node_data.get(value)
+    def add_property_str(self, newkey, value, data):
+        if value in data:
+            new_value = data.get(value)
             self._properties[newkey] = '"' + new_value + '"'
 
-    def add_property_size(self, newkey, value):
-        if value in self._node_data:
-            w = self._node_data.get(value)['width']
-            h = self._node_data.get(value)['height']
+    def add_property_size(self, newkey, value, data):
+        if value in data:
+            w = data.get(value)['width']
+            h = data.get(value)['height']
             self._properties[newkey] = 'Size(%g, %g)' % (w,h)
 
-    def add_property_int(self, newkey, value):
-        if value in self._node_data:
-            i = self._node_data.get(value)
+    def add_property_int(self, newkey, value, data):
+        if value in data:
+            i = data.get(value)
             self._properties[newkey] = i
 
-    def add_property_vec2(self, newkey, value):
-        if value in self._node_data:
-            x = self._node_data.get(value)['x']
-            y = self._node_data.get(value)['y']
+    def add_property_vec2(self, newkey, value, data):
+        if value in data:
+            x = data.get(value)['x']
+            y = data.get(value)['y']
             self._properties[newkey] = 'Vec2(%g, %g)' % (x,y)
 
-    def add_property_rgb(self, newkey, value):
-        if value in self._node_data:
-            r = self._node_data.get(value)['r']
-            g = self._node_data.get(value)['g']
-            b = self._node_data.get(value)['b']
+    def add_property_rgb(self, newkey, value, data):
+        if value in data:
+            r = data.get(value)['r']
+            g = data.get(value)['g']
+            b = data.get(value)['b']
             self._properties[newkey] = 'Color3B(%d, %d, %d)' %(r,g,b)
 
-    def add_property_bool(self, newkey, value):
-        if value in self._node_data:
-            b = str(self._node_data.get(value)).lower()
+    def add_property_bool(self, newkey, value, data):
+        if value in data:
+            b = str(data.get(value)).lower()
             self._properties[newkey] = b
 
     def get_class_name(self):
@@ -256,11 +258,40 @@ class Node(object):
         return "create()"
 
 
+################################################################################
+#
+# Special Nodes: Scene, Canvas
+#
+################################################################################
 class Scene(Node):
     def __init__(self, data):
         super(Scene, self).__init__(data)
 
 
+class Canvas(Node):
+    def __init__(self, data):
+        super(Canvas, self).__init__(data)
+
+        component = Node.get_node_component_of_type(self._node_data, 'cc.Canvas')
+
+        global g_design_resolution, g_fit_height, g_fit_width
+        g_design_resolution = component['_designResolution']
+        g_fit_width = component['_fitWidth']
+        g_fit_height = component['_fitHeight']
+
+
+    # Canvas should be part of the big init
+    # but as as part of the scene graph
+    # since cocos2d-x doesn't have this concept
+    def to_cpp(self, parent, depth, sibling_idx):
+        pass
+
+################################################################################
+#
+# Built-in Renderer Node
+# Sprite, Label, TMX, Particle
+#
+################################################################################
 class Sprite(Node):
     def __init__(self, data):
         super(Sprite, self).__init__(data)
@@ -275,7 +306,8 @@ class Sprite(Node):
 #        atlas = component['_atlas']
 
         # add name between ""
-        self._properties['setSpriteFrame'] = '"' + g_sprite_frames[sprite_frame_uuid]['frameName'] + '"'
+        print(g_sprite_frames[sprite_frame_uuid])
+        self.add_property_str('setSpriteFrame', 'frameName', g_sprite_frames[sprite_frame_uuid])
         print(g_sprite_frames[sprite_frame_uuid])
 
     def get_description(self, tab):
@@ -320,12 +352,12 @@ class Label(Node):
                 self._font_type = Label.FONT_TTF
             elif self._font_filename.endswith('.fnt'):
                 self._font_type = Label.FONT_BM
-                self._properties['setBMFontSize'] = component['_fontSize']
+                self.add_property_int('setBMFontSize','_fontSize', component)
             else:
                 raise Exception("Invalid label file: %s" % filename)
 
             # needed for multiline. lineHeight not supported in SystemFONT
-            self._properties['setLineHeight'] = component['_lineHeight']
+            self.add_property_int('setLineHeight' ,'_lineHeight', component)
 
     def to_cpp_create_params(self):
         if self._font_type == Label.FONT_SYSTEM:
@@ -376,26 +408,54 @@ class TiledMap(Node):
     def to_cpp_create_params(self):
         return 'create("' + g_assetpath + self._tmx_file + '")'
 
+################################################################################
+#
+# Built-in UI Nodes
+# Button, EditBox, etc.
+#
+################################################################################
+class Button(Node):
+    pass
 
-class Canvas(Node):
-    def __init__(self, data):
-        super(Canvas, self).__init__(data)
+class EditBox(Node):
+    # custom properties
+    # "_N$backgroundImage": { "__uuid__": }
+    # "_N$returnType": 0,
+    # "_N$inputFlag": 3,
+    # "_N$inputMode": 6,
+    # "_N$fontSize": 29,
+    # "_N$lineHeight": 40,
+    # "_N$fontColor": { "__type__": "cc.Color",}
+    # "_N$placeholder": "Enter text here...",
+    # "_N$placeholderFontSize": 20,
+    # "_N$placeholderFontColor": { "__type__": "cc.Color" }
+    # "_N$maxLength": 8
 
-        component = Node.get_node_component_of_type(self._node_data, 'cc.Canvas')
+    def parse_properties(self):
+        super(EditBox, self).parse_properties()
 
-        global g_design_resolution, g_fit_height, g_fit_width
-        g_design_resolution = component['_designResolution']
-        g_fit_width = component['_fitWidth']
-        g_fit_height = component['_fitHeight']
+        # search for sprite frame name
+        component = Node.get_node_component_of_type(self._node_data, 'cc.EditBox')
+        self.add_property_int('setReturnType', '_N$returnType', component)
+        self.add_property_int('setInputFlag', '_N$inputFlag', component)
+        self.add_property_int('setInputMode', '_N$inputMode', component)
+        self.add_property_int('setFontSize', '_N$fontSize', component)
+        self.add_property_int('setLineHeight', '_N$lineHeight', component)
+        self.add_property_rgb('setFontColor', '_N$fontColor', component)
+        self.add_property_str('setPlaceholder', '_N$placeholder', component)
+        self.add_property_int('setPlaceholderFontSize', '_N$placeholderFontSize', component)
+        self.add_property_rgb('setPlaceholderFontColor', '_N$placeholderFontColor', component)
+        self.add_property_int('setMaxLength', '_N$maxLength', component)
+
+    def get_class_name(self):
+        return 'ui::EditBox'
 
 
-    # Canvas should be part of the big init
-    # but as as part of the scene graph
-    # since cocos2d-x doesn't have this concept
-    def to_cpp(self, parent, depth, sibling_idx):
-        pass
-
-
+################################################################################
+#
+# bootstrap + helper functions
+#
+################################################################################
 def populate_meta_files(path):
     global g_meta_data, g_sprite_frames, g_textures
     global g_sprite_with_atlas, g_sprite_without_atlas
