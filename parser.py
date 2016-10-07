@@ -128,9 +128,18 @@ class Node(object):
             n = TiledMap(g_json_data[node_idx])
         elif node_type == 'cc.Canvas':
             n = Canvas(g_json_data[node_idx])
+        elif node_type == 'cc.EditBox':
+            n = EditBox(g_json_data[node_idx])
         if n is not None:
             n.parse_properties()
         return n
+
+    @classmethod
+    def get_filepath_from_uuid(self, uuid):
+        if uuid in g_uuid:
+            filepath = g_uuid[uuid]['relativePath']
+            return filepath
+        return None
 
     def __init__(self, data):
         self._node_data = data
@@ -241,6 +250,7 @@ class Node(object):
     def to_cpp_begin(self, depth, sibling_idx):
         g_file_cpp.write("    // New node\n")
         self._cpp_node_name = "%s_%d_%d" % (self.get_class_name().lower(), depth, sibling_idx)
+        self._cpp_node_name = self._cpp_node_name.replace(':','')
         g_file_cpp.write("    auto %s = %s::%s;\n" % (self._cpp_node_name, self.get_class_name(), self.to_cpp_create_params()))
 
 
@@ -346,8 +356,7 @@ class Label(Node):
         if is_system_font:
             self._font_type = Label.FONT_SYSTEM
         else:
-            file_uuid = component['_N$file']['__uuid__']
-            self._font_filename = g_uuid[file_uuid]['relativePath']
+            self._font_filename = Node.get_filepath_from_uuid(component['_N$file']['__uuid__'])
             if self._font_filename.endswith('.ttf'):
                 self._font_type = Label.FONT_TTF
             elif self._font_filename.endswith('.fnt'):
@@ -376,10 +385,8 @@ class ParticleSystem(Node):
         super(ParticleSystem, self).__init__(data)
 
         component = Node.get_node_component_of_type(self._node_data, 'cc.ParticleSystem')
-        file_uuid = component['_file']['__uuid__']
 
-        # add name between ""
-        self._particle_system_file = g_uuid[file_uuid]['relativePath']
+        self._particle_system_file = Node.get_filepath_from_uuid(component['_file']['__uuid__'])
 
         # tag it as needed resourse
         g_resources_needed.add(self._particle_system_file)
@@ -395,9 +402,7 @@ class TiledMap(Node):
         super(TiledMap, self).__init__(data)
 
         component = Node.get_node_component_of_type(self._node_data, 'cc.TiledMap')
-        file_uuid = component['_tmxFile']['__uuid__']
-        # add name between ""
-        self._tmx_file = g_uuid[file_uuid]['relativePath']
+        self._tmx_file = Node.get_filepath_from_uuid(component['_tmxFile']['__uuid__'])
 
         # tag it as needed resourse
         g_resources_needed.add(self._tmx_file)
@@ -430,6 +435,9 @@ class EditBox(Node):
     # "_N$placeholderFontSize": 20,
     # "_N$placeholderFontColor": { "__type__": "cc.Color" }
     # "_N$maxLength": 8
+
+    def __init__(self, data):
+        super(EditBox, self).__init__(data)
 
     def parse_properties(self):
         super(EditBox, self).parse_properties()
@@ -487,7 +495,7 @@ def populate_meta_files(path):
                     if j_data['type'] == 'sprite':
                         g_sprite_without_atlas[uuid] = submetas[spriteframename]
                     elif j_data['type'] == 'Texture Packer':
-                        g_sprite_with_atlas.append(g_uuid[meta_uuid]['relativePath'])
+                        g_sprite_with_atlas.append(Node.get_filepath_from_uuid(meta_uuid))
                     else:
                         raise Exception("Invalid type: %s" % j_data['type'])
 
@@ -543,7 +551,7 @@ def to_cpp_setup_design_resolution():
         g_file_cpp.write(expanded)
     else:
         expanded = design_resolution % (
-                str(g_design_resolution['width']), 
+                str(g_design_resolution['width']),
                 str(g_design_resolution['height']))
         g_file_cpp.write(expanded)
 
@@ -554,8 +562,8 @@ def to_cpp_setup_sprite_frames():
 
     for k in g_sprite_without_atlas:
         sprite_frame = g_sprite_frames[k]
-        texture_uuid = sprite_frame['rawTextureUuid']
-        texture_filename = g_uuid[texture_uuid]['relativePath']
+        texture_filename = Node.get_filepath_from_uuid(sprite_frame['rawTextureUuid'])
+
         sprite_frame_name = sprite_frame['frameName']
         sprite_frame_name = sprite_frame_name.replace('-','_')
         cpp_sprite_frame = '    auto sf_%s = SpriteFrame::create("%s", Rect(%g, %g, %g, %g), %s, Vec2(%g, %g), Size(%g, %g));\n' % (
@@ -628,6 +636,7 @@ def run(filename, assetpath):
 #pragma once
 
 #include <cocos2d.h>
+#include <ui/CocosGUI.h>
 
 bool %s_init();
 cocos2d::Node* %s_create();
