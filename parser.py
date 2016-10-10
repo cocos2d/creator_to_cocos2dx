@@ -103,16 +103,14 @@ class Node(object):
 
     @classmethod
     def guess_type_from_components(cls, components):
-        # Button should be before Sprite
-        known_components = ['cc.Button', 'cc.EditBox', 'cc.Label', 'cc.Sprite', 'cc.ParticleSystem', 'cc.TiledMap', 'cc.Canvas']
-        for component in components:
-            t = component['__type__']
-            if t in known_components:
-                l = [x['__type__'] for x in components]
-                print("Choosen %s from %s" % (t,l))
-                return t
-            else:
-                print("Component not found: %s" % component['__type__'])
+        # Button & ProgressBar should be before Sprite
+        supported_components = ('cc.Button', 'cc.ProgressBar', 'cc.EditBox', 'cc.Label', 'cc.Sprite', 'cc.ParticleSystem', 'cc.TiledMap', 'cc.Canvas')
+        node_components = [x['__type__'] for x in components]
+        for supported in supported_components:
+            if supported in node_components:
+                print("Choosen %s from %s" % (supported, node_components))
+                return supported
+        print("Unknown components: %s" % node_components)
         return 'unknown'
 
     @classmethod
@@ -130,16 +128,20 @@ class Node(object):
             n = Canvas(g_json_data[node_idx])
         elif node_type == 'cc.EditBox':
             n = EditBox(g_json_data[node_idx])
+        elif node_type == 'cc.ProgressBar':
+            n = ProgressBar(g_json_data[node_idx])
         if n is not None:
             n.parse_properties()
         return n
 
     @classmethod
     def get_filepath_from_uuid(self, uuid):
+        filepath = None
         if uuid in g_uuid:
             filepath = g_uuid[uuid]['relativePath']
-            return filepath
-        return None
+        elif uuid in g_sprite_frames:
+            filepath = g_sprite_frames[uuid]['frameName']
+        return filepath
 
     def __init__(self, data):
         self._node_data = data
@@ -416,7 +418,7 @@ class TiledMap(Node):
 ################################################################################
 #
 # Built-in UI Nodes
-# Button, EditBox, etc.
+# Button, EditBox, ProgressBar, etc.
 #
 ################################################################################
 class Button(Node):
@@ -436,6 +438,32 @@ class EditBox(Node):
     # "_N$placeholderFontColor": { "__type__": "cc.Color" }
     # "_N$maxLength": 8
 
+    INPUT_MODE = ( 'ui::EditBox::InputMode::ANY',
+            'ui::EditBox::InputMode::EMAIL_ADDRESS',
+            'ui::EditBox::InputMode::NUMERIC',
+            'ui::EditBox::InputMode::PHONE_NUMBER',
+            'ui::EditBox::InputMode::URL',
+            'ui::EditBox::InputMode::DECIMAL',
+            'ui::EditBox::InputMode::SINGLE_LINE'
+            )
+
+    INPUT_FLAG = (
+            'ui::EditBox::InputFlag::PASSWORD',
+            'ui::EditBox::InputFlag::SENSITIVE',
+            'ui::EditBox::InputFlag::INITIAL_CAPS_WORD',
+            'ui::EditBox::InputFlag::INITIAL_CAPS_SENTENCE',
+            'ui::EditBox::InputFlag::INITIAL_CAPS_ALL_CHARACTERS',
+            'ui::EditBox::InputFlag::LOWERCASE_ALL_CHARACTERS',
+            )
+
+    RETURN_TYPE = (
+            'ui::EditBox::KeyboardReturnType::DEFAULT',
+            'ui::EditBox::KeyboardReturnType::DONE',
+            'ui::EditBox::KeyboardReturnType::SEND',
+            'ui::EditBox::KeyboardReturnType::SEARCH',
+            'ui::EditBox::KeyboardReturnType::GO',
+            )
+
     def __init__(self, data):
         super(EditBox, self).__init__(data)
 
@@ -444,19 +472,48 @@ class EditBox(Node):
 
         # search for sprite frame name
         component = Node.get_node_component_of_type(self._node_data, 'cc.EditBox')
-        self.add_property_int('setReturnType', '_N$returnType', component)
-        self.add_property_int('setInputFlag', '_N$inputFlag', component)
-        self.add_property_int('setInputMode', '_N$inputMode', component)
+        self._backgroundImage = Node.get_filepath_from_uuid(component['_N$backgroundImage']['__uuid__'])
+        self._properties['setReturnType'] = EditBox.RETURN_TYPE[component['_N$returnType']]
+        self._properties['setInputFlag'] = EditBox.INPUT_FLAG[component['_N$inputFlag']]
+        self._properties['setInputMode'] = EditBox.INPUT_MODE[component['_N$inputMode']]
         self.add_property_int('setFontSize', '_N$fontSize', component)
-        self.add_property_int('setLineHeight', '_N$lineHeight', component)
+#        self.add_property_int('setLineHeight', '_N$lineHeight', component)
         self.add_property_rgb('setFontColor', '_N$fontColor', component)
-        self.add_property_str('setPlaceholder', '_N$placeholder', component)
+        self.add_property_str('setPlaceHolder', '_N$placeholder', component)
         self.add_property_int('setPlaceholderFontSize', '_N$placeholderFontSize', component)
         self.add_property_rgb('setPlaceholderFontColor', '_N$placeholderFontColor', component)
         self.add_property_int('setMaxLength', '_N$maxLength', component)
 
     def get_class_name(self):
         return 'ui::EditBox'
+
+    def to_cpp_create_params(self):
+        s = self._node_data['_contentSize']
+        w = s['width']
+        h = s['height']
+        return 'create(Size(%d,%d), "%s")' % (w, h, g_assetpath + self._backgroundImage)
+
+class ProgressBar(Node):
+    # custom properties
+    # "_N$barSprite": { "__id__" }
+    # "_N$mode": 0,
+    # "_N$totalLength": 100,
+    # "_N$progress": 0.5,
+    # "_N$reverse": false
+
+    def parse_properties(self):
+        super(ProgressBar, self).parse_properties()
+
+        # search for sprite frame name
+        component = Node.get_node_component_of_type(self._node_data, 'cc.ProgressBar')
+        self._properties['setPercent'] = component['_N$progress'] * 100
+
+
+    def get_class_name(self):
+        return 'ui::LoadingBar'
+
+    def to_cpp_create_params(self):
+        return 'create()'
 
 
 ################################################################################
@@ -467,7 +524,10 @@ class EditBox(Node):
 def populate_meta_files(path):
     global g_meta_data, g_sprite_frames, g_textures
     global g_sprite_with_atlas, g_sprite_without_atlas
-    metas = glob.glob(path + '/*.meta')
+    metas1 = glob.glob(path + '/*.meta')
+    metas2 = glob.glob('temp/*/*/*.meta')
+    metas = metas1 + metas2
+    print(metas)
     for meta_filename in metas:
         with open(meta_filename) as fd:
             basename = os.path.basename(meta_filename)
@@ -623,6 +683,7 @@ def run(filename, assetpath):
             # cpp file
             g_file_cpp.write("////// AUTOGENERATED:BEGIN //////\n")
             g_file_cpp.write("////// DO     NOT     EDIT //////\n")
+            g_file_cpp.write("\n#include <ui/CocosGUI.h>\n")
             to_cpp_setup()
             g_file_cpp.write("Node* %s_create()\n{\n" % g_filename)
             scene_obj.to_cpp(None,0,0)
@@ -636,7 +697,6 @@ def run(filename, assetpath):
 #pragma once
 
 #include <cocos2d.h>
-#include <ui/CocosGUI.h>
 
 bool %s_init();
 cocos2d::Node* %s_create();
