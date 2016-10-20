@@ -59,6 +59,7 @@ Node* CreatorSprites_create()
     scene_0_0->setOpacityModifyRGB(false);
     scene_0_0->setCascadeOpacityEnabled(true);
     scene_0_0->setTag(-1);
+    scene_0_0->setContentSize(Size(0, 0));
     // New node
     auto sprite_1_1 = Sprite::create();
     sprite_1_1->setSpriteFrame("grossinis_sister1.png");
@@ -72,11 +73,12 @@ Node* CreatorSprites_create()
     sprite_1_1->setOpacity(255);
     sprite_1_1->setOpacityModifyRGB(false);
     sprite_1_1->setCascadeOpacityEnabled(true);
+    sprite_1_1->setSkewX(0);
     sprite_1_1->setTag(-1);
-    sprite_1_1->setPosition(Vec2(48, 79));
+    sprite_1_1->setContentSize(Size(50, 116));
     sprite_1_1->setSkewY(0);
     sprite_1_1->setRotationSkewY(0);
-    sprite_1_1->setSkewX(0);
+    sprite_1_1->setPosition(Vec2(48, 79));
     sprite_1_1->setRotationSkewX(0);
     scene_0_0->addChild(sprite_1_1);
     // New node
@@ -92,11 +94,12 @@ Node* CreatorSprites_create()
     sprite_1_2->setOpacity(255);
     sprite_1_2->setOpacityModifyRGB(false);
     sprite_1_2->setCascadeOpacityEnabled(true);
+    sprite_1_2->setSkewX(0);
     sprite_1_2->setTag(-1);
-    sprite_1_2->setPosition(Vec2(136, 85));
+    sprite_1_2->setContentSize(Size(55, 130));
     sprite_1_2->setSkewY(0);
     sprite_1_2->setRotationSkewY(0);
-    sprite_1_2->setSkewX(0);
+    sprite_1_2->setPosition(Vec2(136, 85));
     sprite_1_2->setRotationSkewX(0);
     scene_0_0->addChild(sprite_1_2);
     // New node
@@ -112,11 +115,12 @@ Node* CreatorSprites_create()
     sprite_1_3->setOpacity(255);
     sprite_1_3->setOpacityModifyRGB(false);
     sprite_1_3->setCascadeOpacityEnabled(true);
+    sprite_1_3->setSkewX(0);
     sprite_1_3->setTag(-1);
-    sprite_1_3->setPosition(Vec2(350, 98));
+    sprite_1_3->setContentSize(Size(287, 152));
     sprite_1_3->setSkewY(0);
     sprite_1_3->setRotationSkewY(0);
-    sprite_1_3->setSkewX(0);
+    sprite_1_3->setPosition(Vec2(350, 98));
     sprite_1_3->setRotationSkewX(0);
     scene_0_0->addChild(sprite_1_3);
     // New node
@@ -132,11 +136,12 @@ Node* CreatorSprites_create()
     sprite_1_4->setOpacity(255);
     sprite_1_4->setOpacityModifyRGB(false);
     sprite_1_4->setCascadeOpacityEnabled(true);
+    sprite_1_4->setSkewX(0);
     sprite_1_4->setTag(-1);
-    sprite_1_4->setPosition(Vec2(136, 247));
+    sprite_1_4->setContentSize(Size(55, 130));
     sprite_1_4->setSkewY(0);
     sprite_1_4->setRotationSkewY(0);
-    sprite_1_4->setSkewX(0);
+    sprite_1_4->setPosition(Vec2(136, 247));
     sprite_1_4->setRotationSkewX(0);
     scene_0_0->addChild(sprite_1_4);
     // New node
@@ -152,11 +157,12 @@ Node* CreatorSprites_create()
     sprite_1_5->setOpacity(255);
     sprite_1_5->setOpacityModifyRGB(false);
     sprite_1_5->setCascadeOpacityEnabled(true);
+    sprite_1_5->setSkewX(0);
     sprite_1_5->setTag(-1);
-    sprite_1_5->setPosition(Vec2(48, 253));
+    sprite_1_5->setContentSize(Size(50, 116));
     sprite_1_5->setSkewY(0);
     sprite_1_5->setRotationSkewY(0);
-    sprite_1_5->setSkewX(0);
+    sprite_1_5->setPosition(Vec2(48, 253));
     sprite_1_5->setRotationSkewX(0);
     scene_0_0->addChild(sprite_1_5);
     // New node
@@ -172,11 +178,12 @@ Node* CreatorSprites_create()
     sprite_1_6->setOpacity(255);
     sprite_1_6->setOpacityModifyRGB(false);
     sprite_1_6->setCascadeOpacityEnabled(true);
+    sprite_1_6->setSkewX(0);
     sprite_1_6->setTag(-1);
-    sprite_1_6->setPosition(Vec2(638, 98));
+    sprite_1_6->setContentSize(Size(287, 152));
     sprite_1_6->setSkewY(0);
     sprite_1_6->setRotationSkewY(0);
-    sprite_1_6->setSkewX(0);
+    sprite_1_6->setPosition(Vec2(638, 98));
     sprite_1_6->setRotationSkewX(0);
     scene_0_0->addChild(sprite_1_6);
     // New node
@@ -192,11 +199,12 @@ Node* CreatorSprites_create()
     sprite_1_7->setOpacity(255);
     sprite_1_7->setOpacityModifyRGB(false);
     sprite_1_7->setCascadeOpacityEnabled(true);
+    sprite_1_7->setSkewX(20);
     sprite_1_7->setTag(-1);
-    sprite_1_7->setPosition(Vec2(288, 297));
+    sprite_1_7->setContentSize(Size(50, 116));
     sprite_1_7->setSkewY(0);
     sprite_1_7->setRotationSkewY(0);
-    sprite_1_7->setSkewX(20);
+    sprite_1_7->setPosition(Vec2(288, 297));
     sprite_1_7->setRotationSkewX(0);
     scene_0_0->addChild(sprite_1_7);
     // New node
@@ -212,11 +220,12 @@ Node* CreatorSprites_create()
     sprite_1_8->setOpacity(255);
     sprite_1_8->setOpacityModifyRGB(false);
     sprite_1_8->setCascadeOpacityEnabled(true);
+    sprite_1_8->setSkewX(-20);
     sprite_1_8->setTag(-1);
-    sprite_1_8->setPosition(Vec2(370, 297));
+    sprite_1_8->setContentSize(Size(50, 116));
     sprite_1_8->setSkewY(0);
     sprite_1_8->setRotationSkewY(0);
-    sprite_1_8->setSkewX(-20);
+    sprite_1_8->setPosition(Vec2(370, 297));
     sprite_1_8->setRotationSkewX(0);
     scene_0_0->addChild(sprite_1_8);
     // New node
@@ -232,11 +241,12 @@ Node* CreatorSprites_create()
     sprite_1_9->setOpacity(255);
     sprite_1_9->setOpacityModifyRGB(false);
     sprite_1_9->setCascadeOpacityEnabled(true);
+    sprite_1_9->setSkewX(0);
     sprite_1_9->setTag(-1);
-    sprite_1_9->setPosition(Vec2(481, 305));
+    sprite_1_9->setContentSize(Size(55, 130));
     sprite_1_9->setSkewY(20);
     sprite_1_9->setRotationSkewY(0);
-    sprite_1_9->setSkewX(0);
+    sprite_1_9->setPosition(Vec2(481, 305));
     sprite_1_9->setRotationSkewX(0);
     scene_0_0->addChild(sprite_1_9);
     // New node
@@ -252,11 +262,12 @@ Node* CreatorSprites_create()
     sprite_1_10->setOpacity(255);
     sprite_1_10->setOpacityModifyRGB(false);
     sprite_1_10->setCascadeOpacityEnabled(true);
+    sprite_1_10->setSkewX(0);
     sprite_1_10->setTag(-1);
-    sprite_1_10->setPosition(Vec2(540, 300));
+    sprite_1_10->setContentSize(Size(55, 130));
     sprite_1_10->setSkewY(-20);
     sprite_1_10->setRotationSkewY(0);
-    sprite_1_10->setSkewX(0);
+    sprite_1_10->setPosition(Vec2(540, 300));
     sprite_1_10->setRotationSkewX(0);
     scene_0_0->addChild(sprite_1_10);
     // New node
@@ -272,11 +283,12 @@ Node* CreatorSprites_create()
     sprite_1_11->setOpacity(255);
     sprite_1_11->setOpacityModifyRGB(false);
     sprite_1_11->setCascadeOpacityEnabled(true);
+    sprite_1_11->setSkewX(0);
     sprite_1_11->setTag(-1);
-    sprite_1_11->setPosition(Vec2(135, 493));
+    sprite_1_11->setContentSize(Size(55, 130));
     sprite_1_11->setSkewY(0);
     sprite_1_11->setRotationSkewY(45);
-    sprite_1_11->setSkewX(0);
+    sprite_1_11->setPosition(Vec2(135, 493));
     sprite_1_11->setRotationSkewX(45);
     scene_0_0->addChild(sprite_1_11);
     // New node
@@ -292,11 +304,12 @@ Node* CreatorSprites_create()
     sprite_1_12->setOpacity(255);
     sprite_1_12->setOpacityModifyRGB(false);
     sprite_1_12->setCascadeOpacityEnabled(true);
+    sprite_1_12->setSkewX(0);
     sprite_1_12->setTag(-1);
-    sprite_1_12->setPosition(Vec2(358, 496));
+    sprite_1_12->setContentSize(Size(50, 116));
     sprite_1_12->setSkewY(0);
     sprite_1_12->setRotationSkewY(-45);
-    sprite_1_12->setSkewX(0);
+    sprite_1_12->setPosition(Vec2(351, 508));
     sprite_1_12->setRotationSkewX(-45);
     scene_0_0->addChild(sprite_1_12);
     // New node
@@ -312,11 +325,12 @@ Node* CreatorSprites_create()
     sprite_1_13->setOpacity(255);
     sprite_1_13->setOpacityModifyRGB(false);
     sprite_1_13->setCascadeOpacityEnabled(true);
+    sprite_1_13->setSkewX(0);
     sprite_1_13->setTag(-1);
-    sprite_1_13->setPosition(Vec2(608, 446));
+    sprite_1_13->setContentSize(Size(55, 130));
     sprite_1_13->setSkewY(0);
     sprite_1_13->setRotationSkewY(0);
-    sprite_1_13->setSkewX(0);
+    sprite_1_13->setPosition(Vec2(765, 31));
     sprite_1_13->setRotationSkewX(0);
     scene_0_0->addChild(sprite_1_13);
     // New node
@@ -332,11 +346,12 @@ Node* CreatorSprites_create()
     sprite_1_14->setOpacity(255);
     sprite_1_14->setOpacityModifyRGB(false);
     sprite_1_14->setCascadeOpacityEnabled(true);
+    sprite_1_14->setSkewX(0);
     sprite_1_14->setTag(-1);
-    sprite_1_14->setPosition(Vec2(48, 79));
+    sprite_1_14->setContentSize(Size(50, 116));
     sprite_1_14->setSkewY(0);
     sprite_1_14->setRotationSkewY(0);
-    sprite_1_14->setSkewX(0);
+    sprite_1_14->setPosition(Vec2(48, 79));
     sprite_1_14->setRotationSkewX(0);
     scene_0_0->addChild(sprite_1_14);
     // New node
@@ -352,11 +367,12 @@ Node* CreatorSprites_create()
     sprite_1_15->setOpacity(255);
     sprite_1_15->setOpacityModifyRGB(false);
     sprite_1_15->setCascadeOpacityEnabled(true);
+    sprite_1_15->setSkewX(0);
     sprite_1_15->setTag(-1);
-    sprite_1_15->setPosition(Vec2(682, 503));
+    sprite_1_15->setContentSize(Size(50, 116));
     sprite_1_15->setSkewY(0);
     sprite_1_15->setRotationSkewY(0);
-    sprite_1_15->setSkewX(0);
+    sprite_1_15->setPosition(Vec2(682, 503));
     sprite_1_15->setRotationSkewX(0);
     scene_0_0->addChild(sprite_1_15);
     // New node
@@ -372,11 +388,12 @@ Node* CreatorSprites_create()
     sprite_1_16->setOpacity(255);
     sprite_1_16->setOpacityModifyRGB(false);
     sprite_1_16->setCascadeOpacityEnabled(true);
+    sprite_1_16->setSkewX(0);
     sprite_1_16->setTag(-1);
-    sprite_1_16->setPosition(Vec2(762, 562));
+    sprite_1_16->setContentSize(Size(50, 116));
     sprite_1_16->setSkewY(0);
     sprite_1_16->setRotationSkewY(0);
-    sprite_1_16->setSkewX(0);
+    sprite_1_16->setPosition(Vec2(762, 562));
     sprite_1_16->setRotationSkewX(0);
     scene_0_0->addChild(sprite_1_16);
     // New node
@@ -392,11 +409,12 @@ Node* CreatorSprites_create()
     sprite_1_17->setOpacity(255);
     sprite_1_17->setOpacityModifyRGB(false);
     sprite_1_17->setCascadeOpacityEnabled(true);
+    sprite_1_17->setSkewX(0);
     sprite_1_17->setTag(-1);
-    sprite_1_17->setPosition(Vec2(545, 445));
+    sprite_1_17->setContentSize(Size(51, 109));
     sprite_1_17->setSkewY(0);
     sprite_1_17->setRotationSkewY(0);
-    sprite_1_17->setSkewX(0);
+    sprite_1_17->setPosition(Vec2(515, 427));
     sprite_1_17->setRotationSkewX(0);
     scene_0_0->addChild(sprite_1_17);
     // New node
@@ -412,13 +430,35 @@ Node* CreatorSprites_create()
     sprite_1_18->setOpacity(255);
     sprite_1_18->setOpacityModifyRGB(false);
     sprite_1_18->setCascadeOpacityEnabled(true);
+    sprite_1_18->setSkewX(0);
     sprite_1_18->setTag(-1);
-    sprite_1_18->setPosition(Vec2(858, 559));
+    sprite_1_18->setContentSize(Size(200, 200));
     sprite_1_18->setSkewY(0);
     sprite_1_18->setRotationSkewY(0);
-    sprite_1_18->setSkewX(0);
+    sprite_1_18->setPosition(Vec2(954, 386));
     sprite_1_18->setRotationSkewX(0);
     scene_0_0->addChild(sprite_1_18);
+    // New node
+    auto sprite_1_19 = Sprite::create();
+    sprite_1_19->setSpriteFrame("grossinis_sister1.png");
+    sprite_1_19->setAnchorPoint(Vec2(0.5, 0.5));
+    sprite_1_19->setScaleY(1);
+    sprite_1_19->setScaleX(1);
+    sprite_1_19->setColor(Color3B(255, 255, 255));
+    sprite_1_19->setName("grossinis_sister1");
+    sprite_1_19->setLocalZOrder(0);
+    sprite_1_19->setGlobalZOrder(0);
+    sprite_1_19->setOpacity(255);
+    sprite_1_19->setOpacityModifyRGB(false);
+    sprite_1_19->setCascadeOpacityEnabled(true);
+    sprite_1_19->setSkewX(0);
+    sprite_1_19->setTag(-1);
+    sprite_1_19->setContentSize(Size(200, 200));
+    sprite_1_19->setSkewY(0);
+    sprite_1_19->setRotationSkewY(0);
+    sprite_1_19->setPosition(Vec2(847, 517));
+    sprite_1_19->setRotationSkewX(0);
+    scene_0_0->addChild(sprite_1_19);
     return scene_0_0;
 }
 ////// AUTOGENERATED:END//////

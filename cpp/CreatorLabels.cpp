@@ -59,6 +59,7 @@ Node* CreatorLabels_create()
     scene_0_0->setOpacityModifyRGB(false);
     scene_0_0->setCascadeOpacityEnabled(true);
     scene_0_0->setTag(-1);
+    scene_0_0->setContentSize(Size(0, 0));
     // New node
     auto label_1_1 = Label::createWithSystemFont("System Font Label: 32", "arial", 32);
     label_1_1->setAnchorPoint(Vec2(0.5, 0.5));
@@ -73,11 +74,12 @@ Node* CreatorLabels_create()
     label_1_1->setOpacityModifyRGB(false);
     label_1_1->setCascadeOpacityEnabled(true);
     label_1_1->setHorizontalAlignment(TextHAlignment::CENTER);
+    label_1_1->setSkewX(0);
     label_1_1->setTag(-1);
-    label_1_1->setPosition(Vec2(186, 117));
+    label_1_1->setContentSize(Size(320.17, 40));
     label_1_1->setSkewY(0);
     label_1_1->setRotationSkewY(0);
-    label_1_1->setSkewX(0);
+    label_1_1->setPosition(Vec2(186, 117));
     label_1_1->setRotationSkewX(0);
     scene_0_0->addChild(label_1_1);
     // New node
@@ -85,6 +87,7 @@ Node* CreatorLabels_create()
     label_1_2->setAnchorPoint(Vec2(1, 1));
     label_1_2->setScaleY(1);
     label_1_2->setScaleX(1);
+    label_1_2->setLineHeight(19);
     label_1_2->setColor(Color3B(71, 0, 255));
     label_1_2->setName("arial16");
     label_1_2->setVerticalAlignment(TextVAlignment::TOP);
@@ -95,12 +98,12 @@ Node* CreatorLabels_create()
     label_1_2->setOpacityModifyRGB(false);
     label_1_2->setCascadeOpacityEnabled(true);
     label_1_2->setHorizontalAlignment(TextHAlignment::LEFT);
-    label_1_2->setLineHeight(19);
+    label_1_2->setSkewX(0);
     label_1_2->setTag(-1);
-    label_1_2->setPosition(Vec2(300, 71));
+    label_1_2->setContentSize(Size(280, 47.5));
     label_1_2->setSkewY(0);
     label_1_2->setRotationSkewY(0);
-    label_1_2->setSkewX(0);
+    label_1_2->setPosition(Vec2(300, 71));
     label_1_2->setRotationSkewX(0);
     scene_0_0->addChild(label_1_2);
     // New node
@@ -108,6 +111,7 @@ Node* CreatorLabels_create()
     label_1_3->setAnchorPoint(Vec2(0, 0));
     label_1_3->setScaleY(1);
     label_1_3->setScaleX(1);
+    label_1_3->setLineHeight(64);
     label_1_3->setColor(Color3B(255, 0, 0));
     label_1_3->setName("A Damn Mess");
     label_1_3->setVerticalAlignment(TextVAlignment::TOP);
@@ -117,12 +121,12 @@ Node* CreatorLabels_create()
     label_1_3->setOpacityModifyRGB(false);
     label_1_3->setCascadeOpacityEnabled(true);
     label_1_3->setHorizontalAlignment(TextHAlignment::LEFT);
-    label_1_3->setLineHeight(64);
+    label_1_3->setSkewX(0);
     label_1_3->setTag(-1);
-    label_1_3->setPosition(Vec2(21, 181));
+    label_1_3->setContentSize(Size(748.47, 64));
     label_1_3->setSkewY(0);
     label_1_3->setRotationSkewY(0);
-    label_1_3->setSkewX(0);
+    label_1_3->setPosition(Vec2(21, 181));
     label_1_3->setRotationSkewX(0);
     scene_0_0->addChild(label_1_3);
     // New node
@@ -130,6 +134,7 @@ Node* CreatorLabels_create()
     label_1_4->setAnchorPoint(Vec2(0.5, 0.5));
     label_1_4->setScaleY(1);
     label_1_4->setScaleX(1);
+    label_1_4->setLineHeight(48);
     label_1_4->setColor(Color3B(255, 133, 0));
     label_1_4->setName("A Damn Mess");
     label_1_4->setVerticalAlignment(TextVAlignment::CENTER);
@@ -139,12 +144,12 @@ Node* CreatorLabels_create()
     label_1_4->setOpacityModifyRGB(false);
     label_1_4->setCascadeOpacityEnabled(true);
     label_1_4->setHorizontalAlignment(TextHAlignment::LEFT);
-    label_1_4->setLineHeight(48);
+    label_1_4->setSkewX(0);
     label_1_4->setTag(-1);
-    label_1_4->setPosition(Vec2(472, 84));
+    label_1_4->setContentSize(Size(222.81, 144));
     label_1_4->setSkewY(0);
     label_1_4->setRotationSkewY(0);
-    label_1_4->setSkewX(0);
+    label_1_4->setPosition(Vec2(472, 84));
     label_1_4->setRotationSkewX(0);
     scene_0_0->addChild(label_1_4);
     // New node
@@ -152,6 +157,7 @@ Node* CreatorLabels_create()
     label_1_5->setAnchorPoint(Vec2(0.5, 0.5));
     label_1_5->setScaleY(1);
     label_1_5->setScaleX(1);
+    label_1_5->setLineHeight(64);
     label_1_5->setColor(Color3B(255, 224, 0));
     label_1_5->setName("A Damn Mess");
     label_1_5->setVerticalAlignment(TextVAlignment::CENTER);
@@ -161,12 +167,12 @@ Node* CreatorLabels_create()
     label_1_5->setOpacityModifyRGB(false);
     label_1_5->setCascadeOpacityEnabled(true);
     label_1_5->setHorizontalAlignment(TextHAlignment::RIGHT);
-    label_1_5->setLineHeight(64);
+    label_1_5->setSkewX(0);
     label_1_5->setTag(-1);
-    label_1_5->setPosition(Vec2(730, 102));
+    label_1_5->setContentSize(Size(259.06, 192));
     label_1_5->setSkewY(0);
     label_1_5->setRotationSkewY(0);
-    label_1_5->setSkewX(0);
+    label_1_5->setPosition(Vec2(730, 102));
     label_1_5->setRotationSkewX(0);
     scene_0_0->addChild(label_1_5);
     return scene_0_0;

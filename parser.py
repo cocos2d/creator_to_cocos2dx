@@ -148,8 +148,8 @@ class Node(object):
         self._children = []
         self._properties = {}
 
-#        self.add_property_size('setContentSize', "_contentSize")
         data = self._node_data
+        self.add_property_size('setContentSize', "_contentSize", data)
         self.add_property_bool('setEnabled', "_enabled", data)
         self.add_property_str('setName', "_name", data)
         self.add_property_vec2('setAnchorPoint', "_anchorPoint", data)
