@@ -556,6 +556,7 @@ def populate_meta_files(path):
                         g_sprite_without_atlas[uuid] = submetas[spriteframename]
                     elif j_data['type'] == 'Texture Packer':
                         g_sprite_with_atlas.append(Node.get_filepath_from_uuid(meta_uuid))
+                        g_sprite_without_atlas[uuid] = submetas[spriteframename]
                     else:
                         raise Exception("Invalid type: %s" % j_data['type'])
 
@@ -617,15 +618,22 @@ def to_cpp_setup_design_resolution():
 
 
 def to_cpp_setup_sprite_frames():
-    for k in Set(g_sprite_with_atlas):
-        g_file_cpp.write('    SpriteFrameCache::getInstance()->addSpriteFramesWithFile("%s");\n' % (g_assetpath + k))
+    g_file_cpp.write('\n    // BEGIN SpriteFrame loading\n')
+    g_file_cpp.write('    auto spriteFrameCache = SpriteFrameCache::getInstance();\n')
 
+    g_file_cpp.write('    // Files from .plist\n')
+    for k in Set(g_sprite_with_atlas):
+        g_file_cpp.write('    // %s processed manually. No need to include it in the assets folder\n' % (g_assetpath + k))
+        #g_file_cpp.write('    spriteFrameCache->addSpriteFramesWithFile("%s");\n' % (g_assetpath + k))
+
+    g_file_cpp.write('\n    // Files from .png\n')
     for k in g_sprite_without_atlas:
         sprite_frame = g_sprite_frames[k]
         texture_filename = Node.get_filepath_from_uuid(sprite_frame['rawTextureUuid'])
 
-        sprite_frame_name = sprite_frame['frameName']
-        sprite_frame_name = sprite_frame_name.replace('-','_')
+        original_frame_name = sprite_frame['frameName']
+        sprite_frame_name = original_frame_name.replace('-','_')
+        sprite_frame_name = sprite_frame_name.replace('.','_')
         cpp_sprite_frame = '    auto sf_%s = SpriteFrame::create("%s", Rect(%g, %g, %g, %g), %s, Vec2(%g, %g), Size(%g, %g));\n' % (
                 sprite_frame_name,
                 g_assetpath + texture_filename,
@@ -634,7 +642,21 @@ def to_cpp_setup_sprite_frames():
                 sprite_frame['offsetX'], sprite_frame['offsetY'],
                 sprite_frame['rawWidth'], sprite_frame['rawHeight'])
         g_file_cpp.write(cpp_sprite_frame)
-        g_file_cpp.write('    SpriteFrameCache::getInstance()->addSpriteFrame(sf_%s, "%s");\n' % (sprite_frame_name, sprite_frame_name))
+
+        # does it have a centerRect ?
+        if sprite_frame['borderTop'] != 0 or sprite_frame['borderBottom'] != 0 or sprite_frame['borderLeft'] != 0 or sprite_frame['borderRight'] != 0:
+            x = sprite_frame['borderLeft']
+            y = sprite_frame['borderBottom']
+            w = sprite_frame['width'] - sprite_frame['borderRight'] - x
+            h = sprite_frame['height'] - sprite_frame['borderTop'] - y
+            g_file_cpp.write('    sf_%s->setCenterRect(Rect(%d,%d,%d,%d));\n' % (
+                sprite_frame_name,
+                x, y, w, h
+                ))
+        g_file_cpp.write('    spriteFrameCache->addSpriteFrame(sf_%s, "%s");\n' % (
+            sprite_frame_name,
+            original_frame_name))
+    g_file_cpp.write('    // END SpriteFrame loading\n')
 
 
 def create_file(filename):

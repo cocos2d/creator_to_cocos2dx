@@ -1627,8 +1627,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 200,
-      "height": 200
+      "width": 100,
+      "height": 232
     },
     "_children": [],
     "_rotationX": 0,
