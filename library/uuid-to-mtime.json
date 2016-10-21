@@ -215,13 +215,13 @@
     "relativePath": "American Typewriter.ttf"
   },
   "cda0dfbc-11cd-41e8-be72-0b8e98abf0a6": {
-    "asset": 1477007352000,
-    "meta": 1477007352000,
+    "asset": 1477014876000,
+    "meta": 1477014876000,
     "relativePath": "CreatorSprites.fire"
   },
   "ebceda0f-2a27-4ed9-a9be-d4e3409e05c5": {
     "asset": 1475718045000,
-    "meta": 1477007342000,
+    "meta": 1477014812000,
     "relativePath": "test_polygon.plist"
   },
   "ec561d4c-4b3c-4ade-a003-28a49c6f5822": {
@@ -230,8 +230,8 @@
     "relativePath": "test_polygon.png"
   },
   "ab8ec530-3f48-4940-a960-17333f6fe7dc": {
-    "asset": 1476998630000,
-    "meta": 1476998630000,
+    "asset": 1477015002000,
+    "meta": 1477015002000,
     "relativePath": "CreatorUI.fire"
   }
 }

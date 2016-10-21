@@ -305,6 +305,7 @@ class Canvas(Node):
 #
 ################################################################################
 class Sprite(Node):
+    SIMPLE, SLICED = range(2)
     def __init__(self, data):
         super(Sprite, self).__init__(data)
 
@@ -321,6 +322,9 @@ class Sprite(Node):
         print(g_sprite_frames[sprite_frame_uuid])
         self.add_property_str('setSpriteFrame', 'frameName', g_sprite_frames[sprite_frame_uuid])
         print(g_sprite_frames[sprite_frame_uuid])
+
+        if component['_type'] == Sprite.SIMPLE:
+            self._properties['setCenterRectNormalized'] = 'Rect(0,0,1,1)'
 
     def get_description(self, tab):
         return "%s%s('%s')" % ('-' * tab, self.get_class_name(), self._properties['setSpriteFrame'])
@@ -408,6 +412,9 @@ class TiledMap(Node):
 
         # tag it as needed resourse
         g_resources_needed.add(self._tmx_file)
+
+        # for some reason, changing the contentSize breaks the TMX
+        del self._properties['setContentSize']
 
     def get_class_name(self):
         return 'TMXTiledMap'
