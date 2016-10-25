@@ -2,6 +2,7 @@
 ////// DO     NOT     EDIT //////
 
 #include <ui/CocosGUI.h>
+#include "creator_utils.h"
 
 USING_NS_CC;
 
@@ -19,12 +20,12 @@ bool CreatorSprites_init()
 
     // Files from .png
     auto sf_grossinis_sister2_png = SpriteFrame::create("creator_assets/test_polygon.png", Rect(279, 26, 55, 130), false, Vec2(0, -2), Size(56, 138));
-    sf_grossinis_sister2_png->setCenterRect(Rect(17,36,21,32));
+    sf_grossinis_sister2_png->setCenterRect(Rect(17,62,21,32));
     spriteFrameCache->addSpriteFrame(sf_grossinis_sister2_png, "grossinis_sister2.png");
     auto sf_test_polygon = SpriteFrame::create("creator_assets/test_polygon.png", Rect(4, 2, 380, 152), false, Vec2(0.5, 0.5), Size(387, 157));
     spriteFrameCache->addSpriteFrame(sf_test_polygon, "test_polygon");
     auto sf_default_btn_normal = SpriteFrame::create("creator_assets/image/default_btn_normal.png", Rect(0, 0, 40, 40), false, Vec2(0, 0), Size(40, 40));
-    sf_default_btn_normal->setCenterRect(Rect(3,7,34,30));
+    sf_default_btn_normal->setCenterRect(Rect(3,3,34,30));
     spriteFrameCache->addSpriteFrame(sf_default_btn_normal, "default_btn_normal");
     auto sf_default_scrollbar_bg = SpriteFrame::create("creator_assets/image/default_scrollbar_bg.png", Rect(0, 0, 30, 15), false, Vec2(0, 0), Size(30, 15));
     sf_default_scrollbar_bg->setCenterRect(Rect(10,0,10,15));
@@ -40,13 +41,13 @@ bool CreatorSprites_init()
     auto sf_default_sprite = SpriteFrame::create("creator_assets/image/default_sprite.png", Rect(0, 2, 40, 36), false, Vec2(0, 0), Size(40, 40));
     spriteFrameCache->addSpriteFrame(sf_default_sprite, "default_sprite");
     auto sf_default_btn_disabled = SpriteFrame::create("creator_assets/image/default_btn_disabled.png", Rect(0, 0, 40, 40), false, Vec2(0, 0), Size(40, 40));
-    sf_default_btn_disabled->setCenterRect(Rect(4,8,32,28));
+    sf_default_btn_disabled->setCenterRect(Rect(4,4,32,28));
     spriteFrameCache->addSpriteFrame(sf_default_btn_disabled, "default_btn_disabled");
     auto sf_default_btn_pressed = SpriteFrame::create("creator_assets/image/default_btn_pressed.png", Rect(0, 0, 40, 40), false, Vec2(0, 0), Size(40, 40));
     sf_default_btn_pressed->setCenterRect(Rect(3,4,34,32));
     spriteFrameCache->addSpriteFrame(sf_default_btn_pressed, "default_btn_pressed");
     auto sf_default_scrollbar_vertical_bg = SpriteFrame::create("creator_assets/image/default_scrollbar_vertical_bg.png", Rect(0, 0, 15, 30), false, Vec2(0, 0), Size(15, 30));
-    sf_default_scrollbar_vertical_bg->setCenterRect(Rect(0,8,15,15));
+    sf_default_scrollbar_vertical_bg->setCenterRect(Rect(0,7,15,15));
     spriteFrameCache->addSpriteFrame(sf_default_scrollbar_vertical_bg, "default_scrollbar_vertical_bg");
     auto sf_default_progressbar = SpriteFrame::create("creator_assets/image/default_progressbar.png", Rect(0, 0, 30, 15), false, Vec2(0, 0), Size(30, 15));
     sf_default_progressbar->setCenterRect(Rect(5,0,20,15));
@@ -61,7 +62,7 @@ bool CreatorSprites_init()
     sf_default_scrollbar->setCenterRect(Rect(10,0,10,11));
     spriteFrameCache->addSpriteFrame(sf_default_scrollbar, "default_scrollbar");
     auto sf_grossinis_sister1_png = SpriteFrame::create("creator_assets/test_polygon.png", Rect(336, 1, 50, 116), false, Vec2(0, -11), Size(52, 139));
-    sf_grossinis_sister1_png->setCenterRect(Rect(7,71,34,39));
+    sf_grossinis_sister1_png->setCenterRect(Rect(7,6,34,39));
     spriteFrameCache->addSpriteFrame(sf_grossinis_sister1_png, "grossinis_sister1.png");
     auto sf_default_progressbar_bg = SpriteFrame::create("creator_assets/image/default_progressbar_bg.png", Rect(0, 0, 60, 15), false, Vec2(0, 0), Size(60, 15));
     sf_default_progressbar_bg->setCenterRect(Rect(5,0,50,15));
@@ -122,7 +123,7 @@ Node* CreatorSprites_create()
     sprite_1_2->setCascadeOpacityEnabled(true);
     sprite_1_2->setSkewX(0);
     sprite_1_2->setTag(-1);
-    sprite_1_2->setContentSize(Size(55, 130));
+    sprite_1_2->setContentSize(Size(56, 138));
     sprite_1_2->setSkewY(0);
     sprite_1_2->setRotationSkewY(0);
     sprite_1_2->setPosition(Vec2(136, 85));
@@ -144,10 +145,10 @@ Node* CreatorSprites_create()
     sprite_1_3->setCascadeOpacityEnabled(true);
     sprite_1_3->setSkewX(0);
     sprite_1_3->setTag(-1);
-    sprite_1_3->setContentSize(Size(55, 130));
+    sprite_1_3->setContentSize(Size(56, 138));
     sprite_1_3->setSkewY(0);
     sprite_1_3->setRotationSkewY(0);
-    sprite_1_3->setPosition(Vec2(136, 247));
+    sprite_1_3->setPosition(Vec2(122, 273));
     sprite_1_3->setRotationSkewX(0);
     sprite_1_3->setCenterRectNormalized(Rect(0,0,1,1));
     scene_0_0->addChild(sprite_1_3);
@@ -166,7 +167,7 @@ Node* CreatorSprites_create()
     sprite_1_4->setCascadeOpacityEnabled(true);
     sprite_1_4->setSkewX(0);
     sprite_1_4->setTag(-1);
-    sprite_1_4->setContentSize(Size(50, 116));
+    sprite_1_4->setContentSize(Size(52, 139));
     sprite_1_4->setSkewY(0);
     sprite_1_4->setRotationSkewY(0);
     sprite_1_4->setPosition(Vec2(48, 253));
@@ -188,7 +189,7 @@ Node* CreatorSprites_create()
     sprite_1_5->setCascadeOpacityEnabled(true);
     sprite_1_5->setSkewX(20);
     sprite_1_5->setTag(-1);
-    sprite_1_5->setContentSize(Size(50, 116));
+    sprite_1_5->setContentSize(Size(52, 139));
     sprite_1_5->setSkewY(0);
     sprite_1_5->setRotationSkewY(0);
     sprite_1_5->setPosition(Vec2(288, 297));
@@ -210,7 +211,7 @@ Node* CreatorSprites_create()
     sprite_1_6->setCascadeOpacityEnabled(true);
     sprite_1_6->setSkewX(-20);
     sprite_1_6->setTag(-1);
-    sprite_1_6->setContentSize(Size(50, 116));
+    sprite_1_6->setContentSize(Size(52, 139));
     sprite_1_6->setSkewY(0);
     sprite_1_6->setRotationSkewY(0);
     sprite_1_6->setPosition(Vec2(370, 297));
@@ -276,7 +277,7 @@ Node* CreatorSprites_create()
     sprite_1_9->setCascadeOpacityEnabled(true);
     sprite_1_9->setSkewX(0);
     sprite_1_9->setTag(-1);
-    sprite_1_9->setContentSize(Size(55, 130));
+    sprite_1_9->setContentSize(Size(56, 138));
     sprite_1_9->setSkewY(0);
     sprite_1_9->setRotationSkewY(45);
     sprite_1_9->setPosition(Vec2(135, 493));
@@ -298,7 +299,7 @@ Node* CreatorSprites_create()
     sprite_1_10->setCascadeOpacityEnabled(true);
     sprite_1_10->setSkewX(0);
     sprite_1_10->setTag(-1);
-    sprite_1_10->setContentSize(Size(50, 116));
+    sprite_1_10->setContentSize(Size(52, 139));
     sprite_1_10->setSkewY(0);
     sprite_1_10->setRotationSkewY(-45);
     sprite_1_10->setPosition(Vec2(351, 508));
@@ -320,11 +321,12 @@ Node* CreatorSprites_create()
     sprite_1_11->setCascadeOpacityEnabled(true);
     sprite_1_11->setSkewX(0);
     sprite_1_11->setTag(-1);
-    sprite_1_11->setContentSize(Size(55, 130));
+    sprite_1_11->setContentSize(Size(52, 139));
     sprite_1_11->setSkewY(0);
     sprite_1_11->setRotationSkewY(0);
-    sprite_1_11->setPosition(Vec2(765, 31));
+    sprite_1_11->setPosition(Vec2(808, 489));
     sprite_1_11->setRotationSkewX(0);
+    sprite_1_11->setCenterRectNormalized(Rect(0,0,1,1));
     scene_0_0->addChild(sprite_1_11);
     // New node
     auto sprite_1_12 = Sprite::create();
@@ -341,10 +343,10 @@ Node* CreatorSprites_create()
     sprite_1_12->setCascadeOpacityEnabled(true);
     sprite_1_12->setSkewX(0);
     sprite_1_12->setTag(-1);
-    sprite_1_12->setContentSize(Size(50, 116));
+    sprite_1_12->setContentSize(Size(52, 139));
     sprite_1_12->setSkewY(0);
     sprite_1_12->setRotationSkewY(0);
-    sprite_1_12->setPosition(Vec2(48, 79));
+    sprite_1_12->setPosition(Vec2(215, 382));
     sprite_1_12->setRotationSkewX(0);
     sprite_1_12->setCenterRectNormalized(Rect(0,0,1,1));
     scene_0_0->addChild(sprite_1_12);
@@ -363,10 +365,10 @@ Node* CreatorSprites_create()
     sprite_1_13->setCascadeOpacityEnabled(true);
     sprite_1_13->setSkewX(0);
     sprite_1_13->setTag(-1);
-    sprite_1_13->setContentSize(Size(50, 116));
+    sprite_1_13->setContentSize(Size(52, 139));
     sprite_1_13->setSkewY(0);
     sprite_1_13->setRotationSkewY(0);
-    sprite_1_13->setPosition(Vec2(682, 503));
+    sprite_1_13->setPosition(Vec2(759, 566));
     sprite_1_13->setRotationSkewX(0);
     sprite_1_13->setCenterRectNormalized(Rect(0,0,1,1));
     scene_0_0->addChild(sprite_1_13);
@@ -385,10 +387,10 @@ Node* CreatorSprites_create()
     sprite_1_14->setCascadeOpacityEnabled(true);
     sprite_1_14->setSkewX(0);
     sprite_1_14->setTag(-1);
-    sprite_1_14->setContentSize(Size(50, 116));
+    sprite_1_14->setContentSize(Size(52, 139));
     sprite_1_14->setSkewY(0);
     sprite_1_14->setRotationSkewY(0);
-    sprite_1_14->setPosition(Vec2(762, 562));
+    sprite_1_14->setPosition(Vec2(478, 639));
     sprite_1_14->setRotationSkewX(0);
     sprite_1_14->setCenterRectNormalized(Rect(0,0,1,1));
     scene_0_0->addChild(sprite_1_14);
@@ -396,7 +398,7 @@ Node* CreatorSprites_create()
     auto sprite_1_15 = Sprite::create();
     sprite_1_15->setSpriteFrame("grossini_dance_08");
     sprite_1_15->setAnchorPoint(Vec2(0, 0));
-    sprite_1_15->setScaleY(2);
+    sprite_1_15->setScaleY(1);
     sprite_1_15->setScaleX(1);
     sprite_1_15->setColor(Color3B(255, 255, 255));
     sprite_1_15->setName("grossini_dance_08");
@@ -407,13 +409,13 @@ Node* CreatorSprites_create()
     sprite_1_15->setCascadeOpacityEnabled(true);
     sprite_1_15->setSkewX(0);
     sprite_1_15->setTag(-1);
-    sprite_1_15->setContentSize(Size(51, 109));
+    sprite_1_15->setContentSize(Size(170, 242));
     sprite_1_15->setSkewY(0);
     sprite_1_15->setRotationSkewY(0);
-    sprite_1_15->setPosition(Vec2(515, 427));
+    sprite_1_15->setPosition(Vec2(500, 385));
     sprite_1_15->setRotationSkewX(0);
-    sprite_1_15->setCenterRectNormalized(Rect(0,0,1,1));
     scene_0_0->addChild(sprite_1_15);
+    creator_tile_sprite(sprite_1_15);
     // New node
     auto sprite_1_16 = Sprite::create();
     sprite_1_16->setSpriteFrame("grossini_dance_08");
@@ -429,12 +431,13 @@ Node* CreatorSprites_create()
     sprite_1_16->setCascadeOpacityEnabled(true);
     sprite_1_16->setSkewX(0);
     sprite_1_16->setTag(-1);
-    sprite_1_16->setContentSize(Size(200, 200));
+    sprite_1_16->setContentSize(Size(85, 121));
     sprite_1_16->setSkewY(0);
-    sprite_1_16->setRotationSkewY(0);
-    sprite_1_16->setPosition(Vec2(954, 386));
-    sprite_1_16->setRotationSkewX(0);
+    sprite_1_16->setRotationSkewY(90);
+    sprite_1_16->setPosition(Vec2(882, 249));
+    sprite_1_16->setRotationSkewX(90);
     scene_0_0->addChild(sprite_1_16);
+    creator_tile_sprite(sprite_1_16);
     // New node
     auto sprite_1_17 = Sprite::create();
     sprite_1_17->setSpriteFrame("grossinis_sister1.png");
@@ -450,10 +453,10 @@ Node* CreatorSprites_create()
     sprite_1_17->setCascadeOpacityEnabled(true);
     sprite_1_17->setSkewX(0);
     sprite_1_17->setTag(-1);
-    sprite_1_17->setContentSize(Size(100, 232));
+    sprite_1_17->setContentSize(Size(100, 250));
     sprite_1_17->setSkewY(0);
     sprite_1_17->setRotationSkewY(0);
-    sprite_1_17->setPosition(Vec2(847, 517));
+    sprite_1_17->setPosition(Vec2(675, 297));
     sprite_1_17->setRotationSkewX(0);
     scene_0_0->addChild(sprite_1_17);
     // New node
@@ -477,6 +480,28 @@ Node* CreatorSprites_create()
     sprite_1_18->setPosition(Vec2(443, 94));
     sprite_1_18->setRotationSkewX(90);
     scene_0_0->addChild(sprite_1_18);
+    // New node
+    auto sprite_1_19 = Sprite::create();
+    sprite_1_19->setSpriteFrame("grossini_dance_08");
+    sprite_1_19->setAnchorPoint(Vec2(0, 0));
+    sprite_1_19->setScaleY(1);
+    sprite_1_19->setScaleX(1);
+    sprite_1_19->setColor(Color3B(255, 255, 255));
+    sprite_1_19->setName("grossini_dance_08");
+    sprite_1_19->setLocalZOrder(0);
+    sprite_1_19->setGlobalZOrder(0);
+    sprite_1_19->setOpacity(255);
+    sprite_1_19->setOpacityModifyRGB(false);
+    sprite_1_19->setCascadeOpacityEnabled(true);
+    sprite_1_19->setSkewX(0);
+    sprite_1_19->setTag(-1);
+    sprite_1_19->setContentSize(Size(85, 121));
+    sprite_1_19->setSkewY(0);
+    sprite_1_19->setRotationSkewY(0);
+    sprite_1_19->setPosition(Vec2(655, 496));
+    sprite_1_19->setRotationSkewX(0);
+    sprite_1_19->setCenterRectNormalized(Rect(0,0,1,1));
+    scene_0_0->addChild(sprite_1_19);
     return scene_0_0;
 }
 ////// AUTOGENERATED:END//////
