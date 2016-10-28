@@ -657,13 +657,13 @@ def to_cpp_setup_sprite_frames():
                 sprite_frame['rawWidth'], sprite_frame['rawHeight'])
         g_file_cpp.write(cpp_sprite_frame)
 
-        # does it have a centerRect ?
+        # does it have a capInsets?
         if sprite_frame['borderTop'] != 0 or sprite_frame['borderBottom'] != 0 or sprite_frame['borderLeft'] != 0 or sprite_frame['borderRight'] != 0:
             x = sprite_frame['borderLeft']
             y = sprite_frame['borderTop']
             w = sprite_frame['width'] - sprite_frame['borderRight'] - x
             h = sprite_frame['height'] - sprite_frame['borderBottom'] - y
-            g_file_cpp.write('    sf_%s->setCenterRect(Rect(%d,%d,%d,%d));\n' % (
+            g_file_cpp.write('    sf_%s->setCenterRectInPixels(Rect(%d,%d,%d,%d));\n' % (
                 sprite_frame_name,
                 x, y, w, h
                 ))
