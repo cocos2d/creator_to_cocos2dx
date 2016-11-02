@@ -563,8 +563,11 @@ def populate_meta_files(path):
                     g_sprite_frames[uuid] = submetas[spriteframename]
 
                     # populate g_textures. The name is meta_filename - '.meta' (5 chars)
-                    texture_uuid = submetas[spriteframename]['rawTextureUuid']
-                    g_textures[texture_uuid] = os.path.basename(meta_filename[:-5])
+                    if 'rawTextureUuid' in submetas[spriteframename]:
+                        texture_uuid = submetas[spriteframename]['rawTextureUuid']
+                        g_textures[texture_uuid] = os.path.basename(meta_filename[:-5])
+                    else:
+                        print('Framename "%s" doesn\'t have rawTextureUuid. Ignoring it...' % submetas[spriteframename]['frameName'])
 
                     if j_data['type'] == 'sprite':
                         g_sprite_without_atlas[uuid] = submetas[spriteframename]
@@ -643,33 +646,36 @@ def to_cpp_setup_sprite_frames():
     g_file_cpp.write('\n    // Files from .png\n')
     for k in g_sprite_without_atlas:
         sprite_frame = g_sprite_frames[k]
-        texture_filename = Node.get_filepath_from_uuid(sprite_frame['rawTextureUuid'])
+        if 'rawTextureUuid' in sprite_frame:
+            texture_filename = Node.get_filepath_from_uuid(sprite_frame['rawTextureUuid'])
 
-        original_frame_name = sprite_frame['frameName']
-        sprite_frame_name = original_frame_name.replace('-','_')
-        sprite_frame_name = sprite_frame_name.replace('.','_')
-        cpp_sprite_frame = '    auto sf_%s = SpriteFrame::create("%s", Rect(%g, %g, %g, %g), %s, Vec2(%g, %g), Size(%g, %g));\n' % (
-                sprite_frame_name,
-                g_assetpath + texture_filename,
-                sprite_frame['trimX'], sprite_frame['trimY'], sprite_frame['width'], sprite_frame['height'],
-                str(sprite_frame['rotated']).lower(),
-                sprite_frame['offsetX'], sprite_frame['offsetY'],
-                sprite_frame['rawWidth'], sprite_frame['rawHeight'])
-        g_file_cpp.write(cpp_sprite_frame)
+            original_frame_name = sprite_frame['frameName']
+            sprite_frame_name = original_frame_name.replace('-','_')
+            sprite_frame_name = sprite_frame_name.replace('.','_')
+            cpp_sprite_frame = '    auto sf_%s = SpriteFrame::create("%s", Rect(%g, %g, %g, %g), %s, Vec2(%g, %g), Size(%g, %g));\n' % (
+                    sprite_frame_name,
+                    g_assetpath + texture_filename,
+                    sprite_frame['trimX'], sprite_frame['trimY'], sprite_frame['width'], sprite_frame['height'],
+                    str(sprite_frame['rotated']).lower(),
+                    sprite_frame['offsetX'], sprite_frame['offsetY'],
+                    sprite_frame['rawWidth'], sprite_frame['rawHeight'])
+            g_file_cpp.write(cpp_sprite_frame)
 
-        # does it have a capInsets?
-        if sprite_frame['borderTop'] != 0 or sprite_frame['borderBottom'] != 0 or sprite_frame['borderLeft'] != 0 or sprite_frame['borderRight'] != 0:
-            x = sprite_frame['borderLeft']
-            y = sprite_frame['borderTop']
-            w = sprite_frame['width'] - sprite_frame['borderRight'] - x
-            h = sprite_frame['height'] - sprite_frame['borderBottom'] - y
-            g_file_cpp.write('    sf_%s->setCenterRectInPixels(Rect(%d,%d,%d,%d));\n' % (
+            # does it have a capInsets?
+            if sprite_frame['borderTop'] != 0 or sprite_frame['borderBottom'] != 0 or sprite_frame['borderLeft'] != 0 or sprite_frame['borderRight'] != 0:
+                x = sprite_frame['borderLeft']
+                y = sprite_frame['borderTop']
+                w = sprite_frame['width'] - sprite_frame['borderRight'] - x
+                h = sprite_frame['height'] - sprite_frame['borderBottom'] - y
+                g_file_cpp.write('    sf_%s->setCenterRectInPixels(Rect(%d,%d,%d,%d));\n' % (
+                    sprite_frame_name,
+                    x, y, w, h
+                    ))
+            g_file_cpp.write('    spriteFrameCache->addSpriteFrame(sf_%s, "%s");\n' % (
                 sprite_frame_name,
-                x, y, w, h
-                ))
-        g_file_cpp.write('    spriteFrameCache->addSpriteFrame(sf_%s, "%s");\n' % (
-            sprite_frame_name,
-            original_frame_name))
+                original_frame_name))
+        else:
+            print("Ignoring '%s'... No rawTextureUuid" % sprite_frame['frameName'])
     g_file_cpp.write('    // END SpriteFrame loading\n')
 
 
