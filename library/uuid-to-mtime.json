@@ -215,8 +215,8 @@
     "relativePath": "American Typewriter.ttf"
   },
   "cda0dfbc-11cd-41e8-be72-0b8e98abf0a6": {
-    "asset": 1477367838000,
-    "meta": 1477367838000,
+    "asset": 1478069919000,
+    "meta": 1478069919000,
     "relativePath": "CreatorSprites.fire"
   },
   "ebceda0f-2a27-4ed9-a9be-d4e3409e05c5": {
@@ -230,8 +230,33 @@
     "relativePath": "test_polygon.png"
   },
   "ab8ec530-3f48-4940-a960-17333f6fe7dc": {
-    "asset": 1477434295000,
-    "meta": 1477434295000,
+    "asset": 1477975129000,
+    "meta": 1477975129000,
     "relativePath": "CreatorUI.fire"
+  },
+  "5ad0d74a-bf8c-454a-863d-dd0cc29a4989": {
+    "asset": 1478069183000,
+    "meta": 1478069183000,
+    "relativePath": "ui.plist"
+  },
+  "f2755924-c358-4c68-a8ab-77cf4eafb922": {
+    "asset": 1478069205000,
+    "meta": 1478069205000,
+    "relativePath": "ui.png"
+  },
+  "a1adf703-5141-401b-808b-c13347efd216": {
+    "asset": 1478069353000,
+    "meta": 1478069354000,
+    "relativePath": "grossini.png"
+  },
+  "ccf94b38-1f68-4088-91a4-d808a87dcb85": {
+    "asset": 1478069464000,
+    "meta": 1478069464000,
+    "relativePath": "ghosts.plist"
+  },
+  "bd227ca5-f287-4e15-ac27-a0c0034515b5": {
+    "asset": 1478069464000,
+    "meta": 1478069464000,
+    "relativePath": "ghosts.png"
   }
 }
