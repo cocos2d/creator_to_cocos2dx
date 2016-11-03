@@ -130,6 +130,8 @@ class Node(object):
             n = EditBox(g_json_data[node_idx])
         elif node_type == 'cc.ProgressBar':
             n = ProgressBar(g_json_data[node_idx])
+        elif node_type == 'cc.Button':
+            n = Button(g_json_data[node_idx])
         if n is not None:
             n.parse_properties()
         return n
@@ -436,7 +438,49 @@ class TiledMap(Node):
 #
 ################################################################################
 class Button(Node):
-    pass
+    #  Composition:
+    #  - Sprite component
+    #  - Button component
+    #  - Label child
+    #    - Label component
+    #
+    # custom properties
+    # "_N$normalSprite": { "__uuid__": }
+    # "_N$disabledSprite": { "__uuid__": }
+    # "_N$interactable": true,
+    # "_N$normalColor": { "__type__": "cc.Color"}
+    # "_N$disabledColor": { "__type__": "cc.Color",
+    # "transition": 2, (NONE, COLOR, SPRITE)
+    # "pressedColor": { "__type__": "cc.Color",
+    # "hoverColor": { "__type__": "cc.Color",
+    # "duration": 0.1,
+    # "pressedSprite": { "__uuid__":
+    # "hoverSprite": { "__uuid__":
+    TRANSITION_NONE, TRANSITION_COLOR, TRANSITION_SPRITE = range(3)
+
+    def __init__(self, data):
+        super(Button, self).__init__(data)
+
+    def parse_properties(self):
+        super(Button, self).parse_properties()
+
+        # search for sprite frame name
+        spr_component = Node.get_node_component_of_type(self._node_data, 'cc.Sprite')
+        but_component = Node.get_node_component_of_type(self._node_data, 'cc.Button')
+
+        self._normalSprite = Node.get_filepath_from_uuid(but_component['_N$normalSprite']['__uuid__'])
+#        self._properties['setTitleText'] = "This is a demo"
+#        self._properties['setTitleColor'] = "Color3B::WHITE"
+#        self._properties['setTitleFontSize'] = 24
+#        self._properties['setTitleFontName'] = "Arial"
+#        self._properties['setTitleAlignment'] = "Arial"
+
+
+    def get_class_name(self):
+        return 'ui::Button'
+
+    def to_cpp_create_params(self):
+        return 'create("%s", "", "", ui::Widget::TextureResType::PLIST)' % self._normalSprite
 
 class EditBox(Node):
     # custom properties

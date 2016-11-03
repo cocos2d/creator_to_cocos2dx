@@ -214,11 +214,6 @@
     "meta": 1475718045000,
     "relativePath": "test_polygon.png"
   },
-  "ab8ec530-3f48-4940-a960-17333f6fe7dc": {
-    "asset": 1478109398000,
-    "meta": 1478109398000,
-    "relativePath": "CreatorUI.fire"
-  },
   "5ad0d74a-bf8c-454a-863d-dd0cc29a4989": {
     "asset": 1478069183000,
     "meta": 1478069183000,
@@ -258,5 +253,10 @@
     "asset": 1478070130000,
     "meta": 1478070130000,
     "relativePath": "CreatorSprites.fire"
+  },
+  "ab8ec530-3f48-4940-a960-17333f6fe7dc": {
+    "asset": 1478131319000,
+    "meta": 1478131319000,
+    "relativePath": "CreatorUI.fire"
   }
 }
