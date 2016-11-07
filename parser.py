@@ -246,7 +246,9 @@ class Node(object):
     def to_cpp(self, parent, depth, sibling_idx):
         self.to_cpp_begin(depth, sibling_idx)
         self.to_cpp_properties()
-        self.to_cpp_end(parent)
+        self.to_cpp_end()
+        if parent is not None:
+            parent.to_cpp_add_child(self)
 
         for idx, child in enumerate(self._children):
             child.to_cpp(self, depth+1, idx)
@@ -257,15 +259,17 @@ class Node(object):
         self._cpp_node_name = self._cpp_node_name.replace(':','')
         g_file_cpp.write("    auto %s = %s::%s;\n" % (self._cpp_node_name, self.get_class_name(), self.to_cpp_create_params()))
 
-
     def to_cpp_properties(self):
         for p in self._properties:
             value = self._properties[p]
             g_file_cpp.write("    %s->%s(%s);\n" % (self._cpp_node_name, p, value))
 
-    def to_cpp_end(self, parent):
-        if parent is not None:
-            g_file_cpp.write("    %s->addChild(%s);\n" % (parent._cpp_node_name, self._cpp_node_name))
+    def to_cpp_end(self):
+        '''epilogue'''
+
+    def to_cpp_add_child(self, child):
+        '''adds a child to self'''
+        g_file_cpp.write("    %s->addChild(%s);\n" % (self._cpp_node_name, child._cpp_node_name))
         g_file_cpp.write("")
 
     def to_cpp_create_params(self):
@@ -333,8 +337,8 @@ class Sprite(Node):
     def get_description(self, tab):
         return "%s%s('%s')" % ('-' * tab, self.get_class_name(), self._properties['setSpriteFrame'])
 
-    def to_cpp_end(self, parent):
-        super(Sprite, self).to_cpp_end(parent)
+    def to_cpp_end(self):
+        super(Sprite, self).to_cpp_end()
         if self._sprite_type == Sprite.TILED:
             g_file_cpp.write("    creator_tile_sprite(%s);\n" % self._cpp_node_name)
 
@@ -481,6 +485,11 @@ class Button(Node):
 
     def to_cpp_create_params(self):
         return 'create("%s", "", "", ui::Widget::TextureResType::PLIST)' % self._normalSprite
+
+    def to_cpp_add_child(self, child):
+        '''replaces addChild() with setTitleLabel()'''
+        g_file_cpp.write("    %s->setTitleLabel(%s);\n" % (self._cpp_node_name, child._cpp_node_name))
+        g_file_cpp.write("")
 
 class EditBox(Node):
     # custom properties
