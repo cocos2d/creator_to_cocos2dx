@@ -473,12 +473,7 @@ class Button(Node):
         but_component = Node.get_node_component_of_type(self._node_data, 'cc.Button')
 
         self._normalSprite = Node.get_filepath_from_uuid(but_component['_N$normalSprite']['__uuid__'])
-#        self._properties['setTitleText'] = "This is a demo"
-#        self._properties['setTitleColor'] = "Color3B::WHITE"
-#        self._properties['setTitleFontSize'] = 24
-#        self._properties['setTitleFontName'] = "Arial"
-#        self._properties['setTitleAlignment'] = "Arial"
-
+        self._properties['ignoreContentAdaptWithSize'] = 'false'
 
     def get_class_name(self):
         return 'ui::Button'
@@ -487,7 +482,7 @@ class Button(Node):
         return 'create("%s", "", "", ui::Widget::TextureResType::PLIST)' % self._normalSprite
 
     def to_cpp_add_child(self, child):
-        '''replaces addChild() with setTitleLabel()'''
+        # replaces addChild() with setTitleLabel()
         g_file_cpp.write("    %s->setTitleLabel(%s);\n" % (self._cpp_node_name, child._cpp_node_name))
         g_file_cpp.write("")
 
