@@ -13,6 +13,7 @@ import glob
 from pprint import pprint
 import getopt
 from sets import Set
+import re
 
 
 __docformat__ = 'restructuredtext'
@@ -240,6 +241,7 @@ class Node(object):
             node_type = Node.guess_type_from_components(components)
             if node_type is not None:
                 n = Node.create_node(node_type, node_idx)
+                self.adjust_child_parameters(n)
                 if n is not None:
                     self.add_child(n)
 
@@ -287,6 +289,11 @@ class Node(object):
 
     def to_cpp_create_params(self):
         return "create()"
+
+    def adjust_child_parameters(self, child):
+        '''Only useful when a parent wants to override some child parameter
+           As an example, ScrollView needs to adjust its children position
+        '''
 
 
 ################################################################################
@@ -616,7 +623,7 @@ class ScrollView(Node):
         #  +--> ScrollBar
         #       +--> Bar
         #  +--> View
-        #       +--> Content <-- this is what we want
+        #       +--> Content    <-- this is what we want
         view_node = None
         content_node = None
 
@@ -655,8 +662,7 @@ class ScrollView(Node):
         sprite_frame_uuid = component_spr['_spriteFrame']['__uuid__']
         self._properties['setBackGroundImage'] =  '"%s", ui::Widget::TextureResType::PLIST' % g_sprite_frames[sprite_frame_uuid]['frameName']
 
-
-        # Sliced
+        # Sliced ?
         if component_spr['_type'] == ScrollView.SLICED:
             self._properties['setBackGroundImageScale9Enabled'] = "true"
         else:
@@ -679,10 +685,15 @@ class ScrollView(Node):
         # get size from content (which must be >= view.size)
         data = content_node
         self.add_property_size('setInnerContainerSize', "_contentSize", data)
-        content_ap = content_node['_anchorPoint']
-        self._properties['getInnerContainer()->setAnchorPoint'] = 'Vec2(%g,%g)' % (content_ap['x'], content_ap['y'])
-        content_pos = content_node['_position']
-        self._properties['getInnerContainer()->setPosition'] = 'Vec2(%g,%g)' % (content_pos['x'], content_pos['y'])
+        self._content_size = data['_contentSize']
+
+        # FIXME: Container Node should honor these values, but it seems that ScrollView doesn't
+        # take them into account... or perhaps CocosCreator uses a different anchorPoint
+        # position is being adjusted in `adjust_child_parameters`
+        self._content_ap = content_node['_anchorPoint']
+        #self._properties['getInnerContainer()->setAnchorPoint'] = 'Vec2(%g,%g)' % (self._content_ap['x'], self._content_ap['y'])
+        self._content_pos = content_node['_position']
+        #self._properties['getInnerContainer()->setPosition'] = 'Vec2(%g,%g)' % (self._content_pos['x'], self._content_pos['y'])
 
         # add its children
         for child_idx in content_node["_children"]:
@@ -694,6 +705,18 @@ class ScrollView(Node):
     def to_cpp_create_params(self):
         return 'create()'
 
+    def adjust_child_parameters(self, child):
+        # FIXME: adjust child position since innerContainer doesn't honor
+        # position and anchorPoit.
+        pos = child._properties['setPosition']
+        g = re.match('Vec2\(([-+]?[0-9]*\.?[0-9]+), ([-+]?[0-9]*\.?[0-9]+)\)', pos)
+        if g is not None:
+            x = float(g.group(1))
+            y = float(g.group(2))
+            child._properties['setPosition'] = "Vec2(%g, %g)" % (x + self._content_size['width'] * self._content_ap['x'],
+                    y + self._content_size['height'] * self._content_ap['y'])
+        else:
+            raise Exception("Could not parse position: %s" % pos)
 
 
 ################################################################################
