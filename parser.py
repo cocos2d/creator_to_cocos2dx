@@ -647,12 +647,14 @@ class ScrollView(Node):
         # We only care about the "content" child
         # super(ScrollView, self).parse_properties()
 
-        # search for sprite & scroll view components
-        component_sv = Node.get_node_component_of_type(self._node_data, 'cc.ScrollView')
-        component_spr = Node.get_node_component_of_type(self._node_data, 'cc.Sprite')
+        # data from 'node' component
+        self.add_property_rgb('setBackGroundImageColor', '_color', self._node_data)
 
+        # data from sprite component
+        component_spr = Node.get_node_component_of_type(self._node_data, 'cc.Sprite')
         sprite_frame_uuid = component_spr['_spriteFrame']['__uuid__']
         self._properties['setBackGroundImage'] =  '"%s", ui::Widget::TextureResType::PLIST' % g_sprite_frames[sprite_frame_uuid]['frameName']
+
 
         # Sliced
         if component_spr['_type'] == ScrollView.SLICED:
@@ -660,12 +662,27 @@ class ScrollView(Node):
         else:
             self._properties['setBackGroundImageScale9Enabled'] = "false"
 
+        # data from scroll view component
+        component_sv = Node.get_node_component_of_type(self._node_data, 'cc.ScrollView')
+        if component_sv['horizontal'] and component_sv['vertical']:
+            self._properties['setDirection'] = 'ui::ScrollView::Direction::BOTH'
+        elif component_sv['horizontal']:
+            self._properties['setDirection'] = 'ui::ScrollView::Direction::HORIZONTAL'
+        elif component_sv['vertical']:
+            self._properties['setDirection'] = 'ui::ScrollView::Direction::VERTICAL'
+        else:
+            self._properties['setDirection'] = 'ui::ScrollView::Direction::NONE'
+
         # content node
         content_node = self.get_content_node()
 
         # get size from content (which must be >= view.size)
         data = content_node
         self.add_property_size('setInnerContainerSize', "_contentSize", data)
+        content_ap = content_node['_anchorPoint']
+        self._properties['getInnerContainer()->setAnchorPoint'] = 'Vec2(%g,%g)' % (content_ap['x'], content_ap['y'])
+        content_pos = content_node['_position']
+        self._properties['getInnerContainer()->setPosition'] = 'Vec2(%g,%g)' % (content_pos['x'], content_pos['y'])
 
         # add its children
         for child_idx in content_node["_children"]:
