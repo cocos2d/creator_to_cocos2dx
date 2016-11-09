@@ -89,6 +89,9 @@ def globals_init():
     g_unique_id = 0
 
 
+#
+# Node
+#
 class Node(object):
     @classmethod
     def get_node_components(cls, node):
@@ -109,8 +112,8 @@ class Node(object):
 
     @classmethod
     def guess_type_from_components(cls, components):
-        # Button & ProgressBar should be before Sprite
-        supported_components = ('cc.Button', 'cc.ProgressBar', 'cc.EditBox', 'cc.Label', 'cc.Sprite', 'cc.ParticleSystem', 'cc.TiledMap', 'cc.Canvas')
+        # ScrollView, Button & ProgressBar should be before Sprite
+        supported_components = ('cc.Button', 'cc.ProgressBar', 'cc.ScrollView', 'cc.EditBox', 'cc.Label', 'cc.Sprite', 'cc.ParticleSystem', 'cc.TiledMap', 'cc.Canvas')
         node_components = [x['__type__'] for x in components]
         for supported in supported_components:
             if supported in node_components:
@@ -138,6 +141,8 @@ class Node(object):
             n = ProgressBar(g_json_data[node_idx])
         elif node_type == 'cc.Button':
             n = Button(g_json_data[node_idx])
+        elif node_type == 'cc.ScrollView':
+            n = ScrollView(g_json_data[node_idx])
         if n is not None:
             n.parse_properties()
         return n
@@ -424,6 +429,7 @@ class ParticleSystem(Node):
     def to_cpp_create_params(self):
         return 'create("' + g_assetpath + self._particle_system_file + '")'
 
+
 class TiledMap(Node):
     def __init__(self, data):
         super(TiledMap, self).__init__(data)
@@ -443,10 +449,11 @@ class TiledMap(Node):
     def to_cpp_create_params(self):
         return 'create("' + g_assetpath + self._tmx_file + '")'
 
+
 ################################################################################
 #
 # Built-in UI Nodes
-# Button, EditBox, ProgressBar, etc.
+# Button, EditBox, ProgressBar, ScrollView
 #
 ################################################################################
 class Button(Node):
@@ -493,6 +500,7 @@ class Button(Node):
         # replaces addChild() with setTitleLabel()
         g_file_cpp.write("    %s->setTitleLabel(%s);\n" % (self._cpp_node_name, child._cpp_node_name))
         g_file_cpp.write("")
+
 
 class EditBox(Node):
     # custom properties
@@ -563,6 +571,7 @@ class EditBox(Node):
         h = s['height']
         return 'create(Size(%d,%d), "%s")' % (w, h, g_assetpath + self._backgroundImage)
 
+
 class ProgressBar(Node):
     # custom properties
     # "_N$barSprite": { "__id__" }
@@ -584,6 +593,90 @@ class ProgressBar(Node):
 
     def to_cpp_create_params(self):
         return 'create()'
+
+
+class ScrollView(Node):
+    # custom properties
+    # "horizontal": false,
+    # "vertical": true,
+    # "inertia": true,
+    # "brake": 0.75,
+    # "elastic": true,
+    # "bounceDuration": 0.23,
+    # "scrollEvents": [],
+    # "cancelInnerEvents": true,
+    # "_N$horizontalScrollBar": null,
+    # "_N$verticalScrollBar": { "__id__": 23 }
+
+    # for the sprites used internally
+    SIMPLE, SLICED, TILED, FILLED = range(4)
+
+    def get_content_node(self):
+        # Node
+        #  +--> ScrollBar
+        #       +--> Bar
+        #  +--> View
+        #       +--> Content <-- this is what we want
+        view_node = None
+        content_node = None
+
+        # find the "view" node
+        for child_idx in self._node_data["_children"]:
+            node_idx = child_idx['__id__']
+            node = g_json_data[node_idx]
+
+            if node["_name"] == "view":
+                view_node = node
+
+        # then find the "content" node
+        if view_node is not None:
+            for child_idx in view_node["_children"]:
+                node_idx = child_idx['__id__']
+                node = g_json_data[node_idx]
+
+                if node["_name"] == "content":
+                    content_node = node
+
+        if content_node is not None:
+            return content_node
+        else:
+            raise Exception("ContentNode not found")
+
+    def parse_properties(self):
+        # Don't call super since it will parse all its children
+        # We only care about the "content" child
+        # super(ScrollView, self).parse_properties()
+
+        # search for sprite & scroll view components
+        component_sv = Node.get_node_component_of_type(self._node_data, 'cc.ScrollView')
+        component_spr = Node.get_node_component_of_type(self._node_data, 'cc.Sprite')
+
+        sprite_frame_uuid = component_spr['_spriteFrame']['__uuid__']
+        self._properties['setBackGroundImage'] =  '"%s", ui::Widget::TextureResType::PLIST' % g_sprite_frames[sprite_frame_uuid]['frameName']
+
+        # Sliced
+        if component_spr['_type'] == ScrollView.SLICED:
+            self._properties['setBackGroundImageScale9Enabled'] = "true"
+        else:
+            self._properties['setBackGroundImageScale9Enabled'] = "false"
+
+        # content node
+        content_node = self.get_content_node()
+
+        # get size from content (which must be >= view.size)
+        data = content_node
+        self.add_property_size('setInnerContainerSize', "_contentSize", data)
+
+        # add its children
+        for child_idx in content_node["_children"]:
+            self.parse_child(child_idx['__id__'])
+
+    def get_class_name(self):
+        return 'ui::ScrollView'
+
+    def to_cpp_create_params(self):
+        return 'create()'
+
 
 
 ################################################################################
