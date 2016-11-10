@@ -678,6 +678,7 @@ class ScrollView(Node):
             self._properties['setDirection'] = 'ui::ScrollView::Direction::VERTICAL'
         else:
             self._properties['setDirection'] = 'ui::ScrollView::Direction::NONE'
+        self.add_property_bool('setBounceEnabled', 'elastic', component_sv)
 
         # content node
         content_node = self.get_content_node()
@@ -691,6 +692,7 @@ class ScrollView(Node):
         # take them into account... or perhaps CocosCreator uses a different anchorPoint
         # position is being adjusted in `adjust_child_parameters`
         self._content_ap = content_node['_anchorPoint']
+
         #self._properties['getInnerContainer()->setAnchorPoint'] = 'Vec2(%g,%g)' % (self._content_ap['x'], self._content_ap['y'])
         self._content_pos = content_node['_position']
         #self._properties['getInnerContainer()->setPosition'] = 'Vec2(%g,%g)' % (self._content_pos['x'], self._content_pos['y'])
@@ -704,6 +706,17 @@ class ScrollView(Node):
 
     def to_cpp_create_params(self):
         return 'create()'
+
+    def to_cpp_end(self):
+        super(ScrollView, self).to_cpp_end()
+        # FIXME: Call setJumpToPercent at the end, because it depens
+        # on having the contentSize correct
+        # FIXME: uses the anchorPoint for the percent in the bar, but 
+        # this migh break if it changes the position of the bar
+        # content node
+        g_file_cpp.write("    %s->jumpToPercentVertical(%g * 100);\n" % (self._cpp_node_name, (1-self._content_ap['y'])))
+        g_file_cpp.write("    %s->jumpToPercentHorizontal(%g * 100);\n" % (self._cpp_node_name, self._content_ap['x']))
+
 
     def adjust_child_parameters(self, child):
         # FIXME: adjust child position since innerContainer doesn't honor
