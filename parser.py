@@ -568,6 +568,7 @@ class EditBox(Node):
         self.add_property_int('setPlaceholderFontSize', '_N$placeholderFontSize', component)
         self.add_property_rgb('setPlaceholderFontColor', '_N$placeholderFontColor', component)
         self.add_property_int('setMaxLength', '_N$maxLength', component)
+        self.add_property_str('setText', '_string', component)
 
     def get_class_name(self):
         return 'ui::EditBox'
@@ -576,7 +577,7 @@ class EditBox(Node):
         s = self._node_data['_contentSize']
         w = s['width']
         h = s['height']
-        return 'create(Size(%d,%d), "%s")' % (w, h, g_assetpath + self._backgroundImage)
+        return 'create(Size(%d,%d), "%s", ui::Widget::TextureResType::PLIST)' % (w, h, self._backgroundImage)
 
 
 class ProgressBar(Node):
