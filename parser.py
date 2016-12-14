@@ -18,76 +18,90 @@ import re
 
 __docformat__ = 'restructuredtext'
 
-# Some globals (yeah!)
+class Singleton:
+    """
+    A non-thread-safe helper class to ease implementing singletons.
+    This should be used as a decorator -- not a metaclass -- to the
+    class that should be a singleton.
 
-# filename of the .fire file to parse
-g_filename = ""
-# File objects to dump the cpp/h data
-g_file_cpp = None
-g_file_h = None
+    The decorated class can define one `__init__` function that
+    takes only the `self` argument. Also, the decorated class cannot be
+    inherited from. Other than that, there are no restrictions that apply
+    to the decorated class.
 
-# Needed resources
-g_resources_needed = set()
+    To get the singleton instance, use the `Instance` method. Trying
+    to use `__call__` will result in a `TypeError` being raised.
 
-# the .fire file being parsed
-g_json_data = []
+    """
 
-# the .meta files that contain sprite frame info and other data
-g_meta_data = {}
+    def __init__(self, decorated):
+        self._decorated = decorated
 
-# contains the sprite frames: customized version of g_meta_data
-# key is the uuid. value is the json container
-g_sprite_frames = {}
+    def Instance(self):
+        """
+        Returns the singleton instance. Upon its first call, it creates a
+        new instance of the decorated class and calls its `__init__` method.
+        On all subsequent calls, the already created instance is returned.
 
-# sprites that don't belong to any atlas
-# should be added to the SpriteFrameCache manually
-g_sprite_without_atlas = {}
+        """
+        try:
+            return self._instance
+        except AttributeError:
+            self._instance = self._decorated()
+            return self._instance
 
-# sprites that belong to atlas files
-# atlas file should be added to the SpriteFrameCache manually
-g_sprite_with_atlas = []
+    def __call__(self):
+        raise TypeError('Singletons must be accessed through `Instance()`.')
 
-# contains the textures used
-# key is the uuid. value is the json container
-g_textures = {}
-
-# contains the data from library/uuid-to-mtime.json
-g_uuid = {}
-
-g_design_resolution = None
-
-# path for the assets
-g_assetpath = ""
-
-# global unique id for nodes
-# it is just a number that gets incremented with each new node
-g_unique_id = 0
+    def __instancecheck__(self, inst):
+        return isinstance(inst, self._decorated)
 
 
+@Singleton
+class State(object):
+    # filename of the .fire file to parse
+    def __init__(self):
+        self._filename = ""
+        # File objects to dump the cpp/h data
+        self._file_cpp = None
+        self._file_h = None
 
-def globals_init():
-    global g_filename, g_json_data, g_meta_data
-    global g_file_cpp, g_file_h
-    global g_sprite_frames, g_textures, g_uuid
-    global g_sprite_without_atlas, g_sprite_with_atlas
-    global g_design_resolution, g_resources_needed
-    global g_assetpath
-    global g_unique_id
+        # Needed resources
+        self._resources_needed = set()
 
-    g_filename = ""
-    g_json_data = []
-    g_meta_data = {}
-    g_sprite_frames = {}
-    g_sprite_without_atlas = {}
-    g_sprite_with_atlas = []
-    g_textures = {}
-    g_uuid = {}
-    g_design_resolution = None
-    g_file_cpp = None
-    g_file_h = None
-    g_resources_needed = set()
-    g_assetpath = ""
-    g_unique_id = 0
+        # the .fire file being parsed
+        self._json_data = []
+
+        # the .meta files that contain sprite frame info and other data
+        self._meta_data = {}
+
+        # contains the sprite frames: customized version of _meta_data
+        # key is the uuid. value is the json container
+        self._sprite_frames = {}
+
+        # sprites that don't belong to any atlas
+        # should be added to the SpriteFrameCache manually
+        self._sprite_without_atlas = {}
+
+        # sprites that belong to atlas files
+        # atlas file should be added to the SpriteFrameCache manually
+        self._sprite_with_atlas = []
+
+        # contains the textures used
+        # key is the uuid. value is the json container
+        self._textures = {}
+
+        # contains the data from library/uuid-to-mtime.json
+        self._uuid = {}
+
+        self._design_resolution = None
+
+        # path for the assets
+        self._assetpath = ""
+
+        # global unique id for nodes
+        # it is just a number that gets incremented with each new node
+        self._unique_id = 0
 
 
 #
@@ -100,7 +114,7 @@ class Node(object):
         components = []
         for idx in idxs:
             idx_num = idx['__id__']
-            components.append(g_json_data[idx_num])
+            components.append(State.Instance()._json_data[idx_num])
         return components
 
     @classmethod
@@ -125,36 +139,38 @@ class Node(object):
 
     @classmethod
     def create_node(cls, node_type, node_idx):
+        state = State.Instance()
         n = None
         if node_type == 'cc.Sprite':
-            n = Sprite(g_json_data[node_idx])
+            n = Sprite(state._json_data[node_idx])
         elif node_type == 'cc.Label':
-            n = Label(g_json_data[node_idx])
+            n = Label(state._json_data[node_idx])
         elif node_type == 'cc.ParticleSystem':
-            n = ParticleSystem(g_json_data[node_idx])
+            n = ParticleSystem(state._json_data[node_idx])
         elif node_type == 'cc.TiledMap':
-            n = TiledMap(g_json_data[node_idx])
+            n = TiledMap(state._json_data[node_idx])
         elif node_type == 'cc.Canvas':
-            n = Canvas(g_json_data[node_idx])
+            n = Canvas(state._json_data[node_idx])
         elif node_type == 'cc.EditBox':
-            n = EditBox(g_json_data[node_idx])
+            n = EditBox(state._json_data[node_idx])
         elif node_type == 'cc.ProgressBar':
-            n = ProgressBar(g_json_data[node_idx])
+            n = ProgressBar(state._json_data[node_idx])
         elif node_type == 'cc.Button':
-            n = Button(g_json_data[node_idx])
+            n = Button(state._json_data[node_idx])
         elif node_type == 'cc.ScrollView':
-            n = ScrollView(g_json_data[node_idx])
+            n = ScrollView(state._json_data[node_idx])
         if n is not None:
             n.parse_properties()
         return n
 
     @classmethod
     def get_filepath_from_uuid(self, uuid):
+        state = State.Instance()
         filepath = None
-        if uuid in g_uuid:
-            filepath = g_uuid[uuid]['relativePath']
-        elif uuid in g_sprite_frames:
-            filepath = g_sprite_frames[uuid]['frameName']
+        if uuid in state._uuid:
+            filepath = state._uuid[uuid]['relativePath']
+        elif uuid in state._sprite_frames:
+            filepath = state._sprite_frames[uuid]['frameName']
         return filepath
 
     def __init__(self, data):
@@ -235,7 +251,7 @@ class Node(object):
             self.parse_child(child_idx['__id__'])
 
     def parse_child(self, node_idx):
-        node = g_json_data[node_idx]
+        node = State.Instance()._json_data[node_idx]
         if node['__type__'] == 'cc.Node':
             components = Node.get_node_components(node)
             node_type = Node.guess_type_from_components(components)
@@ -267,25 +283,26 @@ class Node(object):
             child.to_cpp(self, depth+1, idx)
 
     def to_cpp_begin(self, depth, sibling_idx):
-        global g_unique_id
-        g_file_cpp.write("    // New node\n")
-        self._cpp_node_name = "%s_%d" % (self.get_class_name().lower(), g_unique_id)
+        state = State.Instance()
+        state._file_cpp.write("    // New node\n")
+        self._cpp_node_name = "%s_%d" % (self.get_class_name().lower(), state._unique_id)
         self._cpp_node_name = self._cpp_node_name.replace(':','')
-        g_unique_id = g_unique_id + 1
-        g_file_cpp.write("    auto %s = %s::%s;\n" % (self._cpp_node_name, self.get_class_name(), self.to_cpp_create_params()))
+        state._unique_id = state._unique_id + 1
+        state._file_cpp.write("    auto %s = %s::%s;\n" % (self._cpp_node_name, self.get_class_name(), self.to_cpp_create_params()))
 
     def to_cpp_properties(self):
         for p in self._properties:
             value = self._properties[p]
-            g_file_cpp.write("    %s->%s(%s);\n" % (self._cpp_node_name, p, value))
+            State.Instance()._file_cpp.write("    %s->%s(%s);\n" % (self._cpp_node_name, p, value))
 
     def to_cpp_end(self):
         '''epilogue'''
 
     def to_cpp_add_child(self, child):
         '''adds a child to self'''
-        g_file_cpp.write("    %s->addChild(%s);\n" % (self._cpp_node_name, child._cpp_node_name))
-        g_file_cpp.write("")
+        state = State.Instance()
+        state._file_cpp.write("    %s->addChild(%s);\n" % (self._cpp_node_name, child._cpp_node_name))
+        state._file_cpp.write("")
 
     def to_cpp_create_params(self):
         return "create()"
@@ -310,12 +327,13 @@ class Canvas(Node):
     def __init__(self, data):
         super(Canvas, self).__init__(data)
 
+        state = State.Instance()
+
         component = Node.get_node_component_of_type(self._node_data, 'cc.Canvas')
 
-        global g_design_resolution, g_fit_height, g_fit_width
-        g_design_resolution = component['_designResolution']
-        g_fit_width = component['_fitWidth']
-        g_fit_height = component['_fitHeight']
+        state._design_resolution = component['_designResolution']
+        state._fit_width = component['_fitWidth']
+        state._fit_height = component['_fitHeight']
 
 
     # Canvas should be part of the big init
@@ -339,6 +357,8 @@ class Sprite(Node):
     def parse_properties(self):
         super(Sprite, self).parse_properties()
 
+        state = State.Instance()
+
         # search for sprite frame name
         component = Node.get_node_component_of_type(self._node_data, 'cc.Sprite')
         sprite_frame_uuid = component['_spriteFrame']['__uuid__']
@@ -346,9 +366,9 @@ class Sprite(Node):
 #        atlas = component['_atlas']
 
         # add name between ""
-        print(g_sprite_frames[sprite_frame_uuid])
-        self.add_property_str('setSpriteFrame', 'frameName', g_sprite_frames[sprite_frame_uuid])
-        print(g_sprite_frames[sprite_frame_uuid])
+        print(state._sprite_frames[sprite_frame_uuid])
+        self.add_property_str('setSpriteFrame', 'frameName', state._sprite_frames[sprite_frame_uuid])
+        print(state._sprite_frames[sprite_frame_uuid])
 
         self._sprite_type = component['_type']
         if self._sprite_type == Sprite.SIMPLE:
@@ -360,7 +380,7 @@ class Sprite(Node):
     def to_cpp_end(self):
         super(Sprite, self).to_cpp_end()
         if self._sprite_type == Sprite.TILED:
-            g_file_cpp.write("    creator_tile_sprite(%s);\n" % self._cpp_node_name)
+            State.Instance()._file_cpp.write("    creator_tile_sprite(%s);\n" % self._cpp_node_name)
 
 
 class Label(Node):
@@ -408,12 +428,13 @@ class Label(Node):
             self.add_property_int('setLineHeight' ,'_lineHeight', component)
 
     def to_cpp_create_params(self):
+        state = State.Instance()
         if self._font_type == Label.FONT_SYSTEM:
             return 'createWithSystemFont("' + self._label_text + '", "arial", ' + str(self._font_size) + ')'
         elif self._font_type == Label.FONT_BM:
-            return 'createWithBMFont("' + g_assetpath + self._font_filename + '", "' + self._label_text + '")'
+            return 'createWithBMFont("' + state._assetpath + self._font_filename + '", "' + self._label_text + '")'
         elif self._font_type == Label.FONT_TTF:
-            return 'createWithTTF("' + self._label_text + '", "'+ g_assetpath + self._font_filename + '", ' + str(self._font_size) + ')'
+            return 'createWithTTF("' + self._label_text + '", "'+ state._assetpath + self._font_filename + '", ' + str(self._font_size) + ')'
 
     def get_description(self, tab):
         return "%s%s('%s')" % ('-' * tab, self.get_class_name(), self._label_text)
@@ -428,13 +449,13 @@ class ParticleSystem(Node):
         self._particle_system_file = Node.get_filepath_from_uuid(component['_file']['__uuid__'])
 
         # tag it as needed resourse
-        g_resources_needed.add(self._particle_system_file)
+        State.Instance()._resources_needed.add(self._particle_system_file)
 
     def get_class_name(self):
         return 'ParticleSystemQuad'
 
     def to_cpp_create_params(self):
-        return 'create("' + g_assetpath + self._particle_system_file + '")'
+        return 'create("' + State.Instance()._assetpath + self._particle_system_file + '")'
 
 
 class TiledMap(Node):
@@ -445,7 +466,7 @@ class TiledMap(Node):
         self._tmx_file = Node.get_filepath_from_uuid(component['_tmxFile']['__uuid__'])
 
         # tag it as needed resourse
-        g_resources_needed.add(self._tmx_file)
+        State.Instance()._resources_needed.add(self._tmx_file)
 
         # for some reason, changing the contentSize breaks the TMX
         del self._properties['setContentSize']
@@ -454,7 +475,7 @@ class TiledMap(Node):
         return 'TMXTiledMap'
 
     def to_cpp_create_params(self):
-        return 'create("' + g_assetpath + self._tmx_file + '")'
+        return 'create("' + State.Instance()._assetpath + self._tmx_file + '")'
 
 
 ################################################################################
@@ -504,9 +525,10 @@ class Button(Node):
         return 'create("%s", "", "", ui::Widget::TextureResType::PLIST)' % self._normalSprite
 
     def to_cpp_add_child(self, child):
+        state = State.Instance()
         # replaces addChild() with setTitleLabel()
-        g_file_cpp.write("    %s->setTitleLabel(%s);\n" % (self._cpp_node_name, child._cpp_node_name))
-        g_file_cpp.write("")
+        state._file_cpp.write("    %s->setTitleLabel(%s);\n" % (self._cpp_node_name, child._cpp_node_name))
+        state._file_cpp.write("")
 
 
 class EditBox(Node):
@@ -620,6 +642,8 @@ class ScrollView(Node):
     SIMPLE, SLICED, TILED, FILLED = range(4)
 
     def get_content_node(self):
+        state = State.Instance()
+
         # Node
         #  +--> ScrollBar
         #       +--> Bar
@@ -631,7 +655,7 @@ class ScrollView(Node):
         # find the "view" node
         for child_idx in self._node_data["_children"]:
             node_idx = child_idx['__id__']
-            node = g_json_data[node_idx]
+            node = state._json_data[node_idx]
 
             if node["_name"] == "view":
                 view_node = node
@@ -640,7 +664,7 @@ class ScrollView(Node):
         if view_node is not None:
             for child_idx in view_node["_children"]:
                 node_idx = child_idx['__id__']
-                node = g_json_data[node_idx]
+                node = state._json_data[node_idx]
 
                 if node["_name"] == "content":
                     content_node = node
@@ -651,6 +675,8 @@ class ScrollView(Node):
             raise Exception("ContentNode not found")
 
     def parse_properties(self):
+        state = State.Instance()
+
         # Don't call super since it will parse all its children
         # We only care about the "content" child
         # super(ScrollView, self).parse_properties()
@@ -661,7 +687,7 @@ class ScrollView(Node):
         # data from sprite component
         component_spr = Node.get_node_component_of_type(self._node_data, 'cc.Sprite')
         sprite_frame_uuid = component_spr['_spriteFrame']['__uuid__']
-        self._properties['setBackGroundImage'] =  '"%s", ui::Widget::TextureResType::PLIST' % g_sprite_frames[sprite_frame_uuid]['frameName']
+        self._properties['setBackGroundImage'] =  '"%s", ui::Widget::TextureResType::PLIST' % state._sprite_frames[sprite_frame_uuid]['frameName']
 
         # Sliced ?
         if component_spr['_type'] == ScrollView.SLICED:
@@ -715,8 +741,9 @@ class ScrollView(Node):
         # FIXME: uses the anchorPoint for the percent in the bar, but 
         # this migh break if it changes the position of the bar
         # content node
-        g_file_cpp.write("    %s->jumpToPercentVertical(%g * 100);\n" % (self._cpp_node_name, (1-self._content_ap['y'])))
-        g_file_cpp.write("    %s->jumpToPercentHorizontal(%g * 100);\n" % (self._cpp_node_name, self._content_ap['x']))
+        state = State.Instance()
+        state._file_cpp.write("    %s->jumpToPercentVertical(%g * 100);\n" % (self._cpp_node_name, (1-self._content_ap['y'])))
+        state._file_cpp.write("    %s->jumpToPercentHorizontal(%g * 100);\n" % (self._cpp_node_name, self._content_ap['x']))
 
 
     def adjust_child_parameters(self, child):
@@ -739,8 +766,7 @@ class ScrollView(Node):
 #
 ################################################################################
 def populate_meta_files(path):
-    global g_meta_data, g_sprite_frames, g_textures
-    global g_sprite_with_atlas, g_sprite_without_atlas
+    state = State.Instance()
     metas1 = glob.glob(path + '/*.meta')
     metas2 = glob.glob('temp/*/*/*.meta')
     metas = metas1 + metas2
@@ -749,7 +775,7 @@ def populate_meta_files(path):
         with open(meta_filename) as fd:
             basename = os.path.basename(meta_filename)
             j_data = json.load(fd)
-            g_meta_data[basename] = j_data
+            state._meta_data[basename] = j_data
 
             meta_uuid = j_data['uuid']
 
@@ -762,54 +788,55 @@ def populate_meta_files(path):
                     uuid = submetas[spriteframename]['uuid']
                     submetas[spriteframename]['frameName'] = spriteframename
 
-                    # populate g_sprite_frames
-                    g_sprite_frames[uuid] = submetas[spriteframename]
+                    # populate State.Instance()._sprite_frames
+                    state._sprite_frames[uuid] = submetas[spriteframename]
 
-                    # populate g_textures. The name is meta_filename - '.meta' (5 chars)
+                    # populate State.Instance()._textures. The name is meta_filename - '.meta' (5 chars)
                     if 'rawTextureUuid' in submetas[spriteframename]:
                         texture_uuid = submetas[spriteframename]['rawTextureUuid']
-                        g_textures[texture_uuid] = os.path.basename(meta_filename[:-5])
+                        state._textures[texture_uuid] = os.path.basename(meta_filename[:-5])
                     else:
                         print('Framename "%s" doesn\'t have rawTextureUuid. Ignoring it...' % submetas[spriteframename]['frameName'])
 
                     if j_data['type'] == 'sprite':
-                        g_sprite_without_atlas[uuid] = submetas[spriteframename]
+                        state._sprite_without_atlas[uuid] = submetas[spriteframename]
                     elif j_data['type'] == 'Texture Packer':
-                        g_sprite_with_atlas.append(Node.get_filepath_from_uuid(meta_uuid))
-                        g_sprite_without_atlas[uuid] = submetas[spriteframename]
+                        state._sprite_with_atlas.append(Node.get_filepath_from_uuid(meta_uuid))
+                        state._sprite_without_atlas[uuid] = submetas[spriteframename]
                     else:
                         raise Exception("Invalid type: %s" % j_data['type'])
 
 
 def populate_uuid_file(path):
-    global g_uuid
     with open(path + '/../library/uuid-to-mtime.json') as data:
-        g_uuid = json.load(data)
+        State.Instance()._uuid = json.load(data)
 
 
 def to_cpp_setup():
+    state = State.Instance()
     header = """
 USING_NS_CC;
 
 bool %s_init()
-{""" % g_filename
+{""" % state._filename
 
     footer = """
     return true;
 }
 """
-    g_file_cpp.write(header)
+    state._file_cpp.write(header)
     to_cpp_setup_design_resolution()
     to_cpp_setup_sprite_frames()
-    g_file_cpp.write(footer)
+    state._file_cpp.write(footer)
 
 
 def to_cpp_setup_design_resolution():
+    state = State.Instance()
     design_resolution_exact_fit = """
     auto director = Director::getInstance();
     auto glview = director->getOpenGLView();
     glview->setDesignResolutionSize(%d, %d, ResolutionPolicy::EXACT_FIT);
-""" % ( g_design_resolution['width'], g_design_resolution['height'])
+""" % ( state._design_resolution['width'], state._design_resolution['height'])
 
     design_resolution = """
     auto director = Director::getInstance();
@@ -818,37 +845,38 @@ def to_cpp_setup_design_resolution():
     glview->setDesignResolutionSize(%s, %s, ResolutionPolicy::NO_BORDER);
 """
 
-    if g_fit_height and g_fit_width:
-        g_file_cpp.write(design_resolution_exact_fit)
-    elif g_fit_height:
+    if state._fit_height and state._fit_width:
+        state._file_cpp.write(design_resolution_exact_fit)
+    elif state._fit_height:
         expanded = design_resolution % (
-                "frameSize.width / (frameSize.height / %d)" % g_design_resolution['height'],
-                "frameSize.height / (frameSize.height / %d)" % g_design_resolution['height'])
-        g_file_cpp.write(expanded)
-    elif g_fit_width:
+                "frameSize.width / (frameSize.height / %d)" % state._design_resolution['height'],
+                "frameSize.height / (frameSize.height / %d)" % state._design_resolution['height'])
+        state._file_cpp.write(expanded)
+    elif state._fit_width:
         expanded = design_resolution % (
-                "frameSize.width / (frameSize.width / %d)" % g_design_resolution['width'],
-                "frameSize.height / (frameSize.width / %d)" % g_design_resolution['width'])
-        g_file_cpp.write(expanded)
+                "frameSize.width / (frameSize.width / %d)" % state._design_resolution['width'],
+                "frameSize.height / (frameSize.width / %d)" % state._design_resolution['width'])
+        state._file_cpp.write(expanded)
     else:
         expanded = design_resolution % (
-                str(g_design_resolution['width']),
-                str(g_design_resolution['height']))
-        g_file_cpp.write(expanded)
+                str(state._design_resolution['width']),
+                str(state._design_resolution['height']))
+        state._file_cpp.write(expanded)
 
 
 def to_cpp_setup_sprite_frames():
-    g_file_cpp.write('\n    // BEGIN SpriteFrame loading\n')
-    g_file_cpp.write('    auto spriteFrameCache = SpriteFrameCache::getInstance();\n')
+    state = State.Instance()
+    state._file_cpp.write('\n    // BEGIN SpriteFrame loading\n')
+    state._file_cpp.write('    auto spriteFrameCache = SpriteFrameCache::getInstance();\n')
 
-    g_file_cpp.write('    // Files from .plist\n')
-    for k in Set(g_sprite_with_atlas):
-        g_file_cpp.write('    // %s processed manually. No need to include it in the assets folder\n' % (g_assetpath + k))
-        #g_file_cpp.write('    spriteFrameCache->addSpriteFramesWithFile("%s");\n' % (g_assetpath + k))
+    state._file_cpp.write('    // Files from .plist\n')
+    for k in Set(state._sprite_with_atlas):
+        state._file_cpp.write('    // %s processed manually. No need to include it in the assets folder\n' % (state._assetpath + k))
+        #state._file_cpp.write('    spriteFrameCache->addSpriteFramesWithFile("%s");\n' % (state._assetpath + k))
 
-    g_file_cpp.write('\n    // Files from .png\n')
-    for k in g_sprite_without_atlas:
-        sprite_frame = g_sprite_frames[k]
+    state._file_cpp.write('\n    // Files from .png\n')
+    for k in state._sprite_without_atlas:
+        sprite_frame = state._sprite_frames[k]
         if 'rawTextureUuid' in sprite_frame:
             texture_filename = Node.get_filepath_from_uuid(sprite_frame['rawTextureUuid'])
 
@@ -857,12 +885,12 @@ def to_cpp_setup_sprite_frames():
             sprite_frame_name = sprite_frame_name.replace('.','_')
             cpp_sprite_frame = '    auto sf_%s = SpriteFrame::create("%s", Rect(%g, %g, %g, %g), %s, Vec2(%g, %g), Size(%g, %g));\n' % (
                     sprite_frame_name,
-                    g_assetpath + texture_filename,
+                    state._assetpath + texture_filename,
                     sprite_frame['trimX'], sprite_frame['trimY'], sprite_frame['width'], sprite_frame['height'],
                     str(sprite_frame['rotated']).lower(),
                     sprite_frame['offsetX'], sprite_frame['offsetY'],
                     sprite_frame['rawWidth'], sprite_frame['rawHeight'])
-            g_file_cpp.write(cpp_sprite_frame)
+            state._file_cpp.write(cpp_sprite_frame)
 
             # does it have a capInsets?
             if sprite_frame['borderTop'] != 0 or sprite_frame['borderBottom'] != 0 or sprite_frame['borderLeft'] != 0 or sprite_frame['borderRight'] != 0:
@@ -870,16 +898,16 @@ def to_cpp_setup_sprite_frames():
                 y = sprite_frame['borderTop']
                 w = sprite_frame['width'] - sprite_frame['borderRight'] - x
                 h = sprite_frame['height'] - sprite_frame['borderBottom'] - y
-                g_file_cpp.write('    sf_%s->setCenterRectInPixels(Rect(%d,%d,%d,%d));\n' % (
+                state._file_cpp.write('    sf_%s->setCenterRectInPixels(Rect(%d,%d,%d,%d));\n' % (
                     sprite_frame_name,
                     x, y, w, h
                     ))
-            g_file_cpp.write('    spriteFrameCache->addSpriteFrame(sf_%s, "%s");\n' % (
+            state._file_cpp.write('    spriteFrameCache->addSpriteFrame(sf_%s, "%s");\n' % (
                 sprite_frame_name,
                 original_frame_name))
         else:
             print("Ignoring '%s'... No rawTextureUuid" % sprite_frame['frameName'])
-    g_file_cpp.write('    // END SpriteFrame loading\n')
+    state._file_cpp.write('    // END SpriteFrame loading\n')
 
 
 def create_file(filename):
@@ -894,17 +922,15 @@ def create_file(filename):
 
 
 def run(filename, assetpath):
-    global g_filename, g_file_cpp, g_file_h, g_assetpath
+    state = State.Instance()
 
-    globals_init()
+    state._assetpath = assetpath
+    state._filename = os.path.splitext(os.path.basename(filename))[0]
+    cpp_name = "cpp/%s.cpp" % state._filename
+    h_name = "cpp/%s.h" % state._filename
 
-    g_assetpath = assetpath
-    g_filename = os.path.splitext(os.path.basename(filename))[0]
-    cpp_name = "cpp/%s.cpp" % g_filename
-    h_name = "cpp/%s.h" % g_filename
-
-    g_file_cpp = create_file(cpp_name)
-    g_file_h = create_file(h_name)
+    state._file_cpp = create_file(cpp_name)
+    state._file_h = create_file(h_name)
 
     path = os.path.dirname(filename)
     # 1st
@@ -912,29 +938,28 @@ def run(filename, assetpath):
     # 2nd
     populate_meta_files(path)
 
-    global g_json_data
     with open(filename) as data_file:
-        g_json_data = json.load(data_file)
+        state._json_data = json.load(data_file)
 
-    print("total elements: %d" % len(g_json_data))
-    for i,obj in enumerate(g_json_data):
+    print("total elements: %d" % len(state._json_data))
+    for i,obj in enumerate(state._json_data):
         if obj["__type__"] == "cc.SceneAsset":
             scenes = obj["scene"]
             scene_idx = scenes["__id__"]
-            scene_obj = Scene(g_json_data[scene_idx])
+            scene_obj = Scene(state._json_data[scene_idx])
             scene_obj.parse_properties()
 #            scene_obj.print_scene_graph(0)
 
             # cpp file
-            g_file_cpp.write("////// AUTOGENERATED:BEGIN //////\n")
-            g_file_cpp.write("////// DO     NOT     EDIT //////\n")
-            g_file_cpp.write("\n#include <ui/CocosGUI.h>\n")
-            g_file_cpp.write('#include "creator_utils.h"\n')
+            state._file_cpp.write("////// AUTOGENERATED:BEGIN //////\n")
+            state._file_cpp.write("////// DO     NOT     EDIT //////\n")
+            state._file_cpp.write("\n#include <ui/CocosGUI.h>\n")
+            state._file_cpp.write('#include "creator_utils.h"\n')
             to_cpp_setup()
-            g_file_cpp.write("Node* %s_create()\n{\n" % g_filename)
+            state._file_cpp.write("Node* %s_create()\n{\n" % state._filename)
             scene_obj.to_cpp(None,0,0)
-            g_file_cpp.write("    return scene_0;\n}\n")
-            g_file_cpp.write("////// AUTOGENERATED:END//////\n")
+            state._file_cpp.write("    return scene_0;\n}\n")
+            state._file_cpp.write("////// AUTOGENERATED:END//////\n")
 
             # header file
             header = """
@@ -948,8 +973,8 @@ bool %s_init();
 cocos2d::Node* %s_create();
 
 ////// AUTOGENERATED:END//////
-""" % (g_filename, g_filename)
-            g_file_h.write(header)
+""" % (state._filename, state._filename)
+            state._file_h.write(header)
 
 
 def help():
