@@ -765,216 +765,217 @@ class ScrollView(Node):
 # bootstrap + helper functions
 #
 ################################################################################
-def populate_meta_files(path):
-    state = State.Instance()
-    metas1 = glob.glob(path + '/*.meta')
-    metas2 = glob.glob('temp/*/*/*.meta')
-    metas = metas1 + metas2
-    print(metas)
-    for meta_filename in metas:
-        with open(meta_filename) as fd:
-            basename = os.path.basename(meta_filename)
-            j_data = json.load(fd)
-            state._meta_data[basename] = j_data
+class FireParser(object):
+    def __init__(self):
+        self._state = State.Instance()
 
-            meta_uuid = j_data['uuid']
+    def populate_meta_files(self, path):
+        metas1 = glob.glob(path + '/*.meta')
+        metas2 = glob.glob('temp/*/*/*.meta')
+        metas = metas1 + metas2
+        print(metas)
+        for meta_filename in metas:
+            with open(meta_filename) as fd:
+                basename = os.path.basename(meta_filename)
+                j_data = json.load(fd)
+                self._state._meta_data[basename] = j_data
 
-            # is this a sprite (.png) file ?
-            if 'type' in j_data and (j_data['type'] == 'sprite' or j_data['type'] == 'Texture Packer'):
-                # subMetas seems to contain all the sprite frame definitions
-                submetas = j_data['subMetas']
-                for spriteframename in submetas:
-                    # uuid will be used as the key
-                    uuid = submetas[spriteframename]['uuid']
-                    submetas[spriteframename]['frameName'] = spriteframename
+                meta_uuid = j_data['uuid']
 
-                    # populate State.Instance()._sprite_frames
-                    state._sprite_frames[uuid] = submetas[spriteframename]
+                # is this a sprite (.png) file ?
+                if 'type' in j_data and (j_data['type'] == 'sprite' or j_data['type'] == 'Texture Packer'):
+                    # subMetas seems to contain all the sprite frame definitions
+                    submetas = j_data['subMetas']
+                    for spriteframename in submetas:
+                        # uuid will be used as the key
+                        uuid = submetas[spriteframename]['uuid']
+                        submetas[spriteframename]['frameName'] = spriteframename
 
-                    # populate State.Instance()._textures. The name is meta_filename - '.meta' (5 chars)
-                    if 'rawTextureUuid' in submetas[spriteframename]:
-                        texture_uuid = submetas[spriteframename]['rawTextureUuid']
-                        state._textures[texture_uuid] = os.path.basename(meta_filename[:-5])
-                    else:
-                        print('Framename "%s" doesn\'t have rawTextureUuid. Ignoring it...' % submetas[spriteframename]['frameName'])
+                        # populate State.Instance()._sprite_frames
+                        self._state._sprite_frames[uuid] = submetas[spriteframename]
 
-                    if j_data['type'] == 'sprite':
-                        state._sprite_without_atlas[uuid] = submetas[spriteframename]
-                    elif j_data['type'] == 'Texture Packer':
-                        state._sprite_with_atlas.append(Node.get_filepath_from_uuid(meta_uuid))
-                        state._sprite_without_atlas[uuid] = submetas[spriteframename]
-                    else:
-                        raise Exception("Invalid type: %s" % j_data['type'])
+                        # populate State.Instance()._textures. The name is meta_filename - '.meta' (5 chars)
+                        if 'rawTextureUuid' in submetas[spriteframename]:
+                            texture_uuid = submetas[spriteframename]['rawTextureUuid']
+                            self._state._textures[texture_uuid] = os.path.basename(meta_filename[:-5])
+                        else:
+                            print('Framename "%s" doesn\'t have rawTextureUuid. Ignoring it...' % submetas[spriteframename]['frameName'])
 
-
-def populate_uuid_file(path):
-    with open(path + '/../library/uuid-to-mtime.json') as data:
-        State.Instance()._uuid = json.load(data)
+                        if j_data['type'] == 'sprite':
+                            self._state._sprite_without_atlas[uuid] = submetas[spriteframename]
+                        elif j_data['type'] == 'Texture Packer':
+                            self._state._sprite_with_atlas.append(Node.get_filepath_from_uuid(meta_uuid))
+                            self._state._sprite_without_atlas[uuid] = submetas[spriteframename]
+                        else:
+                            raise Exception("Invalid type: %s" % j_data['type'])
 
 
-def to_cpp_setup():
-    state = State.Instance()
-    header = """
-USING_NS_CC;
-
-bool %s_init()
-{""" % state._filename
-
-    footer = """
-    return true;
-}
-"""
-    state._file_cpp.write(header)
-    to_cpp_setup_design_resolution()
-    to_cpp_setup_sprite_frames()
-    state._file_cpp.write(footer)
+    def populate_uuid_file(self, path):
+        with open(path + '/../library/uuid-to-mtime.json') as data:
+            State.Instance()._uuid = json.load(data)
 
 
-def to_cpp_setup_design_resolution():
-    state = State.Instance()
-    design_resolution_exact_fit = """
-    auto director = Director::getInstance();
-    auto glview = director->getOpenGLView();
-    glview->setDesignResolutionSize(%d, %d, ResolutionPolicy::EXACT_FIT);
-""" % ( state._design_resolution['width'], state._design_resolution['height'])
+    def to_cpp_setup(self):
+        header = """
+    USING_NS_CC;
 
-    design_resolution = """
-    auto director = Director::getInstance();
-    auto glview = director->getOpenGLView();
-    auto frameSize = glview->getFrameSize();
-    glview->setDesignResolutionSize(%s, %s, ResolutionPolicy::NO_BORDER);
-"""
+    bool %s_init()
+    {""" % self._state._filename
 
-    if state._fit_height and state._fit_width:
-        state._file_cpp.write(design_resolution_exact_fit)
-    elif state._fit_height:
-        expanded = design_resolution % (
-                "frameSize.width / (frameSize.height / %d)" % state._design_resolution['height'],
-                "frameSize.height / (frameSize.height / %d)" % state._design_resolution['height'])
-        state._file_cpp.write(expanded)
-    elif state._fit_width:
-        expanded = design_resolution % (
-                "frameSize.width / (frameSize.width / %d)" % state._design_resolution['width'],
-                "frameSize.height / (frameSize.width / %d)" % state._design_resolution['width'])
-        state._file_cpp.write(expanded)
-    else:
-        expanded = design_resolution % (
-                str(state._design_resolution['width']),
-                str(state._design_resolution['height']))
-        state._file_cpp.write(expanded)
+        footer = """
+        return true;
+    }
+    """
+        self._state._file_cpp.write(header)
+        self.to_cpp_setup_design_resolution()
+        self.to_cpp_setup_sprite_frames()
+        self._state._file_cpp.write(footer)
 
 
-def to_cpp_setup_sprite_frames():
-    state = State.Instance()
-    state._file_cpp.write('\n    // BEGIN SpriteFrame loading\n')
-    state._file_cpp.write('    auto spriteFrameCache = SpriteFrameCache::getInstance();\n')
+    def to_cpp_setup_design_resolution(self):
+        self._state = State.Instance()
+        design_resolution_exact_fit = """
+        auto director = Director::getInstance();
+        auto glview = director->getOpenGLView();
+        glview->setDesignResolutionSize(%d, %d, ResolutionPolicy::EXACT_FIT);
+    """ % ( self._state._design_resolution['width'], self._state._design_resolution['height'])
 
-    state._file_cpp.write('    // Files from .plist\n')
-    for k in Set(state._sprite_with_atlas):
-        state._file_cpp.write('    // %s processed manually. No need to include it in the assets folder\n' % (state._assetpath + k))
-        #state._file_cpp.write('    spriteFrameCache->addSpriteFramesWithFile("%s");\n' % (state._assetpath + k))
+        design_resolution = """
+        auto director = Director::getInstance();
+        auto glview = director->getOpenGLView();
+        auto frameSize = glview->getFrameSize();
+        glview->setDesignResolutionSize(%s, %s, ResolutionPolicy::NO_BORDER);
+    """
 
-    state._file_cpp.write('\n    // Files from .png\n')
-    for k in state._sprite_without_atlas:
-        sprite_frame = state._sprite_frames[k]
-        if 'rawTextureUuid' in sprite_frame:
-            texture_filename = Node.get_filepath_from_uuid(sprite_frame['rawTextureUuid'])
-
-            original_frame_name = sprite_frame['frameName']
-            sprite_frame_name = original_frame_name.replace('-','_')
-            sprite_frame_name = sprite_frame_name.replace('.','_')
-            cpp_sprite_frame = '    auto sf_%s = SpriteFrame::create("%s", Rect(%g, %g, %g, %g), %s, Vec2(%g, %g), Size(%g, %g));\n' % (
-                    sprite_frame_name,
-                    state._assetpath + texture_filename,
-                    sprite_frame['trimX'], sprite_frame['trimY'], sprite_frame['width'], sprite_frame['height'],
-                    str(sprite_frame['rotated']).lower(),
-                    sprite_frame['offsetX'], sprite_frame['offsetY'],
-                    sprite_frame['rawWidth'], sprite_frame['rawHeight'])
-            state._file_cpp.write(cpp_sprite_frame)
-
-            # does it have a capInsets?
-            if sprite_frame['borderTop'] != 0 or sprite_frame['borderBottom'] != 0 or sprite_frame['borderLeft'] != 0 or sprite_frame['borderRight'] != 0:
-                x = sprite_frame['borderLeft']
-                y = sprite_frame['borderTop']
-                w = sprite_frame['width'] - sprite_frame['borderRight'] - x
-                h = sprite_frame['height'] - sprite_frame['borderBottom'] - y
-                state._file_cpp.write('    sf_%s->setCenterRectInPixels(Rect(%d,%d,%d,%d));\n' % (
-                    sprite_frame_name,
-                    x, y, w, h
-                    ))
-            state._file_cpp.write('    spriteFrameCache->addSpriteFrame(sf_%s, "%s");\n' % (
-                sprite_frame_name,
-                original_frame_name))
+        if self._state._fit_height and self._state._fit_width:
+            self._state._file_cpp.write(design_resolution_exact_fit)
+        elif self._state._fit_height:
+            expanded = design_resolution % (
+                    "frameSize.width / (frameSize.height / %d)" % self._state._design_resolution['height'],
+                    "frameSize.height / (frameSize.height / %d)" % self._state._design_resolution['height'])
+            self._state._file_cpp.write(expanded)
+        elif self._state._fit_width:
+            expanded = design_resolution % (
+                    "frameSize.width / (frameSize.width / %d)" % self._state._design_resolution['width'],
+                    "frameSize.height / (frameSize.width / %d)" % self._state._design_resolution['width'])
+            self._state._file_cpp.write(expanded)
         else:
-            print("Ignoring '%s'... No rawTextureUuid" % sprite_frame['frameName'])
-    state._file_cpp.write('    // END SpriteFrame loading\n')
+            expanded = design_resolution % (
+                    str(self._state._design_resolution['width']),
+                    str(self._state._design_resolution['height']))
+            self._state._file_cpp.write(expanded)
 
 
-def create_file(filename):
+    def to_cpp_setup_sprite_frames(self):
+        self._state = State.Instance()
+        self._state._file_cpp.write('\n    // BEGIN SpriteFrame loading\n')
+        self._state._file_cpp.write('    auto spriteFrameCache = SpriteFrameCache::getInstance();\n')
 
-    if not os.path.exists(os.path.dirname(filename)):
-        try:
-            os.makedirs(os.path.dirname(filename))
-        except OSError as exc: # Guard against race condition
-            if exc.errno != errno.EEXIST:
-                raise
-    return open(filename, "w")
+        self._state._file_cpp.write('    // Files from .plist\n')
+        for k in Set(self._state._sprite_with_atlas):
+            self._state._file_cpp.write('    // %s processed manually. No need to include it in the assets folder\n' % (self._state._assetpath + k))
+            #self._state._file_cpp.write('    spriteFrameCache->addSpriteFramesWithFile("%s");\n' % (self._state._assetpath + k))
+
+        self._state._file_cpp.write('\n    // Files from .png\n')
+        for k in self._state._sprite_without_atlas:
+            sprite_frame = self._state._sprite_frames[k]
+            if 'rawTextureUuid' in sprite_frame:
+                texture_filename = Node.get_filepath_from_uuid(sprite_frame['rawTextureUuid'])
+
+                original_frame_name = sprite_frame['frameName']
+                sprite_frame_name = original_frame_name.replace('-','_')
+                sprite_frame_name = sprite_frame_name.replace('.','_')
+                cpp_sprite_frame = '    auto sf_%s = SpriteFrame::create("%s", Rect(%g, %g, %g, %g), %s, Vec2(%g, %g), Size(%g, %g));\n' % (
+                        sprite_frame_name,
+                        self._state._assetpath + texture_filename,
+                        sprite_frame['trimX'], sprite_frame['trimY'], sprite_frame['width'], sprite_frame['height'],
+                        str(sprite_frame['rotated']).lower(),
+                        sprite_frame['offsetX'], sprite_frame['offsetY'],
+                        sprite_frame['rawWidth'], sprite_frame['rawHeight'])
+                self._state._file_cpp.write(cpp_sprite_frame)
+
+                # does it have a capInsets?
+                if sprite_frame['borderTop'] != 0 or sprite_frame['borderBottom'] != 0 or sprite_frame['borderLeft'] != 0 or sprite_frame['borderRight'] != 0:
+                    x = sprite_frame['borderLeft']
+                    y = sprite_frame['borderTop']
+                    w = sprite_frame['width'] - sprite_frame['borderRight'] - x
+                    h = sprite_frame['height'] - sprite_frame['borderBottom'] - y
+                    self._state._file_cpp.write('    sf_%s->setCenterRectInPixels(Rect(%d,%d,%d,%d));\n' % (
+                        sprite_frame_name,
+                        x, y, w, h
+                        ))
+                self._state._file_cpp.write('    spriteFrameCache->addSpriteFrame(sf_%s, "%s");\n' % (
+                    sprite_frame_name,
+                    original_frame_name))
+            else:
+                print("Ignoring '%s'... No rawTextureUuid" % sprite_frame['frameName'])
+        self._state._file_cpp.write('    // END SpriteFrame loading\n')
 
 
-def run(filename, assetpath):
-    state = State.Instance()
+    def create_file(self, filename):
 
-    state._assetpath = assetpath
-    state._filename = os.path.splitext(os.path.basename(filename))[0]
-    cpp_name = "cpp/%s.cpp" % state._filename
-    h_name = "cpp/%s.h" % state._filename
+        if not os.path.exists(os.path.dirname(filename)):
+            try:
+                os.makedirs(os.path.dirname(filename))
+            except OSError as exc: # Guard against race condition
+                if exc.errno != errno.EEXIST:
+                    raise
+        return open(filename, "w")
 
-    state._file_cpp = create_file(cpp_name)
-    state._file_h = create_file(h_name)
 
-    path = os.path.dirname(filename)
-    # 1st
-    populate_uuid_file(path)
-    # 2nd
-    populate_meta_files(path)
+    def run(self, filename, assetpath):
 
-    with open(filename) as data_file:
-        state._json_data = json.load(data_file)
+        self._state._assetpath = assetpath
+        self._state._filename = os.path.splitext(os.path.basename(filename))[0]
+        cpp_name = "cpp/%s.cpp" % self._state._filename
+        h_name = "cpp/%s.h" % self._state._filename
 
-    print("total elements: %d" % len(state._json_data))
-    for i,obj in enumerate(state._json_data):
-        if obj["__type__"] == "cc.SceneAsset":
-            scenes = obj["scene"]
-            scene_idx = scenes["__id__"]
-            scene_obj = Scene(state._json_data[scene_idx])
-            scene_obj.parse_properties()
-#            scene_obj.print_scene_graph(0)
+        self._state._file_cpp = self.create_file(cpp_name)
+        self._state._file_h = self.create_file(h_name)
 
-            # cpp file
-            state._file_cpp.write("////// AUTOGENERATED:BEGIN //////\n")
-            state._file_cpp.write("////// DO     NOT     EDIT //////\n")
-            state._file_cpp.write("\n#include <ui/CocosGUI.h>\n")
-            state._file_cpp.write('#include "creator_utils.h"\n')
-            to_cpp_setup()
-            state._file_cpp.write("Node* %s_create()\n{\n" % state._filename)
-            scene_obj.to_cpp(None,0,0)
-            state._file_cpp.write("    return scene_0;\n}\n")
-            state._file_cpp.write("////// AUTOGENERATED:END//////\n")
+        path = os.path.dirname(filename)
+        # 1st
+        self.populate_uuid_file(path)
+        # 2nd
+        self.populate_meta_files(path)
 
-            # header file
-            header = """
-////// AUTOGENERATED:BEGIN //////
-////// DO     NOT     EDIT //////
-#pragma once
+        with open(filename) as data_file:
+            self._state._json_data = json.load(data_file)
 
-#include <cocos2d.h>
+        print("total elements: %d" % len(self._state._json_data))
+        for i,obj in enumerate(self._state._json_data):
+            if obj["__type__"] == "cc.SceneAsset":
+                scenes = obj["scene"]
+                scene_idx = scenes["__id__"]
+                scene_obj = Scene(self._state._json_data[scene_idx])
+                scene_obj.parse_properties()
+    #            scene_obj.print_scene_graph(0)
 
-bool %s_init();
-cocos2d::Node* %s_create();
+                # cpp file
+                self._state._file_cpp.write("////// AUTOGENERATED:BEGIN //////\n")
+                self._state._file_cpp.write("////// DO     NOT     EDIT //////\n")
+                self._state._file_cpp.write("\n#include <ui/CocosGUI.h>\n")
+                self._state._file_cpp.write('#include "creator_utils.h"\n')
+                self.to_cpp_setup()
+                self._state._file_cpp.write("Node* %s_create()\n{\n" % self._state._filename)
+                scene_obj.to_cpp(None,0,0)
+                self._state._file_cpp.write("    return scene_0;\n}\n")
+                self._state._file_cpp.write("////// AUTOGENERATED:END//////\n")
 
-////// AUTOGENERATED:END//////
-""" % (state._filename, state._filename)
-            state._file_h.write(header)
+                # header file
+                header = """
+    ////// AUTOGENERATED:BEGIN //////
+    ////// DO     NOT     EDIT //////
+    #pragma once
+
+    #include <cocos2d.h>
+
+    bool %s_init();
+    cocos2d::Node* %s_create();
+
+    ////// AUTOGENERATED:END//////
+    """ % (self._state._filename, self._state._filename)
+                self._state._file_h.write(header)
 
 
 def help():
@@ -998,7 +999,8 @@ if __name__ == "__main__":
                     assetpath += '/'
 
         for f in args:
-            run(f, assetpath)
+            parser = FireParser()
+            parser.run(f, assetpath)
     except getopt.GetoptError, e:
         print(e)
 

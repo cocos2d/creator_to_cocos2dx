@@ -4,15 +4,15 @@
 #include <ui/CocosGUI.h>
 #include "creator_utils.h"
 
-USING_NS_CC;
+    USING_NS_CC;
 
-bool CreatorLabels_init()
-{
-    auto director = Director::getInstance();
-    auto glview = director->getOpenGLView();
-    auto frameSize = glview->getFrameSize();
-    glview->setDesignResolutionSize(frameSize.width / (frameSize.height / 640), frameSize.height / (frameSize.height / 640), ResolutionPolicy::NO_BORDER);
-
+    bool CreatorLabels_init()
+    {
+        auto director = Director::getInstance();
+        auto glview = director->getOpenGLView();
+        auto frameSize = glview->getFrameSize();
+        glview->setDesignResolutionSize(frameSize.width / (frameSize.height / 640), frameSize.height / (frameSize.height / 640), ResolutionPolicy::NO_BORDER);
+    
     // BEGIN SpriteFrame loading
     auto spriteFrameCache = SpriteFrameCache::getInstance();
     // Files from .plist
@@ -90,9 +90,9 @@ bool CreatorLabels_init()
     spriteFrameCache->addSpriteFrame(sf_default_scrollbar, "default_scrollbar");
     // END SpriteFrame loading
 
-    return true;
-}
-Node* CreatorLabels_create()
+        return true;
+    }
+    Node* CreatorLabels_create()
 {
     // New node
     auto scene_0 = Scene::create();
