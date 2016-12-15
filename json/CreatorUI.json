@@ -1,0 +1,1598 @@
+{
+    "designResolution": {
+        "h": 960,
+        "w": 640
+    },
+    "resolutionFitHeight": true,
+    "resolutionFitWidth": false,
+    "root": {
+        "children": [
+            {
+                "children": [],
+                "object": {
+                    "anchorPoint": {
+                        "x": 0.5,
+                        "y": 0.5
+                    },
+                    "cascadeOpacityEnabled": true,
+                    "color": {
+                        "b": 255,
+                        "g": 255,
+                        "r": 255
+                    },
+                    "contentSize": {
+                        "h": 640,
+                        "w": 960
+                    },
+                    "globalZOrder": 0,
+                    "localZOrder": 0,
+                    "name": "Canvas",
+                    "opacity": 255,
+                    "opacityModifyRGB": false,
+                    "position": {
+                        "x": 480,
+                        "y": 320
+                    },
+                    "rotationSkewX": 0,
+                    "rotationSkewY": 0,
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "skewX": 0,
+                    "skewY": 0,
+                    "tag": -1
+                },
+                "object_type": "Node"
+            },
+            {
+                "children": [
+                    {
+                        "children": [],
+                        "object": {
+                            "node": {
+                                "anchorPoint": {
+                                    "x": 0.5,
+                                    "y": 0.5
+                                },
+                                "cascadeOpacityEnabled": true,
+                                "color": {
+                                    "b": 0,
+                                    "g": 0,
+                                    "r": 252
+                                },
+                                "contentSize": {
+                                    "h": 40,
+                                    "w": 200
+                                },
+                                "globalZOrder": 0,
+                                "localZOrder": 0,
+                                "name": "Label",
+                                "opacity": 255,
+                                "opacityModifyRGB": false,
+                                "position": {
+                                    "x": 0,
+                                    "y": 0
+                                },
+                                "rotationSkewX": 0,
+                                "rotationSkewY": 0,
+                                "scaleX": 1,
+                                "scaleY": 1,
+                                "skewX": 0,
+                                "skewY": 0,
+                                "tag": -1
+                            },
+                            "setHorizontalAlignment": "TextHAlignment::CENTER",
+                            "setVerticalAlignment": "TextVAlignment::CENTER"
+                        },
+                        "object_type": "Label"
+                    }
+                ],
+                "object": {
+                    "ignoreContentAdaptWithSize": "false",
+                    "node": {
+                        "anchorPoint": {
+                            "x": 0.5,
+                            "y": 0.5
+                        },
+                        "cascadeOpacityEnabled": true,
+                        "color": {
+                            "b": 255,
+                            "g": 255,
+                            "r": 255
+                        },
+                        "contentSize": {
+                            "h": 40,
+                            "w": 200
+                        },
+                        "globalZOrder": 0,
+                        "localZOrder": 0,
+                        "name": "Button",
+                        "opacity": 255,
+                        "opacityModifyRGB": false,
+                        "position": {
+                            "x": 323,
+                            "y": 330
+                        },
+                        "rotationSkewX": 90,
+                        "rotationSkewY": 90,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "skewX": 0,
+                        "skewY": 0,
+                        "tag": -1
+                    }
+                },
+                "object_type": "Button"
+            },
+            {
+                "children": [
+                    {
+                        "children": [],
+                        "object": {
+                            "node": {
+                                "anchorPoint": {
+                                    "x": 0.5,
+                                    "y": 0.5
+                                },
+                                "cascadeOpacityEnabled": true,
+                                "color": {
+                                    "b": 255,
+                                    "g": 255,
+                                    "r": 255
+                                },
+                                "contentSize": {
+                                    "h": 40,
+                                    "w": 250
+                                },
+                                "globalZOrder": 0,
+                                "localZOrder": 0,
+                                "name": "Label",
+                                "opacity": 255,
+                                "opacityModifyRGB": false,
+                                "position": {
+                                    "x": 0,
+                                    "y": 0
+                                },
+                                "rotationSkewX": 0,
+                                "rotationSkewY": 0,
+                                "scaleX": 1,
+                                "scaleY": 1,
+                                "skewX": 0,
+                                "skewY": 0,
+                                "tag": -1
+                            },
+                            "setHorizontalAlignment": "TextHAlignment::CENTER",
+                            "setLineHeight": 40,
+                            "setVerticalAlignment": "TextVAlignment::CENTER"
+                        },
+                        "object_type": "Label"
+                    }
+                ],
+                "object": {
+                    "ignoreContentAdaptWithSize": "false",
+                    "node": {
+                        "anchorPoint": {
+                            "x": 0.5,
+                            "y": 0.5
+                        },
+                        "cascadeOpacityEnabled": true,
+                        "color": {
+                            "b": 0,
+                            "g": 0,
+                            "r": 255
+                        },
+                        "contentSize": {
+                            "h": 80,
+                            "w": 250
+                        },
+                        "globalZOrder": 0,
+                        "localZOrder": 0,
+                        "name": "Button",
+                        "opacity": 255,
+                        "opacityModifyRGB": false,
+                        "position": {
+                            "x": 170.2,
+                            "y": 415.5
+                        },
+                        "rotationSkewX": 0,
+                        "rotationSkewY": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "skewX": 0,
+                        "skewY": 0,
+                        "tag": -1
+                    }
+                },
+                "object_type": "Button"
+            },
+            {
+                "children": [
+                    {
+                        "children": [],
+                        "object": {
+                            "node": {
+                                "anchorPoint": {
+                                    "x": 0.5,
+                                    "y": 0.5
+                                },
+                                "cascadeOpacityEnabled": true,
+                                "color": {
+                                    "b": 0,
+                                    "g": 0,
+                                    "r": 0
+                                },
+                                "contentSize": {
+                                    "h": 40,
+                                    "w": 200
+                                },
+                                "globalZOrder": 0,
+                                "localZOrder": 0,
+                                "name": "Label",
+                                "opacity": 255,
+                                "opacityModifyRGB": false,
+                                "position": {
+                                    "x": 0,
+                                    "y": 0
+                                },
+                                "rotationSkewX": 0,
+                                "rotationSkewY": 0,
+                                "scaleX": 1,
+                                "scaleY": 1,
+                                "skewX": 0,
+                                "skewY": 0,
+                                "tag": -1
+                            },
+                            "setHorizontalAlignment": "TextHAlignment::CENTER",
+                            "setLineHeight": 40,
+                            "setVerticalAlignment": "TextVAlignment::CENTER"
+                        },
+                        "object_type": "Label"
+                    }
+                ],
+                "object": {
+                    "ignoreContentAdaptWithSize": "false",
+                    "node": {
+                        "anchorPoint": {
+                            "x": 0.5,
+                            "y": 0.5
+                        },
+                        "cascadeOpacityEnabled": true,
+                        "color": {
+                            "b": 255,
+                            "g": 0,
+                            "r": 245
+                        },
+                        "contentSize": {
+                            "h": 40,
+                            "w": 300
+                        },
+                        "globalZOrder": 0,
+                        "localZOrder": 0,
+                        "name": "Button",
+                        "opacity": 255,
+                        "opacityModifyRGB": false,
+                        "position": {
+                            "x": 388,
+                            "y": 415
+                        },
+                        "rotationSkewX": 45,
+                        "rotationSkewY": 45,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "skewX": 0,
+                        "skewY": 0,
+                        "tag": -1
+                    }
+                },
+                "object_type": "Button"
+            },
+            {
+                "children": [
+                    {
+                        "children": [],
+                        "object": {
+                            "node": {
+                                "anchorPoint": {
+                                    "x": 0.5,
+                                    "y": 0.5
+                                },
+                                "cascadeOpacityEnabled": true,
+                                "color": {
+                                    "b": 255,
+                                    "g": 255,
+                                    "r": 255
+                                },
+                                "contentSize": {
+                                    "h": 109,
+                                    "w": 51
+                                },
+                                "globalZOrder": 0,
+                                "localZOrder": 0,
+                                "name": "grossini_dance_08",
+                                "opacity": 255,
+                                "opacityModifyRGB": false,
+                                "position": {
+                                    "x": 110.0,
+                                    "y": 144
+                                },
+                                "rotationSkewX": 0,
+                                "rotationSkewY": 0,
+                                "scaleX": 1,
+                                "scaleY": 1,
+                                "skewX": 0,
+                                "skewY": 0,
+                                "tag": -1
+                            },
+                            "setCenterRectNormalized": "Rect(0,0,1,1)",
+                            "setSpriteFrame": "grossini_dance_08"
+                        },
+                        "object_type": "Sprite"
+                    },
+                    {
+                        "children": [],
+                        "object": {
+                            "node": {
+                                "anchorPoint": {
+                                    "x": 0,
+                                    "y": 1
+                                },
+                                "cascadeOpacityEnabled": true,
+                                "color": {
+                                    "b": 255,
+                                    "g": 255,
+                                    "r": 255
+                                },
+                                "contentSize": {
+                                    "h": 60,
+                                    "w": 131.33
+                                },
+                                "globalZOrder": 0,
+                                "localZOrder": 0,
+                                "name": "item",
+                                "opacity": 255,
+                                "opacityModifyRGB": false,
+                                "position": {
+                                    "x": 46.0,
+                                    "y": 387
+                                },
+                                "rotationSkewX": 0,
+                                "rotationSkewY": 0,
+                                "scaleX": 1,
+                                "scaleY": 1,
+                                "skewX": 0,
+                                "skewY": 0,
+                                "tag": -1
+                            },
+                            "setHorizontalAlignment": "TextHAlignment::CENTER",
+                            "setVerticalAlignment": "TextVAlignment::TOP"
+                        },
+                        "object_type": "Label"
+                    },
+                    {
+                        "children": [
+                            {
+                                "children": [],
+                                "object": {
+                                    "node": {
+                                        "anchorPoint": {
+                                            "x": 0.5,
+                                            "y": 0.5
+                                        },
+                                        "cascadeOpacityEnabled": true,
+                                        "color": {
+                                            "b": 0,
+                                            "g": 0,
+                                            "r": 0
+                                        },
+                                        "contentSize": {
+                                            "h": 40,
+                                            "w": 100
+                                        },
+                                        "globalZOrder": 0,
+                                        "localZOrder": 0,
+                                        "name": "Label",
+                                        "opacity": 255,
+                                        "opacityModifyRGB": false,
+                                        "position": {
+                                            "x": 0,
+                                            "y": 0
+                                        },
+                                        "rotationSkewX": 0,
+                                        "rotationSkewY": 0,
+                                        "scaleX": 1,
+                                        "scaleY": 1,
+                                        "skewX": 0,
+                                        "skewY": 0,
+                                        "tag": -1
+                                    },
+                                    "setHorizontalAlignment": "TextHAlignment::CENTER",
+                                    "setVerticalAlignment": "TextVAlignment::CENTER"
+                                },
+                                "object_type": "Label"
+                            }
+                        ],
+                        "object": {
+                            "ignoreContentAdaptWithSize": "false",
+                            "node": {
+                                "anchorPoint": {
+                                    "x": 0.5,
+                                    "y": 0.5
+                                },
+                                "cascadeOpacityEnabled": true,
+                                "color": {
+                                    "b": 255,
+                                    "g": 255,
+                                    "r": 255
+                                },
+                                "contentSize": {
+                                    "h": 40,
+                                    "w": 100
+                                },
+                                "globalZOrder": 0,
+                                "localZOrder": 0,
+                                "name": "Button",
+                                "opacity": 255,
+                                "opacityModifyRGB": false,
+                                "position": {
+                                    "x": 113.0,
+                                    "y": 290
+                                },
+                                "rotationSkewX": 0,
+                                "rotationSkewY": 0,
+                                "scaleX": 1,
+                                "scaleY": 1,
+                                "skewX": 0,
+                                "skewY": 0,
+                                "tag": -1
+                            }
+                        },
+                        "object_type": "Button"
+                    }
+                ],
+                "object": {
+                    "node": {
+                        "anchorPoint": {
+                            "x": 0.5,
+                            "y": 0.5
+                        },
+                        "cascadeOpacityEnabled": true,
+                        "color": {
+                            "b": 108,
+                            "g": 108,
+                            "r": 122
+                        },
+                        "contentSize": {
+                            "h": 250,
+                            "w": 240
+                        },
+                        "globalZOrder": 0,
+                        "localZOrder": 0,
+                        "name": "scrollViewMama",
+                        "opacity": 255,
+                        "opacityModifyRGB": false,
+                        "position": {
+                            "x": 668,
+                            "y": 280
+                        },
+                        "rotationSkewX": 0,
+                        "rotationSkewY": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "skewX": 0,
+                        "skewY": 0,
+                        "tag": -1
+                    },
+                    "setBackGroundImage": "\"default_panel\", ui::Widget::TextureResType::PLIST",
+                    "setBackGroundImageColor": {
+                        "b": 108,
+                        "g": 108,
+                        "r": 122
+                    },
+                    "setBackGroundImageScale9Enabled": "true",
+                    "setBounceEnabled": true,
+                    "setDirection": "ui::ScrollView::Direction::VERTICAL",
+                    "setInnerContainerSize": {
+                        "h": 400,
+                        "w": 220
+                    }
+                },
+                "object_type": "ScrollView"
+            },
+            {
+                "children": [
+                    {
+                        "children": [],
+                        "object": {
+                            "node": {
+                                "anchorPoint": {
+                                    "x": 0.5,
+                                    "y": 0.5
+                                },
+                                "cascadeOpacityEnabled": true,
+                                "color": {
+                                    "b": 255,
+                                    "g": 255,
+                                    "r": 255
+                                },
+                                "contentSize": {
+                                    "h": 116,
+                                    "w": 50
+                                },
+                                "globalZOrder": 0,
+                                "localZOrder": 0,
+                                "name": "grossinis_sister1",
+                                "opacity": 255,
+                                "opacityModifyRGB": false,
+                                "position": {
+                                    "x": 91.0,
+                                    "y": 99
+                                },
+                                "rotationSkewX": 0,
+                                "rotationSkewY": 0,
+                                "scaleX": 1,
+                                "scaleY": 1,
+                                "skewX": 0,
+                                "skewY": 0,
+                                "tag": -1
+                            },
+                            "setCenterRectNormalized": "Rect(0,0,1,1)",
+                            "setSpriteFrame": "grossinis_sister1.png"
+                        },
+                        "object_type": "Sprite"
+                    },
+                    {
+                        "children": [],
+                        "object": {
+                            "node": {
+                                "anchorPoint": {
+                                    "x": 0.5,
+                                    "y": 0.5
+                                },
+                                "cascadeOpacityEnabled": true,
+                                "color": {
+                                    "b": 255,
+                                    "g": 255,
+                                    "r": 255
+                                },
+                                "contentSize": {
+                                    "h": 130,
+                                    "w": 55
+                                },
+                                "globalZOrder": 0,
+                                "localZOrder": 0,
+                                "name": "grossinis_sister2",
+                                "opacity": 255,
+                                "opacityModifyRGB": false,
+                                "position": {
+                                    "x": 154.0,
+                                    "y": 101
+                                },
+                                "rotationSkewX": 0,
+                                "rotationSkewY": 0,
+                                "scaleX": 1,
+                                "scaleY": 1,
+                                "skewX": 0,
+                                "skewY": 0,
+                                "tag": -1
+                            },
+                            "setCenterRectNormalized": "Rect(0,0,1,1)",
+                            "setSpriteFrame": "grossinis_sister2.png"
+                        },
+                        "object_type": "Sprite"
+                    },
+                    {
+                        "children": [],
+                        "object": {
+                            "node": {
+                                "anchorPoint": {
+                                    "x": 0.5,
+                                    "y": 0.5
+                                },
+                                "cascadeOpacityEnabled": true,
+                                "color": {
+                                    "b": 255,
+                                    "g": 255,
+                                    "r": 255
+                                },
+                                "contentSize": {
+                                    "h": 116,
+                                    "w": 50
+                                },
+                                "globalZOrder": 0,
+                                "localZOrder": 0,
+                                "name": "grossinis_sister1",
+                                "opacity": 255,
+                                "opacityModifyRGB": false,
+                                "position": {
+                                    "x": 215.0,
+                                    "y": 93
+                                },
+                                "rotationSkewX": 0,
+                                "rotationSkewY": 0,
+                                "scaleX": 1,
+                                "scaleY": 1,
+                                "skewX": 0,
+                                "skewY": 0,
+                                "tag": -1
+                            },
+                            "setCenterRectNormalized": "Rect(0,0,1,1)",
+                            "setSpriteFrame": "grossinis_sister1.png"
+                        },
+                        "object_type": "Sprite"
+                    },
+                    {
+                        "children": [],
+                        "object": {
+                            "node": {
+                                "anchorPoint": {
+                                    "x": 0.5,
+                                    "y": 0.5
+                                },
+                                "cascadeOpacityEnabled": true,
+                                "color": {
+                                    "b": 255,
+                                    "g": 255,
+                                    "r": 255
+                                },
+                                "contentSize": {
+                                    "h": 130,
+                                    "w": 55
+                                },
+                                "globalZOrder": 0,
+                                "localZOrder": 0,
+                                "name": "grossinis_sister2",
+                                "opacity": 255,
+                                "opacityModifyRGB": false,
+                                "position": {
+                                    "x": 279.0,
+                                    "y": 96
+                                },
+                                "rotationSkewX": 0,
+                                "rotationSkewY": 0,
+                                "scaleX": 1,
+                                "scaleY": 1,
+                                "skewX": 0,
+                                "skewY": 0,
+                                "tag": -1
+                            },
+                            "setCenterRectNormalized": "Rect(0,0,1,1)",
+                            "setSpriteFrame": "grossinis_sister2.png"
+                        },
+                        "object_type": "Sprite"
+                    },
+                    {
+                        "children": [],
+                        "object": {
+                            "node": {
+                                "anchorPoint": {
+                                    "x": 0.5,
+                                    "y": 0.5
+                                },
+                                "cascadeOpacityEnabled": true,
+                                "color": {
+                                    "b": 255,
+                                    "g": 255,
+                                    "r": 255
+                                },
+                                "contentSize": {
+                                    "h": 116,
+                                    "w": 50
+                                },
+                                "globalZOrder": 0,
+                                "localZOrder": 0,
+                                "name": "grossinis_sister1",
+                                "opacity": 255,
+                                "opacityModifyRGB": false,
+                                "position": {
+                                    "x": 334.0,
+                                    "y": 96
+                                },
+                                "rotationSkewX": 0,
+                                "rotationSkewY": 0,
+                                "scaleX": 1,
+                                "scaleY": 1,
+                                "skewX": 0,
+                                "skewY": 0,
+                                "tag": -1
+                            },
+                            "setCenterRectNormalized": "Rect(0,0,1,1)",
+                            "setSpriteFrame": "grossinis_sister1.png"
+                        },
+                        "object_type": "Sprite"
+                    }
+                ],
+                "object": {
+                    "node": {
+                        "anchorPoint": {
+                            "x": 0.5,
+                            "y": 0.5
+                        },
+                        "cascadeOpacityEnabled": true,
+                        "color": {
+                            "b": 100,
+                            "g": 100,
+                            "r": 235
+                        },
+                        "contentSize": {
+                            "h": 200,
+                            "w": 240
+                        },
+                        "globalZOrder": 0,
+                        "localZOrder": 0,
+                        "name": "scrollView",
+                        "opacity": 255,
+                        "opacityModifyRGB": false,
+                        "position": {
+                            "x": 107,
+                            "y": 132
+                        },
+                        "rotationSkewX": 45,
+                        "rotationSkewY": 45,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "skewX": 0,
+                        "skewY": 0,
+                        "tag": -1
+                    },
+                    "setBackGroundImage": "\"default_panel\", ui::Widget::TextureResType::PLIST",
+                    "setBackGroundImageColor": {
+                        "b": 100,
+                        "g": 100,
+                        "r": 235
+                    },
+                    "setBackGroundImageScale9Enabled": "true",
+                    "setBounceEnabled": true,
+                    "setDirection": "ui::ScrollView::Direction::HORIZONTAL",
+                    "setInnerContainerSize": {
+                        "h": 200,
+                        "w": 400
+                    }
+                },
+                "object_type": "ScrollView"
+            },
+            {
+                "children": [
+                    {
+                        "children": [
+                            {
+                                "children": [],
+                                "object": {
+                                    "node": {
+                                        "anchorPoint": {
+                                            "x": 0.5,
+                                            "y": 0.5
+                                        },
+                                        "cascadeOpacityEnabled": true,
+                                        "color": {
+                                            "b": 0,
+                                            "g": 0,
+                                            "r": 0
+                                        },
+                                        "contentSize": {
+                                            "h": 40,
+                                            "w": 100
+                                        },
+                                        "globalZOrder": 0,
+                                        "localZOrder": 0,
+                                        "name": "Label",
+                                        "opacity": 255,
+                                        "opacityModifyRGB": false,
+                                        "position": {
+                                            "x": 0,
+                                            "y": 0
+                                        },
+                                        "rotationSkewX": 0,
+                                        "rotationSkewY": 0,
+                                        "scaleX": 1,
+                                        "scaleY": 1,
+                                        "skewX": 0,
+                                        "skewY": 0,
+                                        "tag": -1
+                                    },
+                                    "setHorizontalAlignment": "TextHAlignment::CENTER",
+                                    "setVerticalAlignment": "TextVAlignment::CENTER"
+                                },
+                                "object_type": "Label"
+                            }
+                        ],
+                        "object": {
+                            "ignoreContentAdaptWithSize": "false",
+                            "node": {
+                                "anchorPoint": {
+                                    "x": 0.5,
+                                    "y": 0.5
+                                },
+                                "cascadeOpacityEnabled": true,
+                                "color": {
+                                    "b": 255,
+                                    "g": 255,
+                                    "r": 255
+                                },
+                                "contentSize": {
+                                    "h": 40,
+                                    "w": 100
+                                },
+                                "globalZOrder": 0,
+                                "localZOrder": 0,
+                                "name": "Button",
+                                "opacity": 255,
+                                "opacityModifyRGB": false,
+                                "position": {
+                                    "x": 334.0,
+                                    "y": 96
+                                },
+                                "rotationSkewX": 0,
+                                "rotationSkewY": 0,
+                                "scaleX": 1,
+                                "scaleY": 1,
+                                "skewX": 0,
+                                "skewY": 0,
+                                "tag": -1
+                            }
+                        },
+                        "object_type": "Button"
+                    },
+                    {
+                        "children": [
+                            {
+                                "children": [],
+                                "object": {
+                                    "node": {
+                                        "anchorPoint": {
+                                            "x": 0.5,
+                                            "y": 0.5
+                                        },
+                                        "cascadeOpacityEnabled": true,
+                                        "color": {
+                                            "b": 0,
+                                            "g": 0,
+                                            "r": 0
+                                        },
+                                        "contentSize": {
+                                            "h": 40,
+                                            "w": 100
+                                        },
+                                        "globalZOrder": 0,
+                                        "localZOrder": 0,
+                                        "name": "Label",
+                                        "opacity": 255,
+                                        "opacityModifyRGB": false,
+                                        "position": {
+                                            "x": 0,
+                                            "y": 0
+                                        },
+                                        "rotationSkewX": 0,
+                                        "rotationSkewY": 0,
+                                        "scaleX": 1,
+                                        "scaleY": 1,
+                                        "skewX": 0,
+                                        "skewY": 0,
+                                        "tag": -1
+                                    },
+                                    "setHorizontalAlignment": "TextHAlignment::CENTER",
+                                    "setVerticalAlignment": "TextVAlignment::CENTER"
+                                },
+                                "object_type": "Label"
+                            }
+                        ],
+                        "object": {
+                            "ignoreContentAdaptWithSize": "false",
+                            "node": {
+                                "anchorPoint": {
+                                    "x": 0.5,
+                                    "y": 0.5
+                                },
+                                "cascadeOpacityEnabled": true,
+                                "color": {
+                                    "b": 255,
+                                    "g": 255,
+                                    "r": 255
+                                },
+                                "contentSize": {
+                                    "h": 40,
+                                    "w": 100
+                                },
+                                "globalZOrder": 0,
+                                "localZOrder": 0,
+                                "name": "Button",
+                                "opacity": 255,
+                                "opacityModifyRGB": false,
+                                "position": {
+                                    "x": 234.0,
+                                    "y": 134
+                                },
+                                "rotationSkewX": 0,
+                                "rotationSkewY": 0,
+                                "scaleX": 1,
+                                "scaleY": 1,
+                                "skewX": 0,
+                                "skewY": 0,
+                                "tag": -1
+                            }
+                        },
+                        "object_type": "Button"
+                    },
+                    {
+                        "children": [
+                            {
+                                "children": [],
+                                "object": {
+                                    "node": {
+                                        "anchorPoint": {
+                                            "x": 0.5,
+                                            "y": 0.5
+                                        },
+                                        "cascadeOpacityEnabled": true,
+                                        "color": {
+                                            "b": 0,
+                                            "g": 0,
+                                            "r": 0
+                                        },
+                                        "contentSize": {
+                                            "h": 40,
+                                            "w": 100
+                                        },
+                                        "globalZOrder": 0,
+                                        "localZOrder": 0,
+                                        "name": "Label",
+                                        "opacity": 255,
+                                        "opacityModifyRGB": false,
+                                        "position": {
+                                            "x": 0,
+                                            "y": 0
+                                        },
+                                        "rotationSkewX": 0,
+                                        "rotationSkewY": 0,
+                                        "scaleX": 1,
+                                        "scaleY": 1,
+                                        "skewX": 0,
+                                        "skewY": 0,
+                                        "tag": -1
+                                    },
+                                    "setHorizontalAlignment": "TextHAlignment::CENTER",
+                                    "setVerticalAlignment": "TextVAlignment::CENTER"
+                                },
+                                "object_type": "Label"
+                            }
+                        ],
+                        "object": {
+                            "ignoreContentAdaptWithSize": "false",
+                            "node": {
+                                "anchorPoint": {
+                                    "x": 0.5,
+                                    "y": 0.5
+                                },
+                                "cascadeOpacityEnabled": true,
+                                "color": {
+                                    "b": 255,
+                                    "g": 255,
+                                    "r": 255
+                                },
+                                "contentSize": {
+                                    "h": 40,
+                                    "w": 100
+                                },
+                                "globalZOrder": 0,
+                                "localZOrder": 0,
+                                "name": "Button",
+                                "opacity": 255,
+                                "opacityModifyRGB": false,
+                                "position": {
+                                    "x": 135.0,
+                                    "y": 173
+                                },
+                                "rotationSkewX": 0,
+                                "rotationSkewY": 0,
+                                "scaleX": 1,
+                                "scaleY": 1,
+                                "skewX": 0,
+                                "skewY": 0,
+                                "tag": -1
+                            }
+                        },
+                        "object_type": "Button"
+                    },
+                    {
+                        "children": [
+                            {
+                                "children": [],
+                                "object": {
+                                    "node": {
+                                        "anchorPoint": {
+                                            "x": 0.5,
+                                            "y": 0.5
+                                        },
+                                        "cascadeOpacityEnabled": true,
+                                        "color": {
+                                            "b": 0,
+                                            "g": 0,
+                                            "r": 0
+                                        },
+                                        "contentSize": {
+                                            "h": 40,
+                                            "w": 100
+                                        },
+                                        "globalZOrder": 0,
+                                        "localZOrder": 0,
+                                        "name": "Label",
+                                        "opacity": 255,
+                                        "opacityModifyRGB": false,
+                                        "position": {
+                                            "x": 0,
+                                            "y": 0
+                                        },
+                                        "rotationSkewX": 0,
+                                        "rotationSkewY": 0,
+                                        "scaleX": 1,
+                                        "scaleY": 1,
+                                        "skewX": 0,
+                                        "skewY": 0,
+                                        "tag": -1
+                                    },
+                                    "setHorizontalAlignment": "TextHAlignment::CENTER",
+                                    "setVerticalAlignment": "TextVAlignment::CENTER"
+                                },
+                                "object_type": "Label"
+                            }
+                        ],
+                        "object": {
+                            "ignoreContentAdaptWithSize": "false",
+                            "node": {
+                                "anchorPoint": {
+                                    "x": 0.5,
+                                    "y": 0.5
+                                },
+                                "cascadeOpacityEnabled": true,
+                                "color": {
+                                    "b": 255,
+                                    "g": 255,
+                                    "r": 255
+                                },
+                                "contentSize": {
+                                    "h": 40,
+                                    "w": 100
+                                },
+                                "globalZOrder": 0,
+                                "localZOrder": 0,
+                                "name": "Button",
+                                "opacity": 255,
+                                "opacityModifyRGB": false,
+                                "position": {
+                                    "x": 36.0,
+                                    "y": 138
+                                },
+                                "rotationSkewX": 0,
+                                "rotationSkewY": 0,
+                                "scaleX": 1,
+                                "scaleY": 1,
+                                "skewX": 0,
+                                "skewY": 0,
+                                "tag": -1
+                            }
+                        },
+                        "object_type": "Button"
+                    },
+                    {
+                        "children": [
+                            {
+                                "children": [],
+                                "object": {
+                                    "node": {
+                                        "anchorPoint": {
+                                            "x": 0.5,
+                                            "y": 0.5
+                                        },
+                                        "cascadeOpacityEnabled": true,
+                                        "color": {
+                                            "b": 0,
+                                            "g": 0,
+                                            "r": 0
+                                        },
+                                        "contentSize": {
+                                            "h": 40,
+                                            "w": 100
+                                        },
+                                        "globalZOrder": 0,
+                                        "localZOrder": 0,
+                                        "name": "Label",
+                                        "opacity": 255,
+                                        "opacityModifyRGB": false,
+                                        "position": {
+                                            "x": 0,
+                                            "y": 0
+                                        },
+                                        "rotationSkewX": 0,
+                                        "rotationSkewY": 0,
+                                        "scaleX": 1,
+                                        "scaleY": 1,
+                                        "skewX": 0,
+                                        "skewY": 0,
+                                        "tag": -1
+                                    },
+                                    "setHorizontalAlignment": "TextHAlignment::CENTER",
+                                    "setVerticalAlignment": "TextVAlignment::CENTER"
+                                },
+                                "object_type": "Label"
+                            }
+                        ],
+                        "object": {
+                            "ignoreContentAdaptWithSize": "false",
+                            "node": {
+                                "anchorPoint": {
+                                    "x": 0.5,
+                                    "y": 0.5
+                                },
+                                "cascadeOpacityEnabled": true,
+                                "color": {
+                                    "b": 255,
+                                    "g": 255,
+                                    "r": 255
+                                },
+                                "contentSize": {
+                                    "h": 40,
+                                    "w": 100
+                                },
+                                "globalZOrder": 0,
+                                "localZOrder": 0,
+                                "name": "Button",
+                                "opacity": 255,
+                                "opacityModifyRGB": false,
+                                "position": {
+                                    "x": 234.0,
+                                    "y": 59
+                                },
+                                "rotationSkewX": 0,
+                                "rotationSkewY": 0,
+                                "scaleX": 1,
+                                "scaleY": 1,
+                                "skewX": 0,
+                                "skewY": 0,
+                                "tag": -1
+                            }
+                        },
+                        "object_type": "Button"
+                    },
+                    {
+                        "children": [
+                            {
+                                "children": [],
+                                "object": {
+                                    "node": {
+                                        "anchorPoint": {
+                                            "x": 0.5,
+                                            "y": 0.5
+                                        },
+                                        "cascadeOpacityEnabled": true,
+                                        "color": {
+                                            "b": 0,
+                                            "g": 0,
+                                            "r": 0
+                                        },
+                                        "contentSize": {
+                                            "h": 40,
+                                            "w": 100
+                                        },
+                                        "globalZOrder": 0,
+                                        "localZOrder": 0,
+                                        "name": "Label",
+                                        "opacity": 255,
+                                        "opacityModifyRGB": false,
+                                        "position": {
+                                            "x": 0,
+                                            "y": 0
+                                        },
+                                        "rotationSkewX": 0,
+                                        "rotationSkewY": 0,
+                                        "scaleX": 1,
+                                        "scaleY": 1,
+                                        "skewX": 0,
+                                        "skewY": 0,
+                                        "tag": -1
+                                    },
+                                    "setHorizontalAlignment": "TextHAlignment::CENTER",
+                                    "setVerticalAlignment": "TextVAlignment::CENTER"
+                                },
+                                "object_type": "Label"
+                            }
+                        ],
+                        "object": {
+                            "ignoreContentAdaptWithSize": "false",
+                            "node": {
+                                "anchorPoint": {
+                                    "x": 0.5,
+                                    "y": 0.5
+                                },
+                                "cascadeOpacityEnabled": true,
+                                "color": {
+                                    "b": 255,
+                                    "g": 255,
+                                    "r": 255
+                                },
+                                "contentSize": {
+                                    "h": 40,
+                                    "w": 100
+                                },
+                                "globalZOrder": 0,
+                                "localZOrder": 0,
+                                "name": "Button",
+                                "opacity": 255,
+                                "opacityModifyRGB": false,
+                                "position": {
+                                    "x": 135.0,
+                                    "y": 19
+                                },
+                                "rotationSkewX": 0,
+                                "rotationSkewY": 0,
+                                "scaleX": 1,
+                                "scaleY": 1,
+                                "skewX": 0,
+                                "skewY": 0,
+                                "tag": -1
+                            }
+                        },
+                        "object_type": "Button"
+                    },
+                    {
+                        "children": [],
+                        "object": {
+                            "node": {
+                                "anchorPoint": {
+                                    "x": 0.5,
+                                    "y": 0.5
+                                },
+                                "cascadeOpacityEnabled": true,
+                                "color": {
+                                    "b": 255,
+                                    "g": 255,
+                                    "r": 255
+                                },
+                                "contentSize": {
+                                    "h": 116,
+                                    "w": 50
+                                },
+                                "globalZOrder": 0,
+                                "localZOrder": 0,
+                                "name": "grossinis_sister1",
+                                "opacity": 255,
+                                "opacityModifyRGB": false,
+                                "position": {
+                                    "x": 129.0,
+                                    "y": 100
+                                },
+                                "rotationSkewX": 0,
+                                "rotationSkewY": 0,
+                                "scaleX": 1,
+                                "scaleY": 1,
+                                "skewX": 0,
+                                "skewY": 0,
+                                "tag": -1
+                            },
+                            "setCenterRectNormalized": "Rect(0,0,1,1)",
+                            "setSpriteFrame": "grossinis_sister1.png"
+                        },
+                        "object_type": "Sprite"
+                    }
+                ],
+                "object": {
+                    "node": {
+                        "anchorPoint": {
+                            "x": 0.5,
+                            "y": 0.5
+                        },
+                        "cascadeOpacityEnabled": true,
+                        "color": {
+                            "b": 61,
+                            "g": 255,
+                            "r": 0
+                        },
+                        "contentSize": {
+                            "h": 150,
+                            "w": 240
+                        },
+                        "globalZOrder": 0,
+                        "localZOrder": 0,
+                        "name": "scrollView",
+                        "opacity": 255,
+                        "opacityModifyRGB": false,
+                        "position": {
+                            "x": 667,
+                            "y": 77
+                        },
+                        "rotationSkewX": 0,
+                        "rotationSkewY": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "skewX": 0,
+                        "skewY": 0,
+                        "tag": -1
+                    },
+                    "setBackGroundImage": "\"default_panel\", ui::Widget::TextureResType::PLIST",
+                    "setBackGroundImageColor": {
+                        "b": 61,
+                        "g": 255,
+                        "r": 0
+                    },
+                    "setBackGroundImageScale9Enabled": "true",
+                    "setBounceEnabled": true,
+                    "setDirection": "ui::ScrollView::Direction::BOTH",
+                    "setInnerContainerSize": {
+                        "h": 200,
+                        "w": 400
+                    }
+                },
+                "object_type": "ScrollView"
+            },
+            {
+                "children": [],
+                "object": {
+                    "fontColor": {
+                        "b": 51,
+                        "g": 255,
+                        "r": 0
+                    },
+                    "fontSize": 29,
+                    "inputFlag": "ui::EditBox::InputFlag::LOWERCASE_ALL_CHARACTERS",
+                    "inputMode": "ui::EditBox::InputMode::SINGLE_LINE",
+                    "maxLength": 14,
+                    "node": {
+                        "anchorPoint": {
+                            "x": 0.5,
+                            "y": 0.5
+                        },
+                        "cascadeOpacityEnabled": true,
+                        "color": {
+                            "b": 255,
+                            "g": 255,
+                            "r": 255
+                        },
+                        "contentSize": {
+                            "h": 40,
+                            "w": 200
+                        },
+                        "globalZOrder": 0,
+                        "localZOrder": 0,
+                        "name": "New Editbox",
+                        "opacity": 255,
+                        "opacityModifyRGB": false,
+                        "position": {
+                            "x": 927,
+                            "y": 286
+                        },
+                        "rotationSkewX": 270,
+                        "rotationSkewY": 270,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "skewX": 0,
+                        "skewY": 0,
+                        "tag": -1
+                    },
+                    "placeHolder": "Enter text here...",
+                    "placeholderFontColor": {
+                        "b": 127.5,
+                        "g": 127.5,
+                        "r": 127.5
+                    },
+                    "placeholderFontSize": 20,
+                    "returnType": "ui::EditBox::KeyboardReturnType::DEFAULT",
+                    "text": "Hello World"
+                },
+                "object_type": "EditBox"
+            },
+            {
+                "children": [],
+                "object": {
+                    "fontColor": {
+                        "b": 0,
+                        "g": 0,
+                        "r": 255
+                    },
+                    "fontSize": 29,
+                    "inputFlag": "ui::EditBox::InputFlag::LOWERCASE_ALL_CHARACTERS",
+                    "inputMode": "ui::EditBox::InputMode::EMAIL_ADDRESS",
+                    "maxLength": 40,
+                    "node": {
+                        "anchorPoint": {
+                            "x": 0.5,
+                            "y": 0.5
+                        },
+                        "cascadeOpacityEnabled": true,
+                        "color": {
+                            "b": 255,
+                            "g": 255,
+                            "r": 255
+                        },
+                        "contentSize": {
+                            "h": 40,
+                            "w": 320
+                        },
+                        "globalZOrder": 0,
+                        "localZOrder": 0,
+                        "name": "New Editbox",
+                        "opacity": 255,
+                        "opacityModifyRGB": false,
+                        "position": {
+                            "x": 670,
+                            "y": 451
+                        },
+                        "rotationSkewX": 0,
+                        "rotationSkewY": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "skewX": 0,
+                        "skewY": 0,
+                        "tag": -1
+                    },
+                    "placeHolder": "Enter your email",
+                    "placeholderFontColor": {
+                        "b": 255,
+                        "g": 5,
+                        "r": 15
+                    },
+                    "placeholderFontSize": 20,
+                    "returnType": "ui::EditBox::KeyboardReturnType::DEFAULT",
+                    "text": ""
+                },
+                "object_type": "EditBox"
+            },
+            {
+                "children": [],
+                "object": {
+                    "fontColor": {
+                        "b": 0,
+                        "g": 0,
+                        "r": 0
+                    },
+                    "fontSize": 29,
+                    "inputFlag": "ui::EditBox::InputFlag::PASSWORD",
+                    "inputMode": "ui::EditBox::InputMode::SINGLE_LINE",
+                    "maxLength": 16,
+                    "node": {
+                        "anchorPoint": {
+                            "x": 0.5,
+                            "y": 0.5
+                        },
+                        "cascadeOpacityEnabled": true,
+                        "color": {
+                            "b": 255,
+                            "g": 255,
+                            "r": 255
+                        },
+                        "contentSize": {
+                            "h": 40,
+                            "w": 240
+                        },
+                        "globalZOrder": 0,
+                        "localZOrder": 0,
+                        "name": "New Editbox",
+                        "opacity": 255,
+                        "opacityModifyRGB": false,
+                        "position": {
+                            "x": 925,
+                            "y": 514
+                        },
+                        "rotationSkewX": 90,
+                        "rotationSkewY": 90,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "skewX": 0,
+                        "skewY": 0,
+                        "tag": -1
+                    },
+                    "placeHolder": "Enter your password",
+                    "placeholderFontColor": {
+                        "b": 131,
+                        "g": 141,
+                        "r": 19
+                    },
+                    "placeholderFontSize": 20,
+                    "returnType": "ui::EditBox::KeyboardReturnType::DEFAULT",
+                    "text": ""
+                },
+                "object_type": "EditBox"
+            },
+            {
+                "children": [
+                    {
+                        "children": [],
+                        "object": {
+                            "node": {
+                                "anchorPoint": {
+                                    "x": 0,
+                                    "y": 0.5
+                                },
+                                "cascadeOpacityEnabled": true,
+                                "color": {
+                                    "b": 255,
+                                    "g": 255,
+                                    "r": 255
+                                },
+                                "contentSize": {
+                                    "h": 15,
+                                    "w": 50
+                                },
+                                "globalZOrder": 0,
+                                "localZOrder": 0,
+                                "name": "bar",
+                                "opacity": 255,
+                                "opacityModifyRGB": false,
+                                "position": {
+                                    "x": -50,
+                                    "y": 0
+                                },
+                                "rotationSkewX": 0,
+                                "rotationSkewY": 0,
+                                "scaleX": 1,
+                                "scaleY": 1,
+                                "skewX": 0,
+                                "skewY": 0,
+                                "tag": -1
+                            },
+                            "setSpriteFrame": "default_progressbar"
+                        },
+                        "object_type": "Sprite"
+                    }
+                ],
+                "object": {
+                    "node": {
+                        "anchorPoint": {
+                            "x": 0.5,
+                            "y": 0.5
+                        },
+                        "cascadeOpacityEnabled": true,
+                        "color": {
+                            "b": 255,
+                            "g": 255,
+                            "r": 255
+                        },
+                        "contentSize": {
+                            "h": 15,
+                            "w": 100
+                        },
+                        "globalZOrder": 0,
+                        "localZOrder": 0,
+                        "name": "progressBar",
+                        "opacity": 255,
+                        "opacityModifyRGB": false,
+                        "position": {
+                            "x": 111,
+                            "y": 586
+                        },
+                        "rotationSkewX": 0,
+                        "rotationSkewY": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "skewX": 0,
+                        "skewY": 0,
+                        "tag": -1
+                    },
+                    "setPercent": 50.0
+                },
+                "object_type": "ProgressBar"
+            }
+        ],
+        "object": {
+            "node": {
+                "anchorPoint": {
+                    "x": 0,
+                    "y": 0
+                },
+                "cascadeOpacityEnabled": true,
+                "color": {
+                    "b": 255,
+                    "g": 255,
+                    "r": 255
+                },
+                "contentSize": {
+                    "h": 0,
+                    "w": 0
+                },
+                "globalZOrder": 0,
+                "localZOrder": 0,
+                "opacity": 255,
+                "opacityModifyRGB": false,
+                "tag": -1
+            }
+        },
+        "object_type": "Scene"
+    },
+    "version": "1.0"
+}

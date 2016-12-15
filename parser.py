@@ -15,6 +15,12 @@ import getopt
 from sets import Set
 import re
 
+DEBUG = False
+
+def log(s):
+    if DEBUG:
+        print(s)
+
 
 __docformat__ = 'restructuredtext'
 
@@ -62,9 +68,6 @@ class State(object):
     # filename of the .fire file to parse
     def __init__(self):
         self._filename = ""
-        # File objects to dump the cpp/h data
-        self._file_cpp = None
-        self._file_h = None
 
         # Needed resources
         self._resources_needed = set()
@@ -132,9 +135,9 @@ class Node(object):
         node_components = [x['__type__'] for x in components]
         for supported in supported_components:
             if supported in node_components:
-                print("Choosen %s from %s" % (supported, node_components))
+                log("Choosen %s from %s" % (supported, node_components))
                 return supported
-        print("Unknown components: %s" % node_components)
+        log("Unknown components: %s" % node_components)
         return 'unknown'
 
     @classmethod
@@ -176,49 +179,43 @@ class Node(object):
     def __init__(self, data):
         self._node_data = data
         self._children = []
+        self._jsonNode = {
+                'object':None,
+                'object_type':None,
+                'children': []
+                }
         self._properties = {}
 
         data = self._node_data
-        self.add_property_size('setContentSize', "_contentSize", data)
-        self.add_property_bool('setEnabled', "_enabled", data)
-        self.add_property_str('setName', "_name", data)
-        self.add_property_vec2('setAnchorPoint', "_anchorPoint", data)
-        self.add_property_bool('setCascadeOpacityEnabled', "_cascadeOpacityEnabled", data)
-        self.add_property_rgb('setColor', "_color", data)
-        self.add_property_int('setGlobalZOrder', "_globalZOrder", data)
-        self.add_property_int('setLocalZOrder', "_localZOrder", data)
-        self.add_property_int('setOpacity', "_opacity" , data)
-        self.add_property_bool('setOpacityModifyRGB', "_opacityModifyRGB", data)
-        self.add_property_vec2('setPosition', "_position", data)
-        self.add_property_int('setRotationSkewX', "_rotationX", data)
-        self.add_property_int('setRotationSkewY', "_rotationY", data)
-        self.add_property_int('setScaleX', "_scaleX", data)
-        self.add_property_int('setScaleY', "_scaleY", data)
-        self.add_property_int('setSkewX', "_skewX", data)
-        self.add_property_int('setSkewY', "_skewY", data)
-        self.add_property_int('setTag', "_tag", data)
-
-
-        self._cpp_node_name = ""
-        self._cpp_parent_name = ""
-
-    def add_property(self, newkey, value, keys_to_parse):
-        if value in self._node_data:
-            new_value = self._node_data.get(value)
-            if keys_to_parse is not None:
-                new_value = [new_value[k] for k in keys_to_parse]
-            self._properties[newkey] = new_value
+        self.add_property_size('contentSize', "_contentSize", data)
+        self.add_property_bool('enabled', "_enabled", data)
+        self.add_property_str('name', "_name", data)
+        self.add_property_vec2('anchorPoint', "_anchorPoint", data)
+        self.add_property_bool('cascadeOpacityEnabled', "_cascadeOpacityEnabled", data)
+        self.add_property_rgb('color', "_color", data)
+        self.add_property_int('globalZOrder', "_globalZOrder", data)
+        self.add_property_int('localZOrder', "_localZOrder", data)
+        self.add_property_int('opacity', "_opacity" , data)
+        self.add_property_bool('opacityModifyRGB', "_opacityModifyRGB", data)
+        self.add_property_vec2('position', "_position", data)
+        self.add_property_int('rotationSkewX', "_rotationX", data)
+        self.add_property_int('rotationSkewY', "_rotationY", data)
+        self.add_property_int('scaleX', "_scaleX", data)
+        self.add_property_int('scaleY', "_scaleY", data)
+        self.add_property_int('skewX', "_skewX", data)
+        self.add_property_int('skewY', "_skewY", data)
+        self.add_property_int('tag', "_tag", data)
 
     def add_property_str(self, newkey, value, data):
         if value in data:
             new_value = data.get(value)
-            self._properties[newkey] = '"' + new_value + '"'
+            self._properties[newkey] = new_value
 
     def add_property_size(self, newkey, value, data):
         if value in data:
             w = data.get(value)['width']
             h = data.get(value)['height']
-            self._properties[newkey] = 'Size(%g, %g)' % (w,h)
+            self._properties[newkey] = {'w':w, 'h':h}
 
     def add_property_int(self, newkey, value, data):
         if value in data:
@@ -229,19 +226,18 @@ class Node(object):
         if value in data:
             x = data.get(value)['x']
             y = data.get(value)['y']
-            self._properties[newkey] = 'Vec2(%g, %g)' % (x,y)
+            self._properties[newkey] = {'x':x, 'y':y}
 
     def add_property_rgb(self, newkey, value, data):
         if value in data:
             r = data.get(value)['r']
             g = data.get(value)['g']
             b = data.get(value)['b']
-            self._properties[newkey] = 'Color3B(%d, %d, %d)' %(r,g,b)
+            self._properties[newkey] = {'r':r, 'g':g, 'b':b}
 
     def add_property_bool(self, newkey, value, data):
         if value in data:
-            b = str(data.get(value)).lower()
-            self._properties[newkey] = b
+            self._properties[newkey] = data.get(value)
 
     def get_class_name(self):
         return type(self).__name__
@@ -265,47 +261,44 @@ class Node(object):
         self._children.append(node)
 
     def print_scene_graph(self, tab):
-        print(self.get_description(tab))
+        log(self.get_description(tab))
         for child in self._children:
             child.print_scene_graph(tab+2)
 
     def get_description(self, tab):
         return "%s%s" % ('-' * tab, self.get_class_name())
 
-    def to_cpp(self, parent, depth, sibling_idx):
-        self.to_cpp_begin(depth, sibling_idx)
-        self.to_cpp_properties()
-        self.to_cpp_end()
-        if parent is not None:
-            parent.to_cpp_add_child(self)
+    #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    #
+    # JSON
+    #
+    #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    def to_json(self, depth, sibling_idx):
+        self.to_json_begin(depth, sibling_idx)
+        self.to_json_properties()
+        self.to_json_end()
 
         for idx, child in enumerate(self._children):
-            child.to_cpp(self, depth+1, idx)
+            jsonChild = child.to_json(depth+1, idx)
+            if jsonChild is not None:
+                self._jsonNode['children'].append(jsonChild)
 
-    def to_cpp_begin(self, depth, sibling_idx):
-        state = State.Instance()
-        state._file_cpp.write("    // New node\n")
-        self._cpp_node_name = "%s_%d" % (self.get_class_name().lower(), state._unique_id)
-        self._cpp_node_name = self._cpp_node_name.replace(':','')
-        state._unique_id = state._unique_id + 1
-        state._file_cpp.write("    auto %s = %s::%s;\n" % (self._cpp_node_name, self.get_class_name(), self.to_cpp_create_params()))
+        return self._jsonNode
 
-    def to_cpp_properties(self):
-        for p in self._properties:
-            value = self._properties[p]
-            State.Instance()._file_cpp.write("    %s->%s(%s);\n" % (self._cpp_node_name, p, value))
+    def to_json_begin(self, depth, sibling_idx):
+        pass
 
-    def to_cpp_end(self):
+    def to_json_properties(self):
+        self._jsonNode['object'] = self._properties
+
+    def to_json_end(self):
         '''epilogue'''
 
-    def to_cpp_add_child(self, child):
+    def to_json_add_child(self, child):
         '''adds a child to self'''
-        state = State.Instance()
-        state._file_cpp.write("    %s->addChild(%s);\n" % (self._cpp_node_name, child._cpp_node_name))
-        state._file_cpp.write("")
 
-    def to_cpp_create_params(self):
-        return "create()"
+    def to_json_create_params(self):
+        return 'create()'
 
     def adjust_child_parameters(self, child):
         '''Only useful when a parent wants to override some child parameter
@@ -322,6 +315,11 @@ class Scene(Node):
     def __init__(self, data):
         super(Scene, self).__init__(data)
 
+        self._jsonNode['object_type'] = 'Scene'
+
+        # Move Node properties into 'node' and clean _properties
+        self._properties = {'node': self._properties}
+
 
 class Canvas(Node):
     def __init__(self, data):
@@ -335,12 +333,9 @@ class Canvas(Node):
         state._fit_width = component['_fitWidth']
         state._fit_height = component['_fitHeight']
 
+        # Canvas... treat it as a Node
+        self._jsonNode['object_type'] = 'Node'
 
-    # Canvas should be part of the big init
-    # but as as part of the scene graph
-    # since cocos2d-x doesn't have this concept
-    def to_cpp(self, parent, depth, sibling_idx):
-        pass
 
 ################################################################################
 #
@@ -353,6 +348,10 @@ class Sprite(Node):
     def __init__(self, data):
         super(Sprite, self).__init__(data)
         self._sprite_type = Sprite.SIMPLE
+        self._jsonNode['object_type'] = 'Sprite'
+
+        # Move Node properties into 'node' and clean _properties
+        self._properties = {'node': self._properties}
 
     def parse_properties(self):
         super(Sprite, self).parse_properties()
@@ -366,9 +365,9 @@ class Sprite(Node):
 #        atlas = component['_atlas']
 
         # add name between ""
-        print(state._sprite_frames[sprite_frame_uuid])
+        log(state._sprite_frames[sprite_frame_uuid])
         self.add_property_str('setSpriteFrame', 'frameName', state._sprite_frames[sprite_frame_uuid])
-        print(state._sprite_frames[sprite_frame_uuid])
+        log(state._sprite_frames[sprite_frame_uuid])
 
         self._sprite_type = component['_type']
         if self._sprite_type == Sprite.SIMPLE:
@@ -377,10 +376,10 @@ class Sprite(Node):
     def get_description(self, tab):
         return "%s%s('%s')" % ('-' * tab, self.get_class_name(), self._properties['setSpriteFrame'])
 
-    def to_cpp_end(self):
-        super(Sprite, self).to_cpp_end()
-        if self._sprite_type == Sprite.TILED:
-            State.Instance()._file_cpp.write("    creator_tile_sprite(%s);\n" % self._cpp_node_name)
+    def to_json_end(self):
+        super(Sprite, self).to_json_end()
+        #if self._sprite_type == Sprite.TILED:
+        #    State.Instance()._file_cpp.write("    creator_tile_sprite(%s);\n" % self._cpp_node_name)
 
 
 class Label(Node):
@@ -394,6 +393,10 @@ class Label(Node):
         self._label_text = ""
         self._font_type = Label.FONT_SYSTEM
         self._font_filename = None
+        self._jsonNode['object_type'] = 'Label'
+
+        # Move Node properties into 'node' and clean _properties
+        self._properties = {'node': self._properties}
 
     def parse_properties(self):
         super(Label, self).parse_properties()
@@ -427,7 +430,7 @@ class Label(Node):
             # needed for multiline. lineHeight not supported in SystemFONT
             self.add_property_int('setLineHeight' ,'_lineHeight', component)
 
-    def to_cpp_create_params(self):
+    def to_json_create_params(self):
         state = State.Instance()
         if self._font_type == Label.FONT_SYSTEM:
             return 'createWithSystemFont("' + self._label_text + '", "arial", ' + str(self._font_size) + ')'
@@ -451,10 +454,15 @@ class ParticleSystem(Node):
         # tag it as needed resourse
         State.Instance()._resources_needed.add(self._particle_system_file)
 
+        self._jsonNode['object_type'] = 'Particle'
+
+        # Move Node properties into 'node' and clean _properties
+        self._properties = {'node':self._properties}
+
     def get_class_name(self):
         return 'ParticleSystemQuad'
 
-    def to_cpp_create_params(self):
+    def to_json_create_params(self):
         return 'create("' + State.Instance()._assetpath + self._particle_system_file + '")'
 
 
@@ -469,12 +477,16 @@ class TiledMap(Node):
         State.Instance()._resources_needed.add(self._tmx_file)
 
         # for some reason, changing the contentSize breaks the TMX
-        del self._properties['setContentSize']
+        del self._properties['contentSize']
+        self._jsonNode['object_type'] = 'TileMap'
+
+        # Move Node properties into 'node' and clean _properties
+        self._properties = {'node': self._properties}
 
     def get_class_name(self):
         return 'TMXTiledMap'
 
-    def to_cpp_create_params(self):
+    def to_json_create_params(self):
         return 'create("' + State.Instance()._assetpath + self._tmx_file + '")'
 
 
@@ -507,6 +519,10 @@ class Button(Node):
 
     def __init__(self, data):
         super(Button, self).__init__(data)
+        self._jsonNode['object_type'] = 'Button'
+
+        # Move Node properties into 'node' and clean _properties
+        self._properties = {'node': self._properties}
 
     def parse_properties(self):
         super(Button, self).parse_properties()
@@ -518,17 +534,19 @@ class Button(Node):
         self._normalSprite = Node.get_filepath_from_uuid(but_component['_N$normalSprite']['__uuid__'])
         self._properties['ignoreContentAdaptWithSize'] = 'false'
 
+
     def get_class_name(self):
         return 'ui::Button'
 
-    def to_cpp_create_params(self):
+    def to_json_create_params(self):
         return 'create("%s", "", "", ui::Widget::TextureResType::PLIST)' % self._normalSprite
 
-    def to_cpp_add_child(self, child):
-        state = State.Instance()
-        # replaces addChild() with setTitleLabel()
-        state._file_cpp.write("    %s->setTitleLabel(%s);\n" % (self._cpp_node_name, child._cpp_node_name))
-        state._file_cpp.write("")
+    def to_json_add_child(self, child):
+        pass
+        #state = State.Instance()
+        ## replaces addChild() with setTitleLabel()
+        #state._file_cpp.write("    %s->setTitleLabel(%s);\n" % (self._cpp_node_name, child._cpp_node_name))
+        #state._file_cpp.write("")
 
 
 class EditBox(Node):
@@ -573,6 +591,10 @@ class EditBox(Node):
 
     def __init__(self, data):
         super(EditBox, self).__init__(data)
+        self._jsonNode['object_type'] = 'EditBox'
+
+        # Move Node properties into 'node' and clean _properties
+        self._properties = {'node': self._properties}
 
     def parse_properties(self):
         super(EditBox, self).parse_properties()
@@ -580,22 +602,22 @@ class EditBox(Node):
         # search for sprite frame name
         component = Node.get_node_component_of_type(self._node_data, 'cc.EditBox')
         self._backgroundImage = Node.get_filepath_from_uuid(component['_N$backgroundImage']['__uuid__'])
-        self._properties['setReturnType'] = EditBox.RETURN_TYPE[component['_N$returnType']]
-        self._properties['setInputFlag'] = EditBox.INPUT_FLAG[component['_N$inputFlag']]
-        self._properties['setInputMode'] = EditBox.INPUT_MODE[component['_N$inputMode']]
-        self.add_property_int('setFontSize', '_N$fontSize', component)
+        self._properties['returnType'] = EditBox.RETURN_TYPE[component['_N$returnType']]
+        self._properties['inputFlag'] = EditBox.INPUT_FLAG[component['_N$inputFlag']]
+        self._properties['inputMode'] = EditBox.INPUT_MODE[component['_N$inputMode']]
+        self.add_property_int('fontSize', '_N$fontSize', component)
 #        self.add_property_int('setLineHeight', '_N$lineHeight', component)
-        self.add_property_rgb('setFontColor', '_N$fontColor', component)
-        self.add_property_str('setPlaceHolder', '_N$placeholder', component)
-        self.add_property_int('setPlaceholderFontSize', '_N$placeholderFontSize', component)
-        self.add_property_rgb('setPlaceholderFontColor', '_N$placeholderFontColor', component)
-        self.add_property_int('setMaxLength', '_N$maxLength', component)
-        self.add_property_str('setText', '_string', component)
+        self.add_property_rgb('fontColor', '_N$fontColor', component)
+        self.add_property_str('placeHolder', '_N$placeholder', component)
+        self.add_property_int('placeholderFontSize', '_N$placeholderFontSize', component)
+        self.add_property_rgb('placeholderFontColor', '_N$placeholderFontColor', component)
+        self.add_property_int('maxLength', '_N$maxLength', component)
+        self.add_property_str('text', '_string', component)
 
     def get_class_name(self):
         return 'ui::EditBox'
 
-    def to_cpp_create_params(self):
+    def to_json_create_params(self):
         s = self._node_data['_contentSize']
         w = s['width']
         h = s['height']
@@ -610,6 +632,13 @@ class ProgressBar(Node):
     # "_N$progress": 0.5,
     # "_N$reverse": false
 
+    def __init__(self, data):
+        super(ProgressBar, self).__init__(data)
+        self._jsonNode['object_type'] = 'ProgressBar'
+
+        # Move Node properties into 'node' and clean _properties
+        self._properties = {'node': self._properties}
+
     def parse_properties(self):
         super(ProgressBar, self).parse_properties()
 
@@ -621,7 +650,7 @@ class ProgressBar(Node):
     def get_class_name(self):
         return 'ui::LoadingBar'
 
-    def to_cpp_create_params(self):
+    def to_json_create_params(self):
         return 'create()'
 
 
@@ -640,6 +669,13 @@ class ScrollView(Node):
 
     # for the sprites used internally
     SIMPLE, SLICED, TILED, FILLED = range(4)
+
+    def __init__(self, data):
+        super(ScrollView, self).__init__(data)
+        self._jsonNode['object_type'] = 'ScrollView'
+
+        # Move Node properties into 'node' and clean _properties
+        self._properties = {'node': self._properties}
 
     def get_content_node(self):
         state = State.Instance()
@@ -731,33 +767,30 @@ class ScrollView(Node):
     def get_class_name(self):
         return 'ui::ScrollView'
 
-    def to_cpp_create_params(self):
+    def to_json_create_params(self):
         return 'create()'
 
-    def to_cpp_end(self):
-        super(ScrollView, self).to_cpp_end()
+    def to_json_end(self):
+        super(ScrollView, self).to_json_end()
         # FIXME: Call setJumpToPercent at the end, because it depens
         # on having the contentSize correct
-        # FIXME: uses the anchorPoint for the percent in the bar, but 
+        # FIXME: uses the anchorPoint for the percent in the bar, but
         # this migh break if it changes the position of the bar
         # content node
-        state = State.Instance()
-        state._file_cpp.write("    %s->jumpToPercentVertical(%g * 100);\n" % (self._cpp_node_name, (1-self._content_ap['y'])))
-        state._file_cpp.write("    %s->jumpToPercentHorizontal(%g * 100);\n" % (self._cpp_node_name, self._content_ap['x']))
+        #state = State.Instance()
+        #state._file_cpp.write("    %s->jumpToPercentVertical(%g * 100);\n" % (self._cpp_node_name, (1-self._content_ap['y'])))
+        #state._file_cpp.write("    %s->jumpToPercentHorizontal(%g * 100);\n" % (self._cpp_node_name, self._content_ap['x']))
 
 
     def adjust_child_parameters(self, child):
         # FIXME: adjust child position since innerContainer doesn't honor
         # position and anchorPoit.
-        pos = child._properties['setPosition']
-        g = re.match('Vec2\(([-+]?[0-9]*\.?[0-9]+), ([-+]?[0-9]*\.?[0-9]+)\)', pos)
-        if g is not None:
-            x = float(g.group(1))
-            y = float(g.group(2))
-            child._properties['setPosition'] = "Vec2(%g, %g)" % (x + self._content_size['width'] * self._content_ap['x'],
-                    y + self._content_size['height'] * self._content_ap['y'])
-        else:
-            raise Exception("Could not parse position: %s" % pos)
+        pos = child._properties['node']['position']
+        x = pos['x']
+        y = pos['y']
+        child._properties['node']['position'] = {
+                'x': x + self._content_size['width'] * self._content_ap['x'],
+                'y': y + self._content_size['height'] * self._content_ap['y'] }
 
 
 ################################################################################
@@ -768,12 +801,14 @@ class ScrollView(Node):
 class FireParser(object):
     def __init__(self):
         self._state = State.Instance()
+        self._json_file = None
+        self._json_output = {'version':'1.0', 'root':{}}
 
     def populate_meta_files(self, path):
         metas1 = glob.glob(path + '/*.meta')
         metas2 = glob.glob('temp/*/*/*.meta')
         metas = metas1 + metas2
-        print(metas)
+        log(metas)
         for meta_filename in metas:
             with open(meta_filename) as fd:
                 basename = os.path.basename(meta_filename)
@@ -799,7 +834,7 @@ class FireParser(object):
                             texture_uuid = submetas[spriteframename]['rawTextureUuid']
                             self._state._textures[texture_uuid] = os.path.basename(meta_filename[:-5])
                         else:
-                            print('Framename "%s" doesn\'t have rawTextureUuid. Ignoring it...' % submetas[spriteframename]['frameName'])
+                            log('Framename "%s" doesn\'t have rawTextureUuid. Ignoring it...' % submetas[spriteframename]['frameName'])
 
                         if j_data['type'] == 'sprite':
                             self._state._sprite_without_atlas[uuid] = submetas[spriteframename]
@@ -815,105 +850,23 @@ class FireParser(object):
             State.Instance()._uuid = json.load(data)
 
 
-    def to_cpp_setup(self):
-        header = """
-    USING_NS_CC;
-
-    bool %s_init()
-    {""" % self._state._filename
-
-        footer = """
-        return true;
-    }
-    """
-        self._state._file_cpp.write(header)
-        self.to_cpp_setup_design_resolution()
-        self.to_cpp_setup_sprite_frames()
-        self._state._file_cpp.write(footer)
+    def to_json_setup(self):
+        self.to_json_setup_design_resolution()
+        self.to_json_setup_sprite_frames()
 
 
-    def to_cpp_setup_design_resolution(self):
-        self._state = State.Instance()
-        design_resolution_exact_fit = """
-        auto director = Director::getInstance();
-        auto glview = director->getOpenGLView();
-        glview->setDesignResolutionSize(%d, %d, ResolutionPolicy::EXACT_FIT);
-    """ % ( self._state._design_resolution['width'], self._state._design_resolution['height'])
-
-        design_resolution = """
-        auto director = Director::getInstance();
-        auto glview = director->getOpenGLView();
-        auto frameSize = glview->getFrameSize();
-        glview->setDesignResolutionSize(%s, %s, ResolutionPolicy::NO_BORDER);
-    """
-
-        if self._state._fit_height and self._state._fit_width:
-            self._state._file_cpp.write(design_resolution_exact_fit)
-        elif self._state._fit_height:
-            expanded = design_resolution % (
-                    "frameSize.width / (frameSize.height / %d)" % self._state._design_resolution['height'],
-                    "frameSize.height / (frameSize.height / %d)" % self._state._design_resolution['height'])
-            self._state._file_cpp.write(expanded)
-        elif self._state._fit_width:
-            expanded = design_resolution % (
-                    "frameSize.width / (frameSize.width / %d)" % self._state._design_resolution['width'],
-                    "frameSize.height / (frameSize.width / %d)" % self._state._design_resolution['width'])
-            self._state._file_cpp.write(expanded)
-        else:
-            expanded = design_resolution % (
-                    str(self._state._design_resolution['width']),
-                    str(self._state._design_resolution['height']))
-            self._state._file_cpp.write(expanded)
+    def to_json_setup_design_resolution(self):
+        self._json_output['designResolution'] = {'w': self._state._design_resolution['height'],
+                                                 'h': self._state._design_resolution['width']}
+        self._json_output['resolutionFitWidth'] = self._state._fit_width
+        self._json_output['resolutionFitHeight'] = self._state._fit_height
 
 
-    def to_cpp_setup_sprite_frames(self):
-        self._state = State.Instance()
-        self._state._file_cpp.write('\n    // BEGIN SpriteFrame loading\n')
-        self._state._file_cpp.write('    auto spriteFrameCache = SpriteFrameCache::getInstance();\n')
-
-        self._state._file_cpp.write('    // Files from .plist\n')
-        for k in Set(self._state._sprite_with_atlas):
-            self._state._file_cpp.write('    // %s processed manually. No need to include it in the assets folder\n' % (self._state._assetpath + k))
-            #self._state._file_cpp.write('    spriteFrameCache->addSpriteFramesWithFile("%s");\n' % (self._state._assetpath + k))
-
-        self._state._file_cpp.write('\n    // Files from .png\n')
-        for k in self._state._sprite_without_atlas:
-            sprite_frame = self._state._sprite_frames[k]
-            if 'rawTextureUuid' in sprite_frame:
-                texture_filename = Node.get_filepath_from_uuid(sprite_frame['rawTextureUuid'])
-
-                original_frame_name = sprite_frame['frameName']
-                sprite_frame_name = original_frame_name.replace('-','_')
-                sprite_frame_name = sprite_frame_name.replace('.','_')
-                cpp_sprite_frame = '    auto sf_%s = SpriteFrame::create("%s", Rect(%g, %g, %g, %g), %s, Vec2(%g, %g), Size(%g, %g));\n' % (
-                        sprite_frame_name,
-                        self._state._assetpath + texture_filename,
-                        sprite_frame['trimX'], sprite_frame['trimY'], sprite_frame['width'], sprite_frame['height'],
-                        str(sprite_frame['rotated']).lower(),
-                        sprite_frame['offsetX'], sprite_frame['offsetY'],
-                        sprite_frame['rawWidth'], sprite_frame['rawHeight'])
-                self._state._file_cpp.write(cpp_sprite_frame)
-
-                # does it have a capInsets?
-                if sprite_frame['borderTop'] != 0 or sprite_frame['borderBottom'] != 0 or sprite_frame['borderLeft'] != 0 or sprite_frame['borderRight'] != 0:
-                    x = sprite_frame['borderLeft']
-                    y = sprite_frame['borderTop']
-                    w = sprite_frame['width'] - sprite_frame['borderRight'] - x
-                    h = sprite_frame['height'] - sprite_frame['borderBottom'] - y
-                    self._state._file_cpp.write('    sf_%s->setCenterRectInPixels(Rect(%d,%d,%d,%d));\n' % (
-                        sprite_frame_name,
-                        x, y, w, h
-                        ))
-                self._state._file_cpp.write('    spriteFrameCache->addSpriteFrame(sf_%s, "%s");\n' % (
-                    sprite_frame_name,
-                    original_frame_name))
-            else:
-                print("Ignoring '%s'... No rawTextureUuid" % sprite_frame['frameName'])
-        self._state._file_cpp.write('    // END SpriteFrame loading\n')
+    def to_json_setup_sprite_frames(self):
+        pass
 
 
     def create_file(self, filename):
-
         if not os.path.exists(os.path.dirname(filename)):
             try:
                 os.makedirs(os.path.dirname(filename))
@@ -927,11 +880,9 @@ class FireParser(object):
 
         self._state._assetpath = assetpath
         self._state._filename = os.path.splitext(os.path.basename(filename))[0]
-        cpp_name = "cpp/%s.cpp" % self._state._filename
-        h_name = "cpp/%s.h" % self._state._filename
+        json_name = "json/%s.json" % self._state._filename
 
-        self._state._file_cpp = self.create_file(cpp_name)
-        self._state._file_h = self.create_file(h_name)
+        self._json_file = self.create_file(json_name)
 
         path = os.path.dirname(filename)
         # 1st
@@ -942,7 +893,7 @@ class FireParser(object):
         with open(filename) as data_file:
             self._state._json_data = json.load(data_file)
 
-        print("total elements: %d" % len(self._state._json_data))
+        log("total elements: %d" % len(self._state._json_data))
         for i,obj in enumerate(self._state._json_data):
             if obj["__type__"] == "cc.SceneAsset":
                 scenes = obj["scene"]
@@ -951,31 +902,15 @@ class FireParser(object):
                 scene_obj.parse_properties()
     #            scene_obj.print_scene_graph(0)
 
-                # cpp file
-                self._state._file_cpp.write("////// AUTOGENERATED:BEGIN //////\n")
-                self._state._file_cpp.write("////// DO     NOT     EDIT //////\n")
-                self._state._file_cpp.write("\n#include <ui/CocosGUI.h>\n")
-                self._state._file_cpp.write('#include "creator_utils.h"\n')
-                self.to_cpp_setup()
-                self._state._file_cpp.write("Node* %s_create()\n{\n" % self._state._filename)
-                scene_obj.to_cpp(None,0,0)
-                self._state._file_cpp.write("    return scene_0;\n}\n")
-                self._state._file_cpp.write("////// AUTOGENERATED:END//////\n")
+                self.to_json_setup()
+                jsonNode = scene_obj.to_json(0,0)
+                self._json_output['root'] = jsonNode
 
-                # header file
-                header = """
-    ////// AUTOGENERATED:BEGIN //////
-    ////// DO     NOT     EDIT //////
-    #pragma once
-
-    #include <cocos2d.h>
-
-    bool %s_init();
-    cocos2d::Node* %s_create();
-
-    ////// AUTOGENERATED:END//////
-    """ % (self._state._filename, self._state._filename)
-                self._state._file_h.write(header)
+        dump = json.dumps(self._json_output,
+                sort_keys=True,
+                indent=4,
+                separators=(',', ': '))
+        self._json_file.write(dump)
 
 
 def help():

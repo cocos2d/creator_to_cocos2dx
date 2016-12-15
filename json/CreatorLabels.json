@@ -1,0 +1,278 @@
+{
+    "designResolution": {
+        "h": 960,
+        "w": 640
+    },
+    "resolutionFitHeight": true,
+    "resolutionFitWidth": false,
+    "root": {
+        "children": [
+            {
+                "children": [],
+                "object": {
+                    "anchorPoint": {
+                        "x": 0.5,
+                        "y": 0.5
+                    },
+                    "cascadeOpacityEnabled": true,
+                    "color": {
+                        "b": 255,
+                        "g": 255,
+                        "r": 255
+                    },
+                    "contentSize": {
+                        "h": 640,
+                        "w": 960
+                    },
+                    "globalZOrder": 0,
+                    "localZOrder": 0,
+                    "name": "Canvas",
+                    "opacity": 255,
+                    "opacityModifyRGB": false,
+                    "position": {
+                        "x": 480,
+                        "y": 320
+                    },
+                    "rotationSkewX": 0,
+                    "rotationSkewY": 0,
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "skewX": 0,
+                    "skewY": 0,
+                    "tag": -1
+                },
+                "object_type": "Node"
+            },
+            {
+                "children": [],
+                "object": {
+                    "node": {
+                        "anchorPoint": {
+                            "x": 0.5,
+                            "y": 0.5
+                        },
+                        "cascadeOpacityEnabled": true,
+                        "color": {
+                            "b": 0,
+                            "g": 255,
+                            "r": 0
+                        },
+                        "contentSize": {
+                            "h": 40,
+                            "w": 320.17
+                        },
+                        "globalZOrder": 0,
+                        "localZOrder": 0,
+                        "name": "Label",
+                        "opacity": 255,
+                        "opacityModifyRGB": false,
+                        "position": {
+                            "x": 186,
+                            "y": 117
+                        },
+                        "rotationSkewX": 0,
+                        "rotationSkewY": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "skewX": 0,
+                        "skewY": 0,
+                        "tag": -1
+                    },
+                    "setHorizontalAlignment": "TextHAlignment::CENTER",
+                    "setVerticalAlignment": "TextVAlignment::CENTER"
+                },
+                "object_type": "Label"
+            },
+            {
+                "children": [],
+                "object": {
+                    "node": {
+                        "anchorPoint": {
+                            "x": 1,
+                            "y": 1
+                        },
+                        "cascadeOpacityEnabled": true,
+                        "color": {
+                            "b": 255,
+                            "g": 0,
+                            "r": 71
+                        },
+                        "contentSize": {
+                            "h": 47.5,
+                            "w": 280
+                        },
+                        "globalZOrder": 0,
+                        "localZOrder": 0,
+                        "name": "arial16",
+                        "opacity": 255,
+                        "opacityModifyRGB": false,
+                        "position": {
+                            "x": 300,
+                            "y": 71
+                        },
+                        "rotationSkewX": 0,
+                        "rotationSkewY": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "skewX": 0,
+                        "skewY": 0,
+                        "tag": -1
+                    },
+                    "setBMFontSize": 40,
+                    "setHorizontalAlignment": "TextHAlignment::LEFT",
+                    "setLineHeight": 19,
+                    "setVerticalAlignment": "TextVAlignment::TOP"
+                },
+                "object_type": "Label"
+            },
+            {
+                "children": [],
+                "object": {
+                    "node": {
+                        "anchorPoint": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "cascadeOpacityEnabled": true,
+                        "color": {
+                            "b": 0,
+                            "g": 0,
+                            "r": 255
+                        },
+                        "contentSize": {
+                            "h": 64,
+                            "w": 748.47
+                        },
+                        "globalZOrder": 0,
+                        "localZOrder": 0,
+                        "name": "A Damn Mess",
+                        "opacity": 255,
+                        "opacityModifyRGB": false,
+                        "position": {
+                            "x": 21,
+                            "y": 181
+                        },
+                        "rotationSkewX": 0,
+                        "rotationSkewY": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "skewX": 0,
+                        "skewY": 0,
+                        "tag": -1
+                    },
+                    "setHorizontalAlignment": "TextHAlignment::LEFT",
+                    "setLineHeight": 64,
+                    "setVerticalAlignment": "TextVAlignment::TOP"
+                },
+                "object_type": "Label"
+            },
+            {
+                "children": [],
+                "object": {
+                    "node": {
+                        "anchorPoint": {
+                            "x": 0.5,
+                            "y": 0.5
+                        },
+                        "cascadeOpacityEnabled": true,
+                        "color": {
+                            "b": 0,
+                            "g": 133,
+                            "r": 255
+                        },
+                        "contentSize": {
+                            "h": 144,
+                            "w": 222.81
+                        },
+                        "globalZOrder": 0,
+                        "localZOrder": 0,
+                        "name": "A Damn Mess",
+                        "opacity": 255,
+                        "opacityModifyRGB": false,
+                        "position": {
+                            "x": 472,
+                            "y": 84
+                        },
+                        "rotationSkewX": 0,
+                        "rotationSkewY": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "skewX": 0,
+                        "skewY": 0,
+                        "tag": -1
+                    },
+                    "setHorizontalAlignment": "TextHAlignment::LEFT",
+                    "setLineHeight": 48,
+                    "setVerticalAlignment": "TextVAlignment::CENTER"
+                },
+                "object_type": "Label"
+            },
+            {
+                "children": [],
+                "object": {
+                    "node": {
+                        "anchorPoint": {
+                            "x": 0.5,
+                            "y": 0.5
+                        },
+                        "cascadeOpacityEnabled": true,
+                        "color": {
+                            "b": 0,
+                            "g": 224,
+                            "r": 255
+                        },
+                        "contentSize": {
+                            "h": 192,
+                            "w": 259.06
+                        },
+                        "globalZOrder": 0,
+                        "localZOrder": 0,
+                        "name": "A Damn Mess",
+                        "opacity": 255,
+                        "opacityModifyRGB": false,
+                        "position": {
+                            "x": 730,
+                            "y": 102
+                        },
+                        "rotationSkewX": 0,
+                        "rotationSkewY": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "skewX": 0,
+                        "skewY": 0,
+                        "tag": -1
+                    },
+                    "setHorizontalAlignment": "TextHAlignment::RIGHT",
+                    "setLineHeight": 64,
+                    "setVerticalAlignment": "TextVAlignment::CENTER"
+                },
+                "object_type": "Label"
+            }
+        ],
+        "object": {
+            "node": {
+                "anchorPoint": {
+                    "x": 0,
+                    "y": 0
+                },
+                "cascadeOpacityEnabled": true,
+                "color": {
+                    "b": 255,
+                    "g": 255,
+                    "r": 255
+                },
+                "contentSize": {
+                    "h": 0,
+                    "w": 0
+                },
+                "globalZOrder": 0,
+                "localZOrder": 0,
+                "opacity": 255,
+                "opacityModifyRGB": false,
+                "tag": -1
+            }
+        },
+        "object_type": "Scene"
+    },
+    "version": "1.0"
+}

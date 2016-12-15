@@ -1,0 +1,305 @@
+{
+    "designResolution": {
+        "h": 960,
+        "w": 640
+    },
+    "resolutionFitHeight": true,
+    "resolutionFitWidth": false,
+    "root": {
+        "children": [
+            {
+                "children": [],
+                "object": {
+                    "anchorPoint": {
+                        "x": 0.5,
+                        "y": 0.5
+                    },
+                    "cascadeOpacityEnabled": true,
+                    "color": {
+                        "b": 255,
+                        "g": 255,
+                        "r": 255
+                    },
+                    "contentSize": {
+                        "h": 640,
+                        "w": 960
+                    },
+                    "globalZOrder": 0,
+                    "localZOrder": 0,
+                    "name": "Canvas",
+                    "opacity": 255,
+                    "opacityModifyRGB": false,
+                    "position": {
+                        "x": 480,
+                        "y": 320
+                    },
+                    "rotationSkewX": 0,
+                    "rotationSkewY": 0,
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "skewX": 0,
+                    "skewY": 0,
+                    "tag": -1
+                },
+                "object_type": "Node"
+            },
+            {
+                "children": [],
+                "object": {
+                    "node": {
+                        "anchorPoint": {
+                            "x": 0.5,
+                            "y": 0.5
+                        },
+                        "cascadeOpacityEnabled": true,
+                        "color": {
+                            "b": 255,
+                            "g": 255,
+                            "r": 255
+                        },
+                        "globalZOrder": 0,
+                        "localZOrder": 0,
+                        "name": "iso-test",
+                        "opacity": 255,
+                        "opacityModifyRGB": false,
+                        "position": {
+                            "x": 494,
+                            "y": 231
+                        },
+                        "rotationSkewX": 0,
+                        "rotationSkewY": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "skewX": 0,
+                        "skewY": 0,
+                        "tag": -1
+                    }
+                },
+                "object_type": "TileMap"
+            },
+            {
+                "children": [],
+                "object": {
+                    "node": {
+                        "anchorPoint": {
+                            "x": 0.5,
+                            "y": 0.5
+                        },
+                        "cascadeOpacityEnabled": true,
+                        "color": {
+                            "b": 255,
+                            "g": 255,
+                            "r": 255
+                        },
+                        "contentSize": {
+                            "h": 0,
+                            "w": 0
+                        },
+                        "globalZOrder": 0,
+                        "localZOrder": 0,
+                        "name": "Galaxy",
+                        "opacity": 255,
+                        "opacityModifyRGB": false,
+                        "position": {
+                            "x": 115,
+                            "y": 251
+                        },
+                        "rotationSkewX": 0,
+                        "rotationSkewY": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "skewX": 0,
+                        "skewY": 0,
+                        "tag": -1
+                    }
+                },
+                "object_type": "Particle"
+            },
+            {
+                "children": [],
+                "object": {
+                    "node": {
+                        "anchorPoint": {
+                            "x": 0.5,
+                            "y": 0.5
+                        },
+                        "cascadeOpacityEnabled": true,
+                        "color": {
+                            "b": 255,
+                            "g": 255,
+                            "r": 255
+                        },
+                        "contentSize": {
+                            "h": 121,
+                            "w": 85
+                        },
+                        "globalZOrder": 0,
+                        "localZOrder": 0,
+                        "name": "New Sprite (Splash)",
+                        "opacity": 255,
+                        "opacityModifyRGB": false,
+                        "position": {
+                            "x": 263,
+                            "y": 542
+                        },
+                        "rotationSkewX": 0,
+                        "rotationSkewY": 0,
+                        "scaleX": 2,
+                        "scaleY": 3,
+                        "skewX": 0,
+                        "skewY": 0,
+                        "tag": -1
+                    },
+                    "setCenterRectNormalized": "Rect(0,0,1,1)",
+                    "setSpriteFrame": "grossini_dance_08"
+                },
+                "object_type": "Sprite"
+            },
+            {
+                "children": [],
+                "object": {
+                    "node": {
+                        "anchorPoint": {
+                            "x": 0.5,
+                            "y": 0.5
+                        },
+                        "cascadeOpacityEnabled": true,
+                        "color": {
+                            "b": 255,
+                            "g": 255,
+                            "r": 255
+                        },
+                        "contentSize": {
+                            "h": 121,
+                            "w": 85
+                        },
+                        "globalZOrder": 0,
+                        "localZOrder": 0,
+                        "name": "grossini_dance_08",
+                        "opacity": 255,
+                        "opacityModifyRGB": false,
+                        "position": {
+                            "x": 100,
+                            "y": 407
+                        },
+                        "rotationSkewX": 0,
+                        "rotationSkewY": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "skewX": 0,
+                        "skewY": 0,
+                        "tag": -1
+                    },
+                    "setCenterRectNormalized": "Rect(0,0,1,1)",
+                    "setSpriteFrame": "grossini_dance_08"
+                },
+                "object_type": "Sprite"
+            },
+            {
+                "children": [],
+                "object": {
+                    "node": {
+                        "anchorPoint": {
+                            "x": 0.5,
+                            "y": 0.5
+                        },
+                        "cascadeOpacityEnabled": true,
+                        "color": {
+                            "b": 255,
+                            "g": 255,
+                            "r": 255
+                        },
+                        "contentSize": {
+                            "h": 40,
+                            "w": 244.55
+                        },
+                        "globalZOrder": 0,
+                        "localZOrder": 0,
+                        "name": "Label_1",
+                        "opacity": 255,
+                        "opacityModifyRGB": false,
+                        "position": {
+                            "x": 437,
+                            "y": 606
+                        },
+                        "rotationSkewX": 0,
+                        "rotationSkewY": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "skewX": 0,
+                        "skewY": 0,
+                        "tag": -1
+                    },
+                    "setHorizontalAlignment": "TextHAlignment::CENTER",
+                    "setVerticalAlignment": "TextVAlignment::CENTER"
+                },
+                "object_type": "Label"
+            },
+            {
+                "children": [],
+                "object": {
+                    "node": {
+                        "anchorPoint": {
+                            "x": 0.5,
+                            "y": 0.5
+                        },
+                        "cascadeOpacityEnabled": true,
+                        "color": {
+                            "b": 255,
+                            "g": 255,
+                            "r": 255
+                        },
+                        "contentSize": {
+                            "h": 40,
+                            "w": 357.97
+                        },
+                        "globalZOrder": 0,
+                        "localZOrder": 0,
+                        "name": "Label_2",
+                        "opacity": 255,
+                        "opacityModifyRGB": false,
+                        "position": {
+                            "x": 107,
+                            "y": 289
+                        },
+                        "rotationSkewX": 0,
+                        "rotationSkewY": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "skewX": 0,
+                        "skewY": 0,
+                        "tag": -1
+                    },
+                    "setHorizontalAlignment": "TextHAlignment::CENTER",
+                    "setVerticalAlignment": "TextVAlignment::CENTER"
+                },
+                "object_type": "Label"
+            }
+        ],
+        "object": {
+            "node": {
+                "anchorPoint": {
+                    "x": 0,
+                    "y": 0
+                },
+                "cascadeOpacityEnabled": true,
+                "color": {
+                    "b": 255,
+                    "g": 255,
+                    "r": 255
+                },
+                "contentSize": {
+                    "h": 0,
+                    "w": 0
+                },
+                "globalZOrder": 0,
+                "localZOrder": 0,
+                "opacity": 255,
+                "opacityModifyRGB": false,
+                "tag": -1
+            }
+        },
+        "object_type": "Scene"
+    },
+    "version": "1.0"
+}

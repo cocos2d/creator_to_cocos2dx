@@ -1,0 +1,868 @@
+{
+    "designResolution": {
+        "h": 960,
+        "w": 640
+    },
+    "resolutionFitHeight": true,
+    "resolutionFitWidth": false,
+    "root": {
+        "children": [
+            {
+                "children": [],
+                "object": {
+                    "anchorPoint": {
+                        "x": 0.5,
+                        "y": 0.5
+                    },
+                    "cascadeOpacityEnabled": true,
+                    "color": {
+                        "b": 255,
+                        "g": 255,
+                        "r": 255
+                    },
+                    "contentSize": {
+                        "h": 640,
+                        "w": 960
+                    },
+                    "globalZOrder": 0,
+                    "localZOrder": 0,
+                    "name": "Canvas",
+                    "opacity": 255,
+                    "opacityModifyRGB": false,
+                    "position": {
+                        "x": 480,
+                        "y": 320
+                    },
+                    "rotationSkewX": 0,
+                    "rotationSkewY": 0,
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "skewX": 0,
+                    "skewY": 0,
+                    "tag": -1
+                },
+                "object_type": "Node"
+            },
+            {
+                "children": [],
+                "object": {
+                    "node": {
+                        "anchorPoint": {
+                            "x": 0.5,
+                            "y": 0.5
+                        },
+                        "cascadeOpacityEnabled": true,
+                        "color": {
+                            "b": 255,
+                            "g": 255,
+                            "r": 255
+                        },
+                        "contentSize": {
+                            "h": 116,
+                            "w": 50
+                        },
+                        "globalZOrder": 0,
+                        "localZOrder": 0,
+                        "name": "grossinis_sister1",
+                        "opacity": 255,
+                        "opacityModifyRGB": false,
+                        "position": {
+                            "x": 48,
+                            "y": 79
+                        },
+                        "rotationSkewX": 0,
+                        "rotationSkewY": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "skewX": 0,
+                        "skewY": 0,
+                        "tag": -1
+                    },
+                    "setCenterRectNormalized": "Rect(0,0,1,1)",
+                    "setSpriteFrame": "grossinis_sister1.png"
+                },
+                "object_type": "Sprite"
+            },
+            {
+                "children": [],
+                "object": {
+                    "node": {
+                        "anchorPoint": {
+                            "x": 0.5,
+                            "y": 0.5
+                        },
+                        "cascadeOpacityEnabled": true,
+                        "color": {
+                            "b": 255,
+                            "g": 255,
+                            "r": 255
+                        },
+                        "contentSize": {
+                            "h": 138,
+                            "w": 56
+                        },
+                        "globalZOrder": 0,
+                        "localZOrder": 0,
+                        "name": "grossinis_sister2",
+                        "opacity": 255,
+                        "opacityModifyRGB": false,
+                        "position": {
+                            "x": 136,
+                            "y": 85
+                        },
+                        "rotationSkewX": 0,
+                        "rotationSkewY": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "skewX": 0,
+                        "skewY": 0,
+                        "tag": -1
+                    },
+                    "setCenterRectNormalized": "Rect(0,0,1,1)",
+                    "setSpriteFrame": "grossinis_sister2.png"
+                },
+                "object_type": "Sprite"
+            },
+            {
+                "children": [],
+                "object": {
+                    "node": {
+                        "anchorPoint": {
+                            "x": 0.5,
+                            "y": 0.5
+                        },
+                        "cascadeOpacityEnabled": true,
+                        "color": {
+                            "b": 255,
+                            "g": 255,
+                            "r": 255
+                        },
+                        "contentSize": {
+                            "h": 138,
+                            "w": 56
+                        },
+                        "globalZOrder": 0,
+                        "localZOrder": 0,
+                        "name": "grossinis_sister2",
+                        "opacity": 255,
+                        "opacityModifyRGB": false,
+                        "position": {
+                            "x": 122,
+                            "y": 273
+                        },
+                        "rotationSkewX": 0,
+                        "rotationSkewY": 0,
+                        "scaleX": 1,
+                        "scaleY": -1,
+                        "skewX": 0,
+                        "skewY": 0,
+                        "tag": -1
+                    },
+                    "setCenterRectNormalized": "Rect(0,0,1,1)",
+                    "setSpriteFrame": "grossinis_sister2.png"
+                },
+                "object_type": "Sprite"
+            },
+            {
+                "children": [],
+                "object": {
+                    "node": {
+                        "anchorPoint": {
+                            "x": 0.5,
+                            "y": 0.5
+                        },
+                        "cascadeOpacityEnabled": true,
+                        "color": {
+                            "b": 255,
+                            "g": 255,
+                            "r": 255
+                        },
+                        "contentSize": {
+                            "h": 139,
+                            "w": 52
+                        },
+                        "globalZOrder": 0,
+                        "localZOrder": 0,
+                        "name": "grossinis_sister1",
+                        "opacity": 255,
+                        "opacityModifyRGB": false,
+                        "position": {
+                            "x": 48,
+                            "y": 253
+                        },
+                        "rotationSkewX": 0,
+                        "rotationSkewY": 0,
+                        "scaleX": 1,
+                        "scaleY": -1,
+                        "skewX": 0,
+                        "skewY": 0,
+                        "tag": -1
+                    },
+                    "setCenterRectNormalized": "Rect(0,0,1,1)",
+                    "setSpriteFrame": "grossinis_sister1.png"
+                },
+                "object_type": "Sprite"
+            },
+            {
+                "children": [],
+                "object": {
+                    "node": {
+                        "anchorPoint": {
+                            "x": 0.5,
+                            "y": 0.5
+                        },
+                        "cascadeOpacityEnabled": true,
+                        "color": {
+                            "b": 255,
+                            "g": 255,
+                            "r": 255
+                        },
+                        "contentSize": {
+                            "h": 139,
+                            "w": 52
+                        },
+                        "globalZOrder": 0,
+                        "localZOrder": 0,
+                        "name": "grossinis_sister1",
+                        "opacity": 255,
+                        "opacityModifyRGB": false,
+                        "position": {
+                            "x": 288,
+                            "y": 297
+                        },
+                        "rotationSkewX": 0,
+                        "rotationSkewY": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "skewX": 20,
+                        "skewY": 0,
+                        "tag": -1
+                    },
+                    "setCenterRectNormalized": "Rect(0,0,1,1)",
+                    "setSpriteFrame": "grossinis_sister1.png"
+                },
+                "object_type": "Sprite"
+            },
+            {
+                "children": [],
+                "object": {
+                    "node": {
+                        "anchorPoint": {
+                            "x": 0.5,
+                            "y": 0.5
+                        },
+                        "cascadeOpacityEnabled": true,
+                        "color": {
+                            "b": 255,
+                            "g": 255,
+                            "r": 255
+                        },
+                        "contentSize": {
+                            "h": 139,
+                            "w": 52
+                        },
+                        "globalZOrder": 0,
+                        "localZOrder": 0,
+                        "name": "grossinis_sister1",
+                        "opacity": 255,
+                        "opacityModifyRGB": false,
+                        "position": {
+                            "x": 370,
+                            "y": 297
+                        },
+                        "rotationSkewX": 0,
+                        "rotationSkewY": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "skewX": -20,
+                        "skewY": 0,
+                        "tag": -1
+                    },
+                    "setCenterRectNormalized": "Rect(0,0,1,1)",
+                    "setSpriteFrame": "grossinis_sister1.png"
+                },
+                "object_type": "Sprite"
+            },
+            {
+                "children": [],
+                "object": {
+                    "node": {
+                        "anchorPoint": {
+                            "x": 0.5,
+                            "y": 0.5
+                        },
+                        "cascadeOpacityEnabled": true,
+                        "color": {
+                            "b": 255,
+                            "g": 255,
+                            "r": 255
+                        },
+                        "contentSize": {
+                            "h": 130,
+                            "w": 55
+                        },
+                        "globalZOrder": 0,
+                        "localZOrder": 0,
+                        "name": "grossinis_sister2",
+                        "opacity": 255,
+                        "opacityModifyRGB": false,
+                        "position": {
+                            "x": 481,
+                            "y": 305
+                        },
+                        "rotationSkewX": 0,
+                        "rotationSkewY": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "skewX": 0,
+                        "skewY": 20,
+                        "tag": -1
+                    },
+                    "setCenterRectNormalized": "Rect(0,0,1,1)",
+                    "setSpriteFrame": "grossinis_sister2.png"
+                },
+                "object_type": "Sprite"
+            },
+            {
+                "children": [],
+                "object": {
+                    "node": {
+                        "anchorPoint": {
+                            "x": 0.5,
+                            "y": 0.5
+                        },
+                        "cascadeOpacityEnabled": true,
+                        "color": {
+                            "b": 255,
+                            "g": 255,
+                            "r": 255
+                        },
+                        "contentSize": {
+                            "h": 130,
+                            "w": 55
+                        },
+                        "globalZOrder": 0,
+                        "localZOrder": 0,
+                        "name": "grossinis_sister2",
+                        "opacity": 255,
+                        "opacityModifyRGB": false,
+                        "position": {
+                            "x": 540,
+                            "y": 300
+                        },
+                        "rotationSkewX": 0,
+                        "rotationSkewY": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "skewX": 0,
+                        "skewY": -20,
+                        "tag": -1
+                    },
+                    "setCenterRectNormalized": "Rect(0,0,1,1)",
+                    "setSpriteFrame": "grossinis_sister2.png"
+                },
+                "object_type": "Sprite"
+            },
+            {
+                "children": [],
+                "object": {
+                    "node": {
+                        "anchorPoint": {
+                            "x": 0.5,
+                            "y": 0.5
+                        },
+                        "cascadeOpacityEnabled": true,
+                        "color": {
+                            "b": 255,
+                            "g": 255,
+                            "r": 255
+                        },
+                        "contentSize": {
+                            "h": 138,
+                            "w": 56
+                        },
+                        "globalZOrder": 0,
+                        "localZOrder": 0,
+                        "name": "grossinis_sister2",
+                        "opacity": 255,
+                        "opacityModifyRGB": false,
+                        "position": {
+                            "x": 135,
+                            "y": 493
+                        },
+                        "rotationSkewX": 45,
+                        "rotationSkewY": 45,
+                        "scaleX": 2,
+                        "scaleY": 2,
+                        "skewX": 0,
+                        "skewY": 0,
+                        "tag": -1
+                    },
+                    "setCenterRectNormalized": "Rect(0,0,1,1)",
+                    "setSpriteFrame": "grossinis_sister2.png"
+                },
+                "object_type": "Sprite"
+            },
+            {
+                "children": [],
+                "object": {
+                    "node": {
+                        "anchorPoint": {
+                            "x": 0.5,
+                            "y": 0.5
+                        },
+                        "cascadeOpacityEnabled": true,
+                        "color": {
+                            "b": 255,
+                            "g": 255,
+                            "r": 255
+                        },
+                        "contentSize": {
+                            "h": 139,
+                            "w": 52
+                        },
+                        "globalZOrder": 0,
+                        "localZOrder": 0,
+                        "name": "grossinis_sister1",
+                        "opacity": 255,
+                        "opacityModifyRGB": false,
+                        "position": {
+                            "x": 351,
+                            "y": 508
+                        },
+                        "rotationSkewX": -45,
+                        "rotationSkewY": -45,
+                        "scaleX": 2,
+                        "scaleY": 2,
+                        "skewX": 0,
+                        "skewY": 0,
+                        "tag": -1
+                    },
+                    "setCenterRectNormalized": "Rect(0,0,1,1)",
+                    "setSpriteFrame": "grossinis_sister1.png"
+                },
+                "object_type": "Sprite"
+            },
+            {
+                "children": [],
+                "object": {
+                    "node": {
+                        "anchorPoint": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "cascadeOpacityEnabled": true,
+                        "color": {
+                            "b": 0,
+                            "g": 0,
+                            "r": 255
+                        },
+                        "contentSize": {
+                            "h": 139,
+                            "w": 52
+                        },
+                        "globalZOrder": 0,
+                        "localZOrder": 0,
+                        "name": "grossinis_sister1",
+                        "opacity": 255,
+                        "opacityModifyRGB": false,
+                        "position": {
+                            "x": 808,
+                            "y": 489
+                        },
+                        "rotationSkewX": 0,
+                        "rotationSkewY": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "skewX": 0,
+                        "skewY": 0,
+                        "tag": -1
+                    },
+                    "setCenterRectNormalized": "Rect(0,0,1,1)",
+                    "setSpriteFrame": "grossinis_sister1.png"
+                },
+                "object_type": "Sprite"
+            },
+            {
+                "children": [],
+                "object": {
+                    "node": {
+                        "anchorPoint": {
+                            "x": 0.5,
+                            "y": 0.5
+                        },
+                        "cascadeOpacityEnabled": true,
+                        "color": {
+                            "b": 255,
+                            "g": 255,
+                            "r": 255
+                        },
+                        "contentSize": {
+                            "h": 139,
+                            "w": 52
+                        },
+                        "globalZOrder": 0,
+                        "localZOrder": 0,
+                        "name": "grossinis_sister1",
+                        "opacity": 255,
+                        "opacityModifyRGB": false,
+                        "position": {
+                            "x": 215,
+                            "y": 382
+                        },
+                        "rotationSkewX": 0,
+                        "rotationSkewY": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "skewX": 0,
+                        "skewY": 0,
+                        "tag": -1
+                    },
+                    "setCenterRectNormalized": "Rect(0,0,1,1)",
+                    "setSpriteFrame": "grossinis_sister1.png"
+                },
+                "object_type": "Sprite"
+            },
+            {
+                "children": [],
+                "object": {
+                    "node": {
+                        "anchorPoint": {
+                            "x": 0.5,
+                            "y": 0.5
+                        },
+                        "cascadeOpacityEnabled": true,
+                        "color": {
+                            "b": 0,
+                            "g": 255,
+                            "r": 0
+                        },
+                        "contentSize": {
+                            "h": 139,
+                            "w": 52
+                        },
+                        "globalZOrder": 0,
+                        "localZOrder": 0,
+                        "name": "grossinis_sister1",
+                        "opacity": 255,
+                        "opacityModifyRGB": false,
+                        "position": {
+                            "x": 759,
+                            "y": 566
+                        },
+                        "rotationSkewX": 0,
+                        "rotationSkewY": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "skewX": 0,
+                        "skewY": 0,
+                        "tag": -1
+                    },
+                    "setCenterRectNormalized": "Rect(0,0,1,1)",
+                    "setSpriteFrame": "grossinis_sister1.png"
+                },
+                "object_type": "Sprite"
+            },
+            {
+                "children": [],
+                "object": {
+                    "node": {
+                        "anchorPoint": {
+                            "x": 1,
+                            "y": 1
+                        },
+                        "cascadeOpacityEnabled": true,
+                        "color": {
+                            "b": 255,
+                            "g": 0,
+                            "r": 0
+                        },
+                        "contentSize": {
+                            "h": 139,
+                            "w": 52
+                        },
+                        "globalZOrder": 0,
+                        "localZOrder": 0,
+                        "name": "grossinis_sister1",
+                        "opacity": 255,
+                        "opacityModifyRGB": false,
+                        "position": {
+                            "x": 478,
+                            "y": 639
+                        },
+                        "rotationSkewX": 0,
+                        "rotationSkewY": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "skewX": 0,
+                        "skewY": 0,
+                        "tag": -1
+                    },
+                    "setCenterRectNormalized": "Rect(0,0,1,1)",
+                    "setSpriteFrame": "grossinis_sister1.png"
+                },
+                "object_type": "Sprite"
+            },
+            {
+                "children": [],
+                "object": {
+                    "node": {
+                        "anchorPoint": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "cascadeOpacityEnabled": true,
+                        "color": {
+                            "b": 255,
+                            "g": 255,
+                            "r": 255
+                        },
+                        "contentSize": {
+                            "h": 218,
+                            "w": 170
+                        },
+                        "globalZOrder": 0,
+                        "localZOrder": 0,
+                        "name": "grossini_dance_08",
+                        "opacity": 255,
+                        "opacityModifyRGB": false,
+                        "position": {
+                            "x": 488,
+                            "y": 387
+                        },
+                        "rotationSkewX": 0,
+                        "rotationSkewY": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "skewX": 0,
+                        "skewY": 0,
+                        "tag": -1
+                    },
+                    "setSpriteFrame": "grossini_dance_08"
+                },
+                "object_type": "Sprite"
+            },
+            {
+                "children": [],
+                "object": {
+                    "node": {
+                        "anchorPoint": {
+                            "x": 1,
+                            "y": 1
+                        },
+                        "cascadeOpacityEnabled": true,
+                        "color": {
+                            "b": 255,
+                            "g": 255,
+                            "r": 255
+                        },
+                        "contentSize": {
+                            "h": 121,
+                            "w": 85
+                        },
+                        "globalZOrder": 0,
+                        "localZOrder": 0,
+                        "name": "grossini_dance_08",
+                        "opacity": 255,
+                        "opacityModifyRGB": false,
+                        "position": {
+                            "x": 944,
+                            "y": 314
+                        },
+                        "rotationSkewX": 90,
+                        "rotationSkewY": 90,
+                        "scaleX": 2,
+                        "scaleY": 1,
+                        "skewX": 0,
+                        "skewY": 0,
+                        "tag": -1
+                    },
+                    "setSpriteFrame": "grossini_dance_08"
+                },
+                "object_type": "Sprite"
+            },
+            {
+                "children": [],
+                "object": {
+                    "node": {
+                        "anchorPoint": {
+                            "x": 0.5,
+                            "y": 0.5
+                        },
+                        "cascadeOpacityEnabled": true,
+                        "color": {
+                            "b": 255,
+                            "g": 255,
+                            "r": 255
+                        },
+                        "contentSize": {
+                            "h": 250,
+                            "w": 100
+                        },
+                        "globalZOrder": 0,
+                        "localZOrder": 0,
+                        "name": "grossinis_sister1",
+                        "opacity": 255,
+                        "opacityModifyRGB": false,
+                        "position": {
+                            "x": 765,
+                            "y": 367
+                        },
+                        "rotationSkewX": 0,
+                        "rotationSkewY": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "skewX": 0,
+                        "skewY": 0,
+                        "tag": -1
+                    },
+                    "setSpriteFrame": "grossinis_sister1.png"
+                },
+                "object_type": "Sprite"
+            },
+            {
+                "children": [],
+                "object": {
+                    "node": {
+                        "anchorPoint": {
+                            "x": 0.5,
+                            "y": 0.5
+                        },
+                        "cascadeOpacityEnabled": true,
+                        "color": {
+                            "b": 255,
+                            "g": 255,
+                            "r": 255
+                        },
+                        "contentSize": {
+                            "h": 390,
+                            "w": 110
+                        },
+                        "globalZOrder": 0,
+                        "localZOrder": 0,
+                        "name": "grossinis_sister2",
+                        "opacity": 255,
+                        "opacityModifyRGB": false,
+                        "position": {
+                            "x": 443,
+                            "y": 94
+                        },
+                        "rotationSkewX": 90,
+                        "rotationSkewY": 90,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "skewX": 0,
+                        "skewY": 0,
+                        "tag": -1
+                    },
+                    "setSpriteFrame": "grossinis_sister2.png"
+                },
+                "object_type": "Sprite"
+            },
+            {
+                "children": [],
+                "object": {
+                    "node": {
+                        "anchorPoint": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "cascadeOpacityEnabled": true,
+                        "color": {
+                            "b": 255,
+                            "g": 255,
+                            "r": 255
+                        },
+                        "contentSize": {
+                            "h": 109,
+                            "w": 51
+                        },
+                        "globalZOrder": 0,
+                        "localZOrder": 0,
+                        "name": "grossini_dance_08",
+                        "opacity": 255,
+                        "opacityModifyRGB": false,
+                        "position": {
+                            "x": 655,
+                            "y": 496
+                        },
+                        "rotationSkewX": 0,
+                        "rotationSkewY": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "skewX": 0,
+                        "skewY": 0,
+                        "tag": -1
+                    },
+                    "setCenterRectNormalized": "Rect(0,0,1,1)",
+                    "setSpriteFrame": "grossini_dance_08"
+                },
+                "object_type": "Sprite"
+            },
+            {
+                "children": [],
+                "object": {
+                    "node": {
+                        "anchorPoint": {
+                            "x": 0.5,
+                            "y": 0.5
+                        },
+                        "cascadeOpacityEnabled": true,
+                        "color": {
+                            "b": 255,
+                            "g": 255,
+                            "r": 255
+                        },
+                        "contentSize": {
+                            "h": 290,
+                            "w": 125
+                        },
+                        "globalZOrder": 0,
+                        "localZOrder": 0,
+                        "name": "grossinis_sister1",
+                        "opacity": 255,
+                        "opacityModifyRGB": false,
+                        "position": {
+                            "x": 806,
+                            "y": 129
+                        },
+                        "rotationSkewX": 270,
+                        "rotationSkewY": 270,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "skewX": 0,
+                        "skewY": 0,
+                        "tag": -1
+                    },
+                    "setSpriteFrame": "grossinis_sister1.png"
+                },
+                "object_type": "Sprite"
+            }
+        ],
+        "object": {
+            "node": {
+                "anchorPoint": {
+                    "x": 0,
+                    "y": 0
+                },
+                "cascadeOpacityEnabled": true,
+                "color": {
+                    "b": 255,
+                    "g": 255,
+                    "r": 255
+                },
+                "contentSize": {
+                    "h": 0,
+                    "w": 0
+                },
+                "globalZOrder": 0,
+                "localZOrder": 0,
+                "opacity": 255,
+                "opacityModifyRGB": false,
+                "tag": -1
+            }
+        },
+        "object_type": "Scene"
+    },
+    "version": "1.0"
+}
