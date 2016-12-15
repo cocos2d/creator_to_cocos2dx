@@ -45,7 +45,12 @@
             },
             {
                 "children": [],
+                "fontName": "arial",
+                "fontSize": 32,
+                "labelText": "System Font Label: 32",
                 "object": {
+                    "fontType": "System",
+                    "horizontalAlignment": "Center",
                     "node": {
                         "anchorPoint": {
                             "x": 0.5,
@@ -78,14 +83,20 @@
                         "skewY": 0,
                         "tag": -1
                     },
-                    "setHorizontalAlignment": "TextHAlignment::CENTER",
-                    "setVerticalAlignment": "TextVAlignment::CENTER"
+                    "verticalAlignment": "Center"
                 },
                 "object_type": "Label"
             },
             {
                 "children": [],
+                "fontName": "arial16.fnt",
+                "fontSize": 40,
+                "labelText": "BMFont: Arial 16",
                 "object": {
+                    "fontSize": 40,
+                    "fontType": "BMFont",
+                    "horizontalAlignment": "Left",
+                    "lineHeight": 19,
                     "node": {
                         "anchorPoint": {
                             "x": 1,
@@ -118,16 +129,19 @@
                         "skewY": 0,
                         "tag": -1
                     },
-                    "setBMFontSize": 40,
-                    "setHorizontalAlignment": "TextHAlignment::LEFT",
-                    "setLineHeight": 19,
-                    "setVerticalAlignment": "TextVAlignment::TOP"
+                    "verticalAlignment": "Top"
                 },
                 "object_type": "Label"
             },
             {
                 "children": [],
+                "fontName": "A Damn Mess.ttf",
+                "fontSize": 64,
+                "labelText": "TTF Font: A Damn Mess: 64",
                 "object": {
+                    "fontType": "TTF",
+                    "horizontalAlignment": "Left",
+                    "lineHeight": 64,
                     "node": {
                         "anchorPoint": {
                             "x": 0,
@@ -160,15 +174,19 @@
                         "skewY": 0,
                         "tag": -1
                     },
-                    "setHorizontalAlignment": "TextHAlignment::LEFT",
-                    "setLineHeight": 64,
-                    "setVerticalAlignment": "TextVAlignment::TOP"
+                    "verticalAlignment": "Top"
                 },
                 "object_type": "Label"
             },
             {
                 "children": [],
+                "fontName": "American Typewriter.ttf",
+                "fontSize": 32,
+                "labelText": "This is a\nmultiline\nTTF label: Left",
                 "object": {
+                    "fontType": "TTF",
+                    "horizontalAlignment": "Left",
+                    "lineHeight": 48,
                     "node": {
                         "anchorPoint": {
                             "x": 0.5,
@@ -201,15 +219,19 @@
                         "skewY": 0,
                         "tag": -1
                     },
-                    "setHorizontalAlignment": "TextHAlignment::LEFT",
-                    "setLineHeight": 48,
-                    "setVerticalAlignment": "TextVAlignment::CENTER"
+                    "verticalAlignment": "Center"
                 },
                 "object_type": "Label"
             },
             {
                 "children": [],
+                "fontName": "American Typewriter.ttf",
+                "fontSize": 32,
+                "labelText": "This is a\nmultiline\nTTF label:  Right",
                 "object": {
+                    "fontType": "TTF",
+                    "horizontalAlignment": "Right",
+                    "lineHeight": 64,
                     "node": {
                         "anchorPoint": {
                             "x": 0.5,
@@ -242,9 +264,7 @@
                         "skewY": 0,
                         "tag": -1
                     },
-                    "setHorizontalAlignment": "TextHAlignment::RIGHT",
-                    "setLineHeight": 64,
-                    "setVerticalAlignment": "TextVAlignment::CENTER"
+                    "verticalAlignment": "Center"
                 },
                 "object_type": "Label"
             }

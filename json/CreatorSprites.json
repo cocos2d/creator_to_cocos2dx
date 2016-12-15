@@ -46,6 +46,7 @@
             {
                 "children": [],
                 "object": {
+                    "centerRectNormalized": "Rect(0,0,1,1)",
                     "node": {
                         "anchorPoint": {
                             "x": 0.5,
@@ -78,14 +79,14 @@
                         "skewY": 0,
                         "tag": -1
                     },
-                    "setCenterRectNormalized": "Rect(0,0,1,1)",
-                    "setSpriteFrame": "grossinis_sister1.png"
+                    "spriteFrame": "grossinis_sister1.png"
                 },
                 "object_type": "Sprite"
             },
             {
                 "children": [],
                 "object": {
+                    "centerRectNormalized": "Rect(0,0,1,1)",
                     "node": {
                         "anchorPoint": {
                             "x": 0.5,
@@ -118,14 +119,14 @@
                         "skewY": 0,
                         "tag": -1
                     },
-                    "setCenterRectNormalized": "Rect(0,0,1,1)",
-                    "setSpriteFrame": "grossinis_sister2.png"
+                    "spriteFrame": "grossinis_sister2.png"
                 },
                 "object_type": "Sprite"
             },
             {
                 "children": [],
                 "object": {
+                    "centerRectNormalized": "Rect(0,0,1,1)",
                     "node": {
                         "anchorPoint": {
                             "x": 0.5,
@@ -158,14 +159,14 @@
                         "skewY": 0,
                         "tag": -1
                     },
-                    "setCenterRectNormalized": "Rect(0,0,1,1)",
-                    "setSpriteFrame": "grossinis_sister2.png"
+                    "spriteFrame": "grossinis_sister2.png"
                 },
                 "object_type": "Sprite"
             },
             {
                 "children": [],
                 "object": {
+                    "centerRectNormalized": "Rect(0,0,1,1)",
                     "node": {
                         "anchorPoint": {
                             "x": 0.5,
@@ -198,14 +199,14 @@
                         "skewY": 0,
                         "tag": -1
                     },
-                    "setCenterRectNormalized": "Rect(0,0,1,1)",
-                    "setSpriteFrame": "grossinis_sister1.png"
+                    "spriteFrame": "grossinis_sister1.png"
                 },
                 "object_type": "Sprite"
             },
             {
                 "children": [],
                 "object": {
+                    "centerRectNormalized": "Rect(0,0,1,1)",
                     "node": {
                         "anchorPoint": {
                             "x": 0.5,
@@ -238,14 +239,14 @@
                         "skewY": 0,
                         "tag": -1
                     },
-                    "setCenterRectNormalized": "Rect(0,0,1,1)",
-                    "setSpriteFrame": "grossinis_sister1.png"
+                    "spriteFrame": "grossinis_sister1.png"
                 },
                 "object_type": "Sprite"
             },
             {
                 "children": [],
                 "object": {
+                    "centerRectNormalized": "Rect(0,0,1,1)",
                     "node": {
                         "anchorPoint": {
                             "x": 0.5,
@@ -278,14 +279,14 @@
                         "skewY": 0,
                         "tag": -1
                     },
-                    "setCenterRectNormalized": "Rect(0,0,1,1)",
-                    "setSpriteFrame": "grossinis_sister1.png"
+                    "spriteFrame": "grossinis_sister1.png"
                 },
                 "object_type": "Sprite"
             },
             {
                 "children": [],
                 "object": {
+                    "centerRectNormalized": "Rect(0,0,1,1)",
                     "node": {
                         "anchorPoint": {
                             "x": 0.5,
@@ -318,14 +319,14 @@
                         "skewY": 20,
                         "tag": -1
                     },
-                    "setCenterRectNormalized": "Rect(0,0,1,1)",
-                    "setSpriteFrame": "grossinis_sister2.png"
+                    "spriteFrame": "grossinis_sister2.png"
                 },
                 "object_type": "Sprite"
             },
             {
                 "children": [],
                 "object": {
+                    "centerRectNormalized": "Rect(0,0,1,1)",
                     "node": {
                         "anchorPoint": {
                             "x": 0.5,
@@ -358,14 +359,14 @@
                         "skewY": -20,
                         "tag": -1
                     },
-                    "setCenterRectNormalized": "Rect(0,0,1,1)",
-                    "setSpriteFrame": "grossinis_sister2.png"
+                    "spriteFrame": "grossinis_sister2.png"
                 },
                 "object_type": "Sprite"
             },
             {
                 "children": [],
                 "object": {
+                    "centerRectNormalized": "Rect(0,0,1,1)",
                     "node": {
                         "anchorPoint": {
                             "x": 0.5,
@@ -398,14 +399,14 @@
                         "skewY": 0,
                         "tag": -1
                     },
-                    "setCenterRectNormalized": "Rect(0,0,1,1)",
-                    "setSpriteFrame": "grossinis_sister2.png"
+                    "spriteFrame": "grossinis_sister2.png"
                 },
                 "object_type": "Sprite"
             },
             {
                 "children": [],
                 "object": {
+                    "centerRectNormalized": "Rect(0,0,1,1)",
                     "node": {
                         "anchorPoint": {
                             "x": 0.5,
@@ -438,14 +439,14 @@
                         "skewY": 0,
                         "tag": -1
                     },
-                    "setCenterRectNormalized": "Rect(0,0,1,1)",
-                    "setSpriteFrame": "grossinis_sister1.png"
+                    "spriteFrame": "grossinis_sister1.png"
                 },
                 "object_type": "Sprite"
             },
             {
                 "children": [],
                 "object": {
+                    "centerRectNormalized": "Rect(0,0,1,1)",
                     "node": {
                         "anchorPoint": {
                             "x": 0,
@@ -478,14 +479,14 @@
                         "skewY": 0,
                         "tag": -1
                     },
-                    "setCenterRectNormalized": "Rect(0,0,1,1)",
-                    "setSpriteFrame": "grossinis_sister1.png"
+                    "spriteFrame": "grossinis_sister1.png"
                 },
                 "object_type": "Sprite"
             },
             {
                 "children": [],
                 "object": {
+                    "centerRectNormalized": "Rect(0,0,1,1)",
                     "node": {
                         "anchorPoint": {
                             "x": 0.5,
@@ -518,14 +519,14 @@
                         "skewY": 0,
                         "tag": -1
                     },
-                    "setCenterRectNormalized": "Rect(0,0,1,1)",
-                    "setSpriteFrame": "grossinis_sister1.png"
+                    "spriteFrame": "grossinis_sister1.png"
                 },
                 "object_type": "Sprite"
             },
             {
                 "children": [],
                 "object": {
+                    "centerRectNormalized": "Rect(0,0,1,1)",
                     "node": {
                         "anchorPoint": {
                             "x": 0.5,
@@ -558,14 +559,14 @@
                         "skewY": 0,
                         "tag": -1
                     },
-                    "setCenterRectNormalized": "Rect(0,0,1,1)",
-                    "setSpriteFrame": "grossinis_sister1.png"
+                    "spriteFrame": "grossinis_sister1.png"
                 },
                 "object_type": "Sprite"
             },
             {
                 "children": [],
                 "object": {
+                    "centerRectNormalized": "Rect(0,0,1,1)",
                     "node": {
                         "anchorPoint": {
                             "x": 1,
@@ -598,8 +599,7 @@
                         "skewY": 0,
                         "tag": -1
                     },
-                    "setCenterRectNormalized": "Rect(0,0,1,1)",
-                    "setSpriteFrame": "grossinis_sister1.png"
+                    "spriteFrame": "grossinis_sister1.png"
                 },
                 "object_type": "Sprite"
             },
@@ -638,7 +638,7 @@
                         "skewY": 0,
                         "tag": -1
                     },
-                    "setSpriteFrame": "grossini_dance_08"
+                    "spriteFrame": "grossini_dance_08"
                 },
                 "object_type": "Sprite"
             },
@@ -677,7 +677,7 @@
                         "skewY": 0,
                         "tag": -1
                     },
-                    "setSpriteFrame": "grossini_dance_08"
+                    "spriteFrame": "grossini_dance_08"
                 },
                 "object_type": "Sprite"
             },
@@ -716,7 +716,7 @@
                         "skewY": 0,
                         "tag": -1
                     },
-                    "setSpriteFrame": "grossinis_sister1.png"
+                    "spriteFrame": "grossinis_sister1.png"
                 },
                 "object_type": "Sprite"
             },
@@ -755,13 +755,14 @@
                         "skewY": 0,
                         "tag": -1
                     },
-                    "setSpriteFrame": "grossinis_sister2.png"
+                    "spriteFrame": "grossinis_sister2.png"
                 },
                 "object_type": "Sprite"
             },
             {
                 "children": [],
                 "object": {
+                    "centerRectNormalized": "Rect(0,0,1,1)",
                     "node": {
                         "anchorPoint": {
                             "x": 0,
@@ -794,8 +795,7 @@
                         "skewY": 0,
                         "tag": -1
                     },
-                    "setCenterRectNormalized": "Rect(0,0,1,1)",
-                    "setSpriteFrame": "grossini_dance_08"
+                    "spriteFrame": "grossini_dance_08"
                 },
                 "object_type": "Sprite"
             },
@@ -834,7 +834,7 @@
                         "skewY": 0,
                         "tag": -1
                     },
-                    "setSpriteFrame": "grossinis_sister1.png"
+                    "spriteFrame": "grossinis_sister1.png"
                 },
                 "object_type": "Sprite"
             }

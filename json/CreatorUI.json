@@ -47,7 +47,12 @@
                 "children": [
                     {
                         "children": [],
+                        "fontName": "arial",
+                        "fontSize": 30,
+                        "labelText": "This is a button",
                         "object": {
+                            "fontType": "System",
+                            "horizontalAlignment": "Center",
                             "node": {
                                 "anchorPoint": {
                                     "x": 0.5,
@@ -80,8 +85,7 @@
                                 "skewY": 0,
                                 "tag": -1
                             },
-                            "setHorizontalAlignment": "TextHAlignment::CENTER",
-                            "setVerticalAlignment": "TextVAlignment::CENTER"
+                            "verticalAlignment": "Center"
                         },
                         "object_type": "Label"
                     }
@@ -127,7 +131,13 @@
                 "children": [
                     {
                         "children": [],
+                        "fontName": "A Damn Mess.ttf",
+                        "fontSize": 40,
+                        "labelText": "Button 2",
                         "object": {
+                            "fontType": "TTF",
+                            "horizontalAlignment": "Center",
+                            "lineHeight": 40,
                             "node": {
                                 "anchorPoint": {
                                     "x": 0.5,
@@ -160,9 +170,7 @@
                                 "skewY": 0,
                                 "tag": -1
                             },
-                            "setHorizontalAlignment": "TextHAlignment::CENTER",
-                            "setLineHeight": 40,
-                            "setVerticalAlignment": "TextVAlignment::CENTER"
+                            "verticalAlignment": "Center"
                         },
                         "object_type": "Label"
                     }
@@ -208,7 +216,13 @@
                 "children": [
                     {
                         "children": [],
+                        "fontName": "American Typewriter.ttf",
+                        "fontSize": 20,
+                        "labelText": "Another Button",
                         "object": {
+                            "fontType": "TTF",
+                            "horizontalAlignment": "Center",
+                            "lineHeight": 40,
                             "node": {
                                 "anchorPoint": {
                                     "x": 0.5,
@@ -241,9 +255,7 @@
                                 "skewY": 0,
                                 "tag": -1
                             },
-                            "setHorizontalAlignment": "TextHAlignment::CENTER",
-                            "setLineHeight": 40,
-                            "setVerticalAlignment": "TextVAlignment::CENTER"
+                            "verticalAlignment": "Center"
                         },
                         "object_type": "Label"
                     }
@@ -290,6 +302,7 @@
                     {
                         "children": [],
                         "object": {
+                            "centerRectNormalized": "Rect(0,0,1,1)",
                             "node": {
                                 "anchorPoint": {
                                     "x": 0.5,
@@ -322,14 +335,18 @@
                                 "skewY": 0,
                                 "tag": -1
                             },
-                            "setCenterRectNormalized": "Rect(0,0,1,1)",
-                            "setSpriteFrame": "grossini_dance_08"
+                            "spriteFrame": "grossini_dance_08"
                         },
                         "object_type": "Sprite"
                     },
                     {
                         "children": [],
+                        "fontName": "arial",
+                        "fontSize": 16,
+                        "labelText": "ScrollView content\n\n",
                         "object": {
+                            "fontType": "System",
+                            "horizontalAlignment": "Center",
                             "node": {
                                 "anchorPoint": {
                                     "x": 0,
@@ -362,8 +379,7 @@
                                 "skewY": 0,
                                 "tag": -1
                             },
-                            "setHorizontalAlignment": "TextHAlignment::CENTER",
-                            "setVerticalAlignment": "TextVAlignment::TOP"
+                            "verticalAlignment": "Top"
                         },
                         "object_type": "Label"
                     },
@@ -371,7 +387,12 @@
                         "children": [
                             {
                                 "children": [],
+                                "fontName": "arial",
+                                "fontSize": 20,
+                                "labelText": "button",
                                 "object": {
+                                    "fontType": "System",
+                                    "horizontalAlignment": "Center",
                                     "node": {
                                         "anchorPoint": {
                                             "x": 0.5,
@@ -404,8 +425,7 @@
                                         "skewY": 0,
                                         "tag": -1
                                     },
-                                    "setHorizontalAlignment": "TextHAlignment::CENTER",
-                                    "setVerticalAlignment": "TextVAlignment::CENTER"
+                                    "verticalAlignment": "Center"
                                 },
                                 "object_type": "Label"
                             }
@@ -449,6 +469,19 @@
                     }
                 ],
                 "object": {
+                    "backGroundImage": "\"default_panel\", ui::Widget::TextureResType::PLIST",
+                    "backGroundImageColor": {
+                        "b": 108,
+                        "g": 108,
+                        "r": 122
+                    },
+                    "backGroundImageScale9Enabled": "true",
+                    "bounceEnabled": true,
+                    "direction": "ui::ScrollView::Direction::VERTICAL",
+                    "innerContainerSize": {
+                        "h": 400,
+                        "w": 220
+                    },
                     "node": {
                         "anchorPoint": {
                             "x": 0.5,
@@ -480,19 +513,6 @@
                         "skewX": 0,
                         "skewY": 0,
                         "tag": -1
-                    },
-                    "setBackGroundImage": "\"default_panel\", ui::Widget::TextureResType::PLIST",
-                    "setBackGroundImageColor": {
-                        "b": 108,
-                        "g": 108,
-                        "r": 122
-                    },
-                    "setBackGroundImageScale9Enabled": "true",
-                    "setBounceEnabled": true,
-                    "setDirection": "ui::ScrollView::Direction::VERTICAL",
-                    "setInnerContainerSize": {
-                        "h": 400,
-                        "w": 220
                     }
                 },
                 "object_type": "ScrollView"
@@ -502,6 +522,7 @@
                     {
                         "children": [],
                         "object": {
+                            "centerRectNormalized": "Rect(0,0,1,1)",
                             "node": {
                                 "anchorPoint": {
                                     "x": 0.5,
@@ -534,14 +555,14 @@
                                 "skewY": 0,
                                 "tag": -1
                             },
-                            "setCenterRectNormalized": "Rect(0,0,1,1)",
-                            "setSpriteFrame": "grossinis_sister1.png"
+                            "spriteFrame": "grossinis_sister1.png"
                         },
                         "object_type": "Sprite"
                     },
                     {
                         "children": [],
                         "object": {
+                            "centerRectNormalized": "Rect(0,0,1,1)",
                             "node": {
                                 "anchorPoint": {
                                     "x": 0.5,
@@ -574,14 +595,14 @@
                                 "skewY": 0,
                                 "tag": -1
                             },
-                            "setCenterRectNormalized": "Rect(0,0,1,1)",
-                            "setSpriteFrame": "grossinis_sister2.png"
+                            "spriteFrame": "grossinis_sister2.png"
                         },
                         "object_type": "Sprite"
                     },
                     {
                         "children": [],
                         "object": {
+                            "centerRectNormalized": "Rect(0,0,1,1)",
                             "node": {
                                 "anchorPoint": {
                                     "x": 0.5,
@@ -614,14 +635,14 @@
                                 "skewY": 0,
                                 "tag": -1
                             },
-                            "setCenterRectNormalized": "Rect(0,0,1,1)",
-                            "setSpriteFrame": "grossinis_sister1.png"
+                            "spriteFrame": "grossinis_sister1.png"
                         },
                         "object_type": "Sprite"
                     },
                     {
                         "children": [],
                         "object": {
+                            "centerRectNormalized": "Rect(0,0,1,1)",
                             "node": {
                                 "anchorPoint": {
                                     "x": 0.5,
@@ -654,14 +675,14 @@
                                 "skewY": 0,
                                 "tag": -1
                             },
-                            "setCenterRectNormalized": "Rect(0,0,1,1)",
-                            "setSpriteFrame": "grossinis_sister2.png"
+                            "spriteFrame": "grossinis_sister2.png"
                         },
                         "object_type": "Sprite"
                     },
                     {
                         "children": [],
                         "object": {
+                            "centerRectNormalized": "Rect(0,0,1,1)",
                             "node": {
                                 "anchorPoint": {
                                     "x": 0.5,
@@ -694,13 +715,25 @@
                                 "skewY": 0,
                                 "tag": -1
                             },
-                            "setCenterRectNormalized": "Rect(0,0,1,1)",
-                            "setSpriteFrame": "grossinis_sister1.png"
+                            "spriteFrame": "grossinis_sister1.png"
                         },
                         "object_type": "Sprite"
                     }
                 ],
                 "object": {
+                    "backGroundImage": "\"default_panel\", ui::Widget::TextureResType::PLIST",
+                    "backGroundImageColor": {
+                        "b": 100,
+                        "g": 100,
+                        "r": 235
+                    },
+                    "backGroundImageScale9Enabled": "true",
+                    "bounceEnabled": true,
+                    "direction": "ui::ScrollView::Direction::HORIZONTAL",
+                    "innerContainerSize": {
+                        "h": 200,
+                        "w": 400
+                    },
                     "node": {
                         "anchorPoint": {
                             "x": 0.5,
@@ -732,19 +765,6 @@
                         "skewX": 0,
                         "skewY": 0,
                         "tag": -1
-                    },
-                    "setBackGroundImage": "\"default_panel\", ui::Widget::TextureResType::PLIST",
-                    "setBackGroundImageColor": {
-                        "b": 100,
-                        "g": 100,
-                        "r": 235
-                    },
-                    "setBackGroundImageScale9Enabled": "true",
-                    "setBounceEnabled": true,
-                    "setDirection": "ui::ScrollView::Direction::HORIZONTAL",
-                    "setInnerContainerSize": {
-                        "h": 200,
-                        "w": 400
                     }
                 },
                 "object_type": "ScrollView"
@@ -755,7 +775,12 @@
                         "children": [
                             {
                                 "children": [],
+                                "fontName": "arial",
+                                "fontSize": 20,
+                                "labelText": "button",
                                 "object": {
+                                    "fontType": "System",
+                                    "horizontalAlignment": "Center",
                                     "node": {
                                         "anchorPoint": {
                                             "x": 0.5,
@@ -788,8 +813,7 @@
                                         "skewY": 0,
                                         "tag": -1
                                     },
-                                    "setHorizontalAlignment": "TextHAlignment::CENTER",
-                                    "setVerticalAlignment": "TextVAlignment::CENTER"
+                                    "verticalAlignment": "Center"
                                 },
                                 "object_type": "Label"
                             }
@@ -835,7 +859,12 @@
                         "children": [
                             {
                                 "children": [],
+                                "fontName": "arial",
+                                "fontSize": 20,
+                                "labelText": "button",
                                 "object": {
+                                    "fontType": "System",
+                                    "horizontalAlignment": "Center",
                                     "node": {
                                         "anchorPoint": {
                                             "x": 0.5,
@@ -868,8 +897,7 @@
                                         "skewY": 0,
                                         "tag": -1
                                     },
-                                    "setHorizontalAlignment": "TextHAlignment::CENTER",
-                                    "setVerticalAlignment": "TextVAlignment::CENTER"
+                                    "verticalAlignment": "Center"
                                 },
                                 "object_type": "Label"
                             }
@@ -915,7 +943,12 @@
                         "children": [
                             {
                                 "children": [],
+                                "fontName": "arial",
+                                "fontSize": 20,
+                                "labelText": "button",
                                 "object": {
+                                    "fontType": "System",
+                                    "horizontalAlignment": "Center",
                                     "node": {
                                         "anchorPoint": {
                                             "x": 0.5,
@@ -948,8 +981,7 @@
                                         "skewY": 0,
                                         "tag": -1
                                     },
-                                    "setHorizontalAlignment": "TextHAlignment::CENTER",
-                                    "setVerticalAlignment": "TextVAlignment::CENTER"
+                                    "verticalAlignment": "Center"
                                 },
                                 "object_type": "Label"
                             }
@@ -995,7 +1027,12 @@
                         "children": [
                             {
                                 "children": [],
+                                "fontName": "arial",
+                                "fontSize": 20,
+                                "labelText": "button",
                                 "object": {
+                                    "fontType": "System",
+                                    "horizontalAlignment": "Center",
                                     "node": {
                                         "anchorPoint": {
                                             "x": 0.5,
@@ -1028,8 +1065,7 @@
                                         "skewY": 0,
                                         "tag": -1
                                     },
-                                    "setHorizontalAlignment": "TextHAlignment::CENTER",
-                                    "setVerticalAlignment": "TextVAlignment::CENTER"
+                                    "verticalAlignment": "Center"
                                 },
                                 "object_type": "Label"
                             }
@@ -1075,7 +1111,12 @@
                         "children": [
                             {
                                 "children": [],
+                                "fontName": "arial",
+                                "fontSize": 20,
+                                "labelText": "button",
                                 "object": {
+                                    "fontType": "System",
+                                    "horizontalAlignment": "Center",
                                     "node": {
                                         "anchorPoint": {
                                             "x": 0.5,
@@ -1108,8 +1149,7 @@
                                         "skewY": 0,
                                         "tag": -1
                                     },
-                                    "setHorizontalAlignment": "TextHAlignment::CENTER",
-                                    "setVerticalAlignment": "TextVAlignment::CENTER"
+                                    "verticalAlignment": "Center"
                                 },
                                 "object_type": "Label"
                             }
@@ -1155,7 +1195,12 @@
                         "children": [
                             {
                                 "children": [],
+                                "fontName": "arial",
+                                "fontSize": 20,
+                                "labelText": "button",
                                 "object": {
+                                    "fontType": "System",
+                                    "horizontalAlignment": "Center",
                                     "node": {
                                         "anchorPoint": {
                                             "x": 0.5,
@@ -1188,8 +1233,7 @@
                                         "skewY": 0,
                                         "tag": -1
                                     },
-                                    "setHorizontalAlignment": "TextHAlignment::CENTER",
-                                    "setVerticalAlignment": "TextVAlignment::CENTER"
+                                    "verticalAlignment": "Center"
                                 },
                                 "object_type": "Label"
                             }
@@ -1234,6 +1278,7 @@
                     {
                         "children": [],
                         "object": {
+                            "centerRectNormalized": "Rect(0,0,1,1)",
                             "node": {
                                 "anchorPoint": {
                                     "x": 0.5,
@@ -1266,13 +1311,25 @@
                                 "skewY": 0,
                                 "tag": -1
                             },
-                            "setCenterRectNormalized": "Rect(0,0,1,1)",
-                            "setSpriteFrame": "grossinis_sister1.png"
+                            "spriteFrame": "grossinis_sister1.png"
                         },
                         "object_type": "Sprite"
                     }
                 ],
                 "object": {
+                    "backGroundImage": "\"default_panel\", ui::Widget::TextureResType::PLIST",
+                    "backGroundImageColor": {
+                        "b": 61,
+                        "g": 255,
+                        "r": 0
+                    },
+                    "backGroundImageScale9Enabled": "true",
+                    "bounceEnabled": true,
+                    "direction": "ui::ScrollView::Direction::BOTH",
+                    "innerContainerSize": {
+                        "h": 200,
+                        "w": 400
+                    },
                     "node": {
                         "anchorPoint": {
                             "x": 0.5,
@@ -1304,19 +1361,6 @@
                         "skewX": 0,
                         "skewY": 0,
                         "tag": -1
-                    },
-                    "setBackGroundImage": "\"default_panel\", ui::Widget::TextureResType::PLIST",
-                    "setBackGroundImageColor": {
-                        "b": 61,
-                        "g": 255,
-                        "r": 0
-                    },
-                    "setBackGroundImageScale9Enabled": "true",
-                    "setBounceEnabled": true,
-                    "setDirection": "ui::ScrollView::Direction::BOTH",
-                    "setInnerContainerSize": {
-                        "h": 200,
-                        "w": 400
                     }
                 },
                 "object_type": "ScrollView"
@@ -1526,7 +1570,7 @@
                                 "skewY": 0,
                                 "tag": -1
                             },
-                            "setSpriteFrame": "default_progressbar"
+                            "spriteFrame": "default_progressbar"
                         },
                         "object_type": "Sprite"
                     }
@@ -1564,7 +1608,7 @@
                         "skewY": 0,
                         "tag": -1
                     },
-                    "setPercent": 50.0
+                    "percent": 50.0
                 },
                 "object_type": "ProgressBar"
             }

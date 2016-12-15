@@ -118,6 +118,7 @@
             {
                 "children": [],
                 "object": {
+                    "centerRectNormalized": "Rect(0,0,1,1)",
                     "node": {
                         "anchorPoint": {
                             "x": 0.5,
@@ -150,14 +151,14 @@
                         "skewY": 0,
                         "tag": -1
                     },
-                    "setCenterRectNormalized": "Rect(0,0,1,1)",
-                    "setSpriteFrame": "grossini_dance_08"
+                    "spriteFrame": "grossini_dance_08"
                 },
                 "object_type": "Sprite"
             },
             {
                 "children": [],
                 "object": {
+                    "centerRectNormalized": "Rect(0,0,1,1)",
                     "node": {
                         "anchorPoint": {
                             "x": 0.5,
@@ -190,14 +191,18 @@
                         "skewY": 0,
                         "tag": -1
                     },
-                    "setCenterRectNormalized": "Rect(0,0,1,1)",
-                    "setSpriteFrame": "grossini_dance_08"
+                    "spriteFrame": "grossini_dance_08"
                 },
                 "object_type": "Sprite"
             },
             {
                 "children": [],
+                "fontName": "arial",
+                "fontSize": 40,
+                "labelText": "This is a label",
                 "object": {
+                    "fontType": "System",
+                    "horizontalAlignment": "Center",
                     "node": {
                         "anchorPoint": {
                             "x": 0.5,
@@ -230,14 +235,18 @@
                         "skewY": 0,
                         "tag": -1
                     },
-                    "setHorizontalAlignment": "TextHAlignment::CENTER",
-                    "setVerticalAlignment": "TextVAlignment::CENTER"
+                    "verticalAlignment": "Center"
                 },
                 "object_type": "Label"
             },
             {
                 "children": [],
+                "fontName": "arial",
+                "fontSize": 40,
+                "labelText": "This is another label",
                 "object": {
+                    "fontType": "System",
+                    "horizontalAlignment": "Center",
                     "node": {
                         "anchorPoint": {
                             "x": 0.5,
@@ -270,8 +279,7 @@
                         "skewY": 0,
                         "tag": -1
                     },
-                    "setHorizontalAlignment": "TextHAlignment::CENTER",
-                    "setVerticalAlignment": "TextVAlignment::CENTER"
+                    "verticalAlignment": "Center"
                 },
                 "object_type": "Label"
             }

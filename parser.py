@@ -366,15 +366,15 @@ class Sprite(Node):
 
         # add name between ""
         log(state._sprite_frames[sprite_frame_uuid])
-        self.add_property_str('setSpriteFrame', 'frameName', state._sprite_frames[sprite_frame_uuid])
+        self.add_property_str('spriteFrame', 'frameName', state._sprite_frames[sprite_frame_uuid])
         log(state._sprite_frames[sprite_frame_uuid])
 
         self._sprite_type = component['_type']
         if self._sprite_type == Sprite.SIMPLE:
-            self._properties['setCenterRectNormalized'] = 'Rect(0,0,1,1)'
+            self._properties['centerRectNormalized'] = 'Rect(0,0,1,1)'
 
     def get_description(self, tab):
-        return "%s%s('%s')" % ('-' * tab, self.get_class_name(), self._properties['setSpriteFrame'])
+        return "%s%s('%s')" % ('-' * tab, self.get_class_name(), self._properties['spriteFrame'])
 
     def to_json_end(self):
         super(Sprite, self).to_json_end()
@@ -385,18 +385,18 @@ class Sprite(Node):
 class Label(Node):
 
     FONT_SYSTEM, FONT_TTF, FONT_BM = range(3)
-    H_ALIGNMENTS = ('TextHAlignment::LEFT', 'TextHAlignment::CENTER', 'TextHAlignment::RIGHT')
-    V_ALIGNMENTS = ('TextVAlignment::TOP', 'TextVAlignment::CENTER', 'TextVAlignment::BOTTOM')
+    H_ALIGNMENTS = ('Left', 'Center', 'Right')
+    V_ALIGNMENTS = ('Top', 'Center', 'Bottom')
 
     def __init__(self, data):
         super(Label, self).__init__(data)
         self._label_text = ""
-        self._font_type = Label.FONT_SYSTEM
-        self._font_filename = None
         self._jsonNode['object_type'] = 'Label'
 
         # Move Node properties into 'node' and clean _properties
         self._properties = {'node': self._properties}
+
+        self._properties['fontType'] = 'System'
 
     def parse_properties(self):
         super(Label, self).parse_properties()
@@ -405,39 +405,32 @@ class Label(Node):
         component = Node.get_node_component_of_type(self._node_data, 'cc.Label')
 
         is_system_font = component["_isSystemFontUsed"]
-        self._font_size = component['_fontSize']
-        self._label_text = component['_N$string']
+        self._jsonNode['fontSize'] = component['_fontSize']
+        self._jsonNode['labelText'] = component['_N$string']
 
         # replace new lines with \n
         self._label_text = self._label_text.replace('\n','\\n')
 
         # alignments
-        self._properties['setHorizontalAlignment'] = Label.H_ALIGNMENTS[component['_N$horizontalAlign']]
-        self._properties['setVerticalAlignment'] = Label.V_ALIGNMENTS[component['_N$verticalAlign']]
+        self._properties['horizontalAlignment'] = Label.H_ALIGNMENTS[component['_N$horizontalAlign']]
+        self._properties['verticalAlignment'] = Label.V_ALIGNMENTS[component['_N$verticalAlign']]
 
         if is_system_font:
-            self._font_type = Label.FONT_SYSTEM
+            self._properties['fontType'] = 'System'
+            self._jsonNode['fontName'] = 'arial'
         else:
-            self._font_filename = Node.get_filepath_from_uuid(component['_N$file']['__uuid__'])
-            if self._font_filename.endswith('.ttf'):
-                self._font_type = Label.FONT_TTF
-            elif self._font_filename.endswith('.fnt'):
-                self._font_type = Label.FONT_BM
-                self.add_property_int('setBMFontSize','_fontSize', component)
+            fontName = Node.get_filepath_from_uuid(component['_N$file']['__uuid__'])
+            self._jsonNode['fontName'] = fontName
+            if fontName.endswith('.ttf'):
+                self._properties['fontType'] = 'TTF'
+            elif fontName.endswith('.fnt'):
+                self._properties['fontType'] = 'BMFont'
+                self.add_property_int('fontSize','_fontSize', component)
             else:
                 raise Exception("Invalid label file: %s" % filename)
 
             # needed for multiline. lineHeight not supported in SystemFONT
-            self.add_property_int('setLineHeight' ,'_lineHeight', component)
-
-    def to_json_create_params(self):
-        state = State.Instance()
-        if self._font_type == Label.FONT_SYSTEM:
-            return 'createWithSystemFont("' + self._label_text + '", "arial", ' + str(self._font_size) + ')'
-        elif self._font_type == Label.FONT_BM:
-            return 'createWithBMFont("' + state._assetpath + self._font_filename + '", "' + self._label_text + '")'
-        elif self._font_type == Label.FONT_TTF:
-            return 'createWithTTF("' + self._label_text + '", "'+ state._assetpath + self._font_filename + '", ' + str(self._font_size) + ')'
+            self.add_property_int('lineHeight' ,'_lineHeight', component)
 
     def get_description(self, tab):
         return "%s%s('%s')" % ('-' * tab, self.get_class_name(), self._label_text)
@@ -644,7 +637,7 @@ class ProgressBar(Node):
 
         # search for sprite frame name
         component = Node.get_node_component_of_type(self._node_data, 'cc.ProgressBar')
-        self._properties['setPercent'] = component['_N$progress'] * 100
+        self._properties['percent'] = component['_N$progress'] * 100
 
 
     def get_class_name(self):
@@ -718,37 +711,37 @@ class ScrollView(Node):
         # super(ScrollView, self).parse_properties()
 
         # data from 'node' component
-        self.add_property_rgb('setBackGroundImageColor', '_color', self._node_data)
+        self.add_property_rgb('backGroundImageColor', '_color', self._node_data)
 
         # data from sprite component
         component_spr = Node.get_node_component_of_type(self._node_data, 'cc.Sprite')
         sprite_frame_uuid = component_spr['_spriteFrame']['__uuid__']
-        self._properties['setBackGroundImage'] =  '"%s", ui::Widget::TextureResType::PLIST' % state._sprite_frames[sprite_frame_uuid]['frameName']
+        self._properties['backGroundImage'] =  '"%s", ui::Widget::TextureResType::PLIST' % state._sprite_frames[sprite_frame_uuid]['frameName']
 
         # Sliced ?
         if component_spr['_type'] == ScrollView.SLICED:
-            self._properties['setBackGroundImageScale9Enabled'] = "true"
+            self._properties['backGroundImageScale9Enabled'] = "true"
         else:
-            self._properties['setBackGroundImageScale9Enabled'] = "false"
+            self._properties['backGroundImageScale9Enabled'] = "false"
 
         # data from scroll view component
         component_sv = Node.get_node_component_of_type(self._node_data, 'cc.ScrollView')
         if component_sv['horizontal'] and component_sv['vertical']:
-            self._properties['setDirection'] = 'ui::ScrollView::Direction::BOTH'
+            self._properties['direction'] = 'ui::ScrollView::Direction::BOTH'
         elif component_sv['horizontal']:
-            self._properties['setDirection'] = 'ui::ScrollView::Direction::HORIZONTAL'
+            self._properties['direction'] = 'ui::ScrollView::Direction::HORIZONTAL'
         elif component_sv['vertical']:
-            self._properties['setDirection'] = 'ui::ScrollView::Direction::VERTICAL'
+            self._properties['direction'] = 'ui::ScrollView::Direction::VERTICAL'
         else:
-            self._properties['setDirection'] = 'ui::ScrollView::Direction::NONE'
-        self.add_property_bool('setBounceEnabled', 'elastic', component_sv)
+            self._properties['direction'] = 'ui::ScrollView::Direction::NONE'
+        self.add_property_bool('bounceEnabled', 'elastic', component_sv)
 
         # content node
         content_node = self.get_content_node()
 
         # get size from content (which must be >= view.size)
         data = content_node
-        self.add_property_size('setInnerContainerSize', "_contentSize", data)
+        self.add_property_size('innerContainerSize', "_contentSize", data)
         self._content_size = data['_contentSize']
 
         # FIXME: Container Node should honor these values, but it seems that ScrollView doesn't
