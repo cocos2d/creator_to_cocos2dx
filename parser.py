@@ -405,8 +405,8 @@ class Label(Node):
         component = Node.get_node_component_of_type(self._node_data, 'cc.Label')
 
         is_system_font = component["_isSystemFontUsed"]
-        self._jsonNode['fontSize'] = component['_fontSize']
-        self._jsonNode['labelText'] = component['_N$string']
+        self._properties['fontSize'] = component['_fontSize']
+        self._properties['labelText'] = component['_N$string']
 
         # replace new lines with \n
         self._label_text = self._label_text.replace('\n','\\n')
@@ -417,10 +417,10 @@ class Label(Node):
 
         if is_system_font:
             self._properties['fontType'] = 'System'
-            self._jsonNode['fontName'] = 'arial'
+            self._properties['fontName'] = 'arial'
         else:
             fontName = Node.get_filepath_from_uuid(component['_N$file']['__uuid__'])
-            self._jsonNode['fontName'] = fontName
+            self._properties['fontName'] = fontName
             if fontName.endswith('.ttf'):
                 self._properties['fontType'] = 'TTF'
             elif fontName.endswith('.fnt'):

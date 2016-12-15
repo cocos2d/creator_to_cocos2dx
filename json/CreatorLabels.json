@@ -45,12 +45,12 @@
             },
             {
                 "children": [],
-                "fontName": "arial",
-                "fontSize": 32,
-                "labelText": "System Font Label: 32",
                 "object": {
+                    "fontName": "arial",
+                    "fontSize": 32,
                     "fontType": "System",
                     "horizontalAlignment": "Center",
+                    "labelText": "System Font Label: 32",
                     "node": {
                         "anchorPoint": {
                             "x": 0.5,
@@ -89,13 +89,12 @@
             },
             {
                 "children": [],
-                "fontName": "arial16.fnt",
-                "fontSize": 40,
-                "labelText": "BMFont: Arial 16",
                 "object": {
+                    "fontName": "arial16.fnt",
                     "fontSize": 40,
                     "fontType": "BMFont",
                     "horizontalAlignment": "Left",
+                    "labelText": "BMFont: Arial 16",
                     "lineHeight": 19,
                     "node": {
                         "anchorPoint": {
@@ -135,12 +134,12 @@
             },
             {
                 "children": [],
-                "fontName": "A Damn Mess.ttf",
-                "fontSize": 64,
-                "labelText": "TTF Font: A Damn Mess: 64",
                 "object": {
+                    "fontName": "A Damn Mess.ttf",
+                    "fontSize": 64,
                     "fontType": "TTF",
                     "horizontalAlignment": "Left",
+                    "labelText": "TTF Font: A Damn Mess: 64",
                     "lineHeight": 64,
                     "node": {
                         "anchorPoint": {
@@ -180,12 +179,12 @@
             },
             {
                 "children": [],
-                "fontName": "American Typewriter.ttf",
-                "fontSize": 32,
-                "labelText": "This is a\nmultiline\nTTF label: Left",
                 "object": {
+                    "fontName": "American Typewriter.ttf",
+                    "fontSize": 32,
                     "fontType": "TTF",
                     "horizontalAlignment": "Left",
+                    "labelText": "This is a\nmultiline\nTTF label: Left",
                     "lineHeight": 48,
                     "node": {
                         "anchorPoint": {
@@ -225,12 +224,12 @@
             },
             {
                 "children": [],
-                "fontName": "American Typewriter.ttf",
-                "fontSize": 32,
-                "labelText": "This is a\nmultiline\nTTF label:  Right",
                 "object": {
+                    "fontName": "American Typewriter.ttf",
+                    "fontSize": 32,
                     "fontType": "TTF",
                     "horizontalAlignment": "Right",
+                    "labelText": "This is a\nmultiline\nTTF label:  Right",
                     "lineHeight": 64,
                     "node": {
                         "anchorPoint": {
