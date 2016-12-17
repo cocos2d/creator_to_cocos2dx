@@ -851,8 +851,8 @@ class FireParser(object):
 
 
     def to_json_setup_design_resolution(self):
-        self._json_output['designResolution'] = {'w': self._state._design_resolution['height'],
-                                                 'h': self._state._design_resolution['width']}
+        self._json_output['designResolution'] = {'w': self._state._design_resolution['width'],
+                                                 'h': self._state._design_resolution['height']}
         self._json_output['resolutionFitWidth'] = self._state._fit_width
         self._json_output['resolutionFitHeight'] = self._state._fit_height
 

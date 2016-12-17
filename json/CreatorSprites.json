@@ -1,7 +1,7 @@
 {
     "designResolution": {
-        "h": 960,
-        "w": 640
+        "h": 640,
+        "w": 960
     },
     "resolutionFitHeight": true,
     "resolutionFitWidth": false,
