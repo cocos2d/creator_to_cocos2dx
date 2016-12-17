@@ -132,7 +132,7 @@
                     {
                         "children": [],
                         "object": {
-                            "fontName": "A Damn Mess.ttf",
+                            "fontName": "creator/assets/A Damn Mess.ttf",
                             "fontSize": 40,
                             "fontType": "TTF",
                             "horizontalAlignment": "Center",
@@ -217,7 +217,7 @@
                     {
                         "children": [],
                         "object": {
-                            "fontName": "American Typewriter.ttf",
+                            "fontName": "creator/assets/American Typewriter.ttf",
                             "fontSize": 20,
                             "fontType": "TTF",
                             "horizontalAlignment": "Center",
@@ -302,7 +302,12 @@
                     {
                         "children": [],
                         "object": {
-                            "centerRectNormalized": "Rect(0,0,1,1)",
+                            "centerRectNormalized": {
+                                "h": 1,
+                                "w": 1,
+                                "x": 0,
+                                "y": 0
+                            },
                             "node": {
                                 "anchorPoint": {
                                     "x": 0.5,
@@ -522,7 +527,12 @@
                     {
                         "children": [],
                         "object": {
-                            "centerRectNormalized": "Rect(0,0,1,1)",
+                            "centerRectNormalized": {
+                                "h": 1,
+                                "w": 1,
+                                "x": 0,
+                                "y": 0
+                            },
                             "node": {
                                 "anchorPoint": {
                                     "x": 0.5,
@@ -562,7 +572,12 @@
                     {
                         "children": [],
                         "object": {
-                            "centerRectNormalized": "Rect(0,0,1,1)",
+                            "centerRectNormalized": {
+                                "h": 1,
+                                "w": 1,
+                                "x": 0,
+                                "y": 0
+                            },
                             "node": {
                                 "anchorPoint": {
                                     "x": 0.5,
@@ -602,7 +617,12 @@
                     {
                         "children": [],
                         "object": {
-                            "centerRectNormalized": "Rect(0,0,1,1)",
+                            "centerRectNormalized": {
+                                "h": 1,
+                                "w": 1,
+                                "x": 0,
+                                "y": 0
+                            },
                             "node": {
                                 "anchorPoint": {
                                     "x": 0.5,
@@ -642,7 +662,12 @@
                     {
                         "children": [],
                         "object": {
-                            "centerRectNormalized": "Rect(0,0,1,1)",
+                            "centerRectNormalized": {
+                                "h": 1,
+                                "w": 1,
+                                "x": 0,
+                                "y": 0
+                            },
                             "node": {
                                 "anchorPoint": {
                                     "x": 0.5,
@@ -682,7 +707,12 @@
                     {
                         "children": [],
                         "object": {
-                            "centerRectNormalized": "Rect(0,0,1,1)",
+                            "centerRectNormalized": {
+                                "h": 1,
+                                "w": 1,
+                                "x": 0,
+                                "y": 0
+                            },
                             "node": {
                                 "anchorPoint": {
                                     "x": 0.5,
@@ -1278,7 +1308,12 @@
                     {
                         "children": [],
                         "object": {
-                            "centerRectNormalized": "Rect(0,0,1,1)",
+                            "centerRectNormalized": {
+                                "h": 1,
+                                "w": 1,
+                                "x": 0,
+                                "y": 0
+                            },
                             "node": {
                                 "anchorPoint": {
                                     "x": 0.5,

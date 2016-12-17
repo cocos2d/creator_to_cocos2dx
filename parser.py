@@ -371,7 +371,7 @@ class Sprite(Node):
 
         self._sprite_type = component['_type']
         if self._sprite_type == Sprite.SIMPLE:
-            self._properties['centerRectNormalized'] = 'Rect(0,0,1,1)'
+            self._properties['centerRectNormalized'] = {'x':0, 'y':0, 'w':1, 'h':1}
 
     def get_description(self, tab):
         return "%s%s('%s')" % ('-' * tab, self.get_class_name(), self._properties['spriteFrame'])
@@ -401,6 +401,8 @@ class Label(Node):
     def parse_properties(self):
         super(Label, self).parse_properties()
 
+        state = State.Instance()
+
         # search for sprite frame name
         component = Node.get_node_component_of_type(self._node_data, 'cc.Label')
 
@@ -420,7 +422,7 @@ class Label(Node):
             self._properties['fontName'] = 'arial'
         else:
             fontName = Node.get_filepath_from_uuid(component['_N$file']['__uuid__'])
-            self._properties['fontName'] = fontName
+            self._properties['fontName'] = state._assetpath + fontName
             if fontName.endswith('.ttf'):
                 self._properties['fontType'] = 'TTF'
             elif fontName.endswith('.fnt'):
