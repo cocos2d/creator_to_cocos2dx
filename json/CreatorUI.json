@@ -302,12 +302,6 @@
                     {
                         "children": [],
                         "object": {
-                            "centerRectNormalized": {
-                                "h": 1,
-                                "w": 1,
-                                "x": 0,
-                                "y": 0
-                            },
                             "node": {
                                 "anchorPoint": {
                                     "x": 0.5,
@@ -340,7 +334,8 @@
                                 "skewY": 0,
                                 "tag": -1
                             },
-                            "spriteFrame": "grossini_dance_08"
+                            "spriteFrameName": "grossini_dance_08",
+                            "spriteType": "Simple"
                         },
                         "object_type": "Sprite"
                     },
@@ -527,12 +522,6 @@
                     {
                         "children": [],
                         "object": {
-                            "centerRectNormalized": {
-                                "h": 1,
-                                "w": 1,
-                                "x": 0,
-                                "y": 0
-                            },
                             "node": {
                                 "anchorPoint": {
                                     "x": 0.5,
@@ -565,19 +554,14 @@
                                 "skewY": 0,
                                 "tag": -1
                             },
-                            "spriteFrame": "grossinis_sister1.png"
+                            "spriteFrameName": "grossinis_sister1.png",
+                            "spriteType": "Simple"
                         },
                         "object_type": "Sprite"
                     },
                     {
                         "children": [],
                         "object": {
-                            "centerRectNormalized": {
-                                "h": 1,
-                                "w": 1,
-                                "x": 0,
-                                "y": 0
-                            },
                             "node": {
                                 "anchorPoint": {
                                     "x": 0.5,
@@ -610,19 +594,14 @@
                                 "skewY": 0,
                                 "tag": -1
                             },
-                            "spriteFrame": "grossinis_sister2.png"
+                            "spriteFrameName": "grossinis_sister2.png",
+                            "spriteType": "Simple"
                         },
                         "object_type": "Sprite"
                     },
                     {
                         "children": [],
                         "object": {
-                            "centerRectNormalized": {
-                                "h": 1,
-                                "w": 1,
-                                "x": 0,
-                                "y": 0
-                            },
                             "node": {
                                 "anchorPoint": {
                                     "x": 0.5,
@@ -655,19 +634,14 @@
                                 "skewY": 0,
                                 "tag": -1
                             },
-                            "spriteFrame": "grossinis_sister1.png"
+                            "spriteFrameName": "grossinis_sister1.png",
+                            "spriteType": "Simple"
                         },
                         "object_type": "Sprite"
                     },
                     {
                         "children": [],
                         "object": {
-                            "centerRectNormalized": {
-                                "h": 1,
-                                "w": 1,
-                                "x": 0,
-                                "y": 0
-                            },
                             "node": {
                                 "anchorPoint": {
                                     "x": 0.5,
@@ -700,19 +674,14 @@
                                 "skewY": 0,
                                 "tag": -1
                             },
-                            "spriteFrame": "grossinis_sister2.png"
+                            "spriteFrameName": "grossinis_sister2.png",
+                            "spriteType": "Simple"
                         },
                         "object_type": "Sprite"
                     },
                     {
                         "children": [],
                         "object": {
-                            "centerRectNormalized": {
-                                "h": 1,
-                                "w": 1,
-                                "x": 0,
-                                "y": 0
-                            },
                             "node": {
                                 "anchorPoint": {
                                     "x": 0.5,
@@ -745,7 +714,8 @@
                                 "skewY": 0,
                                 "tag": -1
                             },
-                            "spriteFrame": "grossinis_sister1.png"
+                            "spriteFrameName": "grossinis_sister1.png",
+                            "spriteType": "Simple"
                         },
                         "object_type": "Sprite"
                     }
@@ -1308,12 +1278,6 @@
                     {
                         "children": [],
                         "object": {
-                            "centerRectNormalized": {
-                                "h": 1,
-                                "w": 1,
-                                "x": 0,
-                                "y": 0
-                            },
                             "node": {
                                 "anchorPoint": {
                                     "x": 0.5,
@@ -1346,7 +1310,8 @@
                                 "skewY": 0,
                                 "tag": -1
                             },
-                            "spriteFrame": "grossinis_sister1.png"
+                            "spriteFrameName": "grossinis_sister1.png",
+                            "spriteType": "Simple"
                         },
                         "object_type": "Sprite"
                     }
@@ -1605,7 +1570,8 @@
                                 "skewY": 0,
                                 "tag": -1
                             },
-                            "spriteFrame": "default_progressbar"
+                            "spriteFrameName": "default_progressbar",
+                            "spriteType": "Sliced"
                         },
                         "object_type": "Sprite"
                     }
@@ -1673,5 +1639,611 @@
         },
         "object_type": "Scene"
     },
+    "spriteFrames": [
+        {
+            "name": "ghosts",
+            "offset": {
+                "x": -29,
+                "y": 63
+            },
+            "originalSize": {
+                "h": 256,
+                "w": 256
+            },
+            "rect": {
+                "h": 130,
+                "w": 196,
+                "x": 1,
+                "y": 0
+            },
+            "rotated": false,
+            "texturePath": "creator/assets/ghosts.png"
+        },
+        {
+            "centerRect": {
+                "h": 32,
+                "w": 21,
+                "x": 17,
+                "y": 62
+            },
+            "name": "grossinis_sister2.png",
+            "offset": {
+                "x": 0,
+                "y": -2
+            },
+            "originalSize": {
+                "h": 138,
+                "w": 56
+            },
+            "rect": {
+                "h": 130,
+                "w": 55,
+                "x": 279,
+                "y": 26
+            },
+            "rotated": false,
+            "texturePath": "creator/assets/test_polygon.png"
+        },
+        {
+            "name": "arial16",
+            "offset": {
+                "x": -1,
+                "y": 225.5
+            },
+            "originalSize": {
+                "h": 512,
+                "w": 512
+            },
+            "rect": {
+                "h": 61,
+                "w": 510,
+                "x": 0,
+                "y": 0
+            },
+            "rotated": false,
+            "texturePath": "creator/assets/arial16.png"
+        },
+        {
+            "name": "default_sprite",
+            "offset": {
+                "x": 0,
+                "y": 0
+            },
+            "originalSize": {
+                "h": 40,
+                "w": 40
+            },
+            "rect": {
+                "h": 36,
+                "w": 40,
+                "x": 0,
+                "y": 2
+            },
+            "rotated": false,
+            "texturePath": "creator/assets/image/default_sprite.png"
+        },
+        {
+            "centerRect": {
+                "h": 28,
+                "w": 32,
+                "x": 4,
+                "y": 4
+            },
+            "name": "default_btn_disabled",
+            "offset": {
+                "x": 0,
+                "y": 0
+            },
+            "originalSize": {
+                "h": 40,
+                "w": 40
+            },
+            "rect": {
+                "h": 40,
+                "w": 40,
+                "x": 0,
+                "y": 0
+            },
+            "rotated": false,
+            "texturePath": "creator/assets/image/default_btn_disabled.png"
+        },
+        {
+            "centerRect": {
+                "h": 15,
+                "w": 15,
+                "x": 0,
+                "y": 7
+            },
+            "name": "default_scrollbar_vertical_bg",
+            "offset": {
+                "x": 0,
+                "y": 0
+            },
+            "originalSize": {
+                "h": 30,
+                "w": 15
+            },
+            "rect": {
+                "h": 30,
+                "w": 15,
+                "x": 0,
+                "y": 0
+            },
+            "rotated": false,
+            "texturePath": "creator/assets/image/default_scrollbar_vertical_bg.png"
+        },
+        {
+            "centerRect": {
+                "h": 39,
+                "w": 34,
+                "x": 7,
+                "y": 6
+            },
+            "name": "grossinis_sister1.png",
+            "offset": {
+                "x": 0,
+                "y": -11
+            },
+            "originalSize": {
+                "h": 139,
+                "w": 52
+            },
+            "rect": {
+                "h": 116,
+                "w": 50,
+                "x": 336,
+                "y": 1
+            },
+            "rotated": false,
+            "texturePath": "creator/assets/test_polygon.png"
+        },
+        {
+            "name": "grossini",
+            "offset": {
+                "x": -24.5,
+                "y": 17.5
+            },
+            "originalSize": {
+                "h": 256,
+                "w": 512
+            },
+            "rect": {
+                "h": 219,
+                "w": 461,
+                "x": 1,
+                "y": 1
+            },
+            "rotated": false,
+            "texturePath": "creator/assets/grossini.png"
+        },
+        {
+            "centerRect": {
+                "h": 14,
+                "w": 12,
+                "x": 4,
+                "y": 3
+            },
+            "name": "default_panel",
+            "offset": {
+                "x": 0,
+                "y": 0
+            },
+            "originalSize": {
+                "h": 20,
+                "w": 20
+            },
+            "rect": {
+                "h": 20,
+                "w": 20,
+                "x": 0,
+                "y": 0
+            },
+            "rotated": false,
+            "texturePath": "creator/assets/image/default_panel.png"
+        },
+        {
+            "name": "default_toggle_checkmark",
+            "offset": {
+                "x": 1,
+                "y": 1.5
+            },
+            "originalSize": {
+                "h": 28,
+                "w": 28
+            },
+            "rect": {
+                "h": 19,
+                "w": 20,
+                "x": 5,
+                "y": 3
+            },
+            "rotated": false,
+            "texturePath": "creator/assets/image/default_toggle_checkmark.png"
+        },
+        {
+            "centerRect": {
+                "h": 32,
+                "w": 34,
+                "x": 3,
+                "y": 4
+            },
+            "name": "default_btn_pressed",
+            "offset": {
+                "x": 0,
+                "y": 0
+            },
+            "originalSize": {
+                "h": 40,
+                "w": 40
+            },
+            "rect": {
+                "h": 40,
+                "w": 40,
+                "x": 0,
+                "y": 0
+            },
+            "rotated": false,
+            "texturePath": "creator/assets/image/default_btn_pressed.png"
+        },
+        {
+            "name": "iso-test",
+            "offset": {
+                "x": -94.5,
+                "y": 69
+            },
+            "originalSize": {
+                "h": 256,
+                "w": 512
+            },
+            "rect": {
+                "h": 116,
+                "w": 319,
+                "x": 2,
+                "y": 1
+            },
+            "rotated": false,
+            "texturePath": "creator/assets/iso-test.png"
+        },
+        {
+            "name": "test_polygon",
+            "offset": {
+                "x": 0.5,
+                "y": 0.5
+            },
+            "originalSize": {
+                "h": 157,
+                "w": 387
+            },
+            "rect": {
+                "h": 152,
+                "w": 380,
+                "x": 4,
+                "y": 2
+            },
+            "rotated": false,
+            "texturePath": "creator/assets/test_polygon.png"
+        },
+        {
+            "centerRect": {
+                "h": 30,
+                "w": 34,
+                "x": 3,
+                "y": 3
+            },
+            "name": "default_btn_normal",
+            "offset": {
+                "x": 0,
+                "y": 0
+            },
+            "originalSize": {
+                "h": 40,
+                "w": 40
+            },
+            "rect": {
+                "h": 40,
+                "w": 40,
+                "x": 0,
+                "y": 0
+            },
+            "rotated": false,
+            "texturePath": "creator/assets/image/default_btn_normal.png"
+        },
+        {
+            "name": "default_toggle_normal",
+            "offset": {
+                "x": 0,
+                "y": 0
+            },
+            "originalSize": {
+                "h": 28,
+                "w": 28
+            },
+            "rect": {
+                "h": 28,
+                "w": 28,
+                "x": 0,
+                "y": 0
+            },
+            "rotated": false,
+            "texturePath": "creator/assets/image/default_toggle_normal.png"
+        },
+        {
+            "name": "grossini_dance_08",
+            "offset": {
+                "x": 0,
+                "y": -1
+            },
+            "originalSize": {
+                "h": 121,
+                "w": 85
+            },
+            "rect": {
+                "h": 109,
+                "w": 51,
+                "x": 17,
+                "y": 7
+            },
+            "rotated": false,
+            "texturePath": "creator/assets/grossini_dance_08.png"
+        },
+        {
+            "centerRect": {
+                "h": 15,
+                "w": 50,
+                "x": 5,
+                "y": 0
+            },
+            "name": "default_progressbar_bg",
+            "offset": {
+                "x": 0,
+                "y": 0
+            },
+            "originalSize": {
+                "h": 15,
+                "w": 60
+            },
+            "rect": {
+                "h": 15,
+                "w": 60,
+                "x": 0,
+                "y": 0
+            },
+            "rotated": false,
+            "texturePath": "creator/assets/image/default_progressbar_bg.png"
+        },
+        {
+            "name": "island_polygon.png",
+            "offset": {
+                "x": 16,
+                "y": 7
+            },
+            "originalSize": {
+                "h": 200,
+                "w": 320
+            },
+            "rect": {
+                "h": 152,
+                "w": 287,
+                "x": 1,
+                "y": 1
+            },
+            "rotated": false,
+            "texturePath": "creator/assets/test_polygon.png"
+        },
+        {
+            "name": "default_toggle_disabled",
+            "offset": {
+                "x": 0,
+                "y": 0
+            },
+            "originalSize": {
+                "h": 28,
+                "w": 28
+            },
+            "rect": {
+                "h": 28,
+                "w": 28,
+                "x": 0,
+                "y": 0
+            },
+            "rotated": false,
+            "texturePath": "creator/assets/image/default_toggle_disabled.png"
+        },
+        {
+            "name": "default_radio_button_on",
+            "offset": {
+                "x": 0,
+                "y": 0
+            },
+            "originalSize": {
+                "h": 32,
+                "w": 32
+            },
+            "rect": {
+                "h": 32,
+                "w": 32,
+                "x": 0,
+                "y": 0
+            },
+            "rotated": false,
+            "texturePath": "creator/assets/image/default_radio_button_on.png"
+        },
+        {
+            "name": "ui",
+            "offset": {
+                "x": 0,
+                "y": 15.5
+            },
+            "originalSize": {
+                "h": 256,
+                "w": 128
+            },
+            "rect": {
+                "h": 221,
+                "w": 124,
+                "x": 2,
+                "y": 2
+            },
+            "rotated": false,
+            "texturePath": "creator/assets/ui.png"
+        },
+        {
+            "name": "default_toggle_pressed",
+            "offset": {
+                "x": 0,
+                "y": 0
+            },
+            "originalSize": {
+                "h": 28,
+                "w": 28
+            },
+            "rect": {
+                "h": 28,
+                "w": 28,
+                "x": 0,
+                "y": 0
+            },
+            "rotated": false,
+            "texturePath": "creator/assets/image/default_toggle_pressed.png"
+        },
+        {
+            "name": "default_radio_button_off",
+            "offset": {
+                "x": 0,
+                "y": -1
+            },
+            "originalSize": {
+                "h": 32,
+                "w": 32
+            },
+            "rect": {
+                "h": 30,
+                "w": 28,
+                "x": 2,
+                "y": 2
+            },
+            "rotated": false,
+            "texturePath": "creator/assets/image/default_radio_button_off.png"
+        },
+        {
+            "centerRect": {
+                "h": 15,
+                "w": 10,
+                "x": 10,
+                "y": 0
+            },
+            "name": "default_scrollbar_bg",
+            "offset": {
+                "x": 0,
+                "y": 0
+            },
+            "originalSize": {
+                "h": 15,
+                "w": 30
+            },
+            "rect": {
+                "h": 15,
+                "w": 30,
+                "x": 0,
+                "y": 0
+            },
+            "rotated": false,
+            "texturePath": "creator/assets/image/default_scrollbar_bg.png"
+        },
+        {
+            "centerRect": {
+                "h": 15,
+                "w": 20,
+                "x": 5,
+                "y": 0
+            },
+            "name": "default_progressbar",
+            "offset": {
+                "x": 0,
+                "y": 0
+            },
+            "originalSize": {
+                "h": 15,
+                "w": 30
+            },
+            "rect": {
+                "h": 15,
+                "w": 30,
+                "x": 0,
+                "y": 0
+            },
+            "rotated": false,
+            "texturePath": "creator/assets/image/default_progressbar.png"
+        },
+        {
+            "name": "default_sprite_splash",
+            "offset": {
+                "x": 0,
+                "y": 0
+            },
+            "originalSize": {
+                "h": 2,
+                "w": 2
+            },
+            "rect": {
+                "h": 2,
+                "w": 2,
+                "x": 0,
+                "y": 0
+            },
+            "rotated": false,
+            "texturePath": "creator/assets/image/default_sprite_splash.png"
+        },
+        {
+            "centerRect": {
+                "h": 20,
+                "w": 11,
+                "x": 0,
+                "y": 5
+            },
+            "name": "default_scrollbar_vertical",
+            "offset": {
+                "x": 0,
+                "y": 0
+            },
+            "originalSize": {
+                "h": 30,
+                "w": 15
+            },
+            "rect": {
+                "h": 30,
+                "w": 11,
+                "x": 2,
+                "y": 0
+            },
+            "rotated": false,
+            "texturePath": "creator/assets/image/default_scrollbar_vertical.png"
+        },
+        {
+            "centerRect": {
+                "h": 11,
+                "w": 10,
+                "x": 10,
+                "y": 0
+            },
+            "name": "default_scrollbar",
+            "offset": {
+                "x": 0,
+                "y": 0
+            },
+            "originalSize": {
+                "h": 15,
+                "w": 30
+            },
+            "rect": {
+                "h": 11,
+                "w": 30,
+                "x": 0,
+                "y": 2
+            },
+            "rotated": false,
+            "texturePath": "creator/assets/image/default_scrollbar.png"
+        }
+    ],
     "version": "1.0"
 }

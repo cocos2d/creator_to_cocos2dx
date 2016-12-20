@@ -344,10 +344,10 @@ class Canvas(Node):
 #
 ################################################################################
 class Sprite(Node):
-    SIMPLE, SLICED, TILED, FILLED = range(4)
+    SPRITE_TYPES = ('Simple', 'Sliced', 'Tiled', 'Filled')
+
     def __init__(self, data):
         super(Sprite, self).__init__(data)
-        self._sprite_type = Sprite.SIMPLE
         self._jsonNode['object_type'] = 'Sprite'
 
         # Move Node properties into 'node' and clean _properties
@@ -366,12 +366,10 @@ class Sprite(Node):
 
         # add name between ""
         log(state._sprite_frames[sprite_frame_uuid])
-        self.add_property_str('spriteFrame', 'frameName', state._sprite_frames[sprite_frame_uuid])
+        self.add_property_str('spriteFrameName', 'frameName', state._sprite_frames[sprite_frame_uuid])
         log(state._sprite_frames[sprite_frame_uuid])
 
-        self._sprite_type = component['_type']
-        if self._sprite_type == Sprite.SIMPLE:
-            self._properties['centerRectNormalized'] = {'x':0, 'y':0, 'w':1, 'h':1}
+        self._properties['spriteType'] = Sprite.SPRITE_TYPES[component['_type']]
 
     def get_description(self, tab):
         return "%s%s('%s')" % ('-' * tab, self.get_class_name(), self._properties['spriteFrame'])
@@ -858,7 +856,46 @@ class FireParser(object):
 
 
     def to_json_setup_sprite_frames(self):
-        pass
+        sprite_frames = []
+
+        state = State.Instance()
+
+        for k in state._sprite_without_atlas:
+            sprite_frame = state._sprite_frames[k]
+            if 'rawTextureUuid' in sprite_frame:
+                texture_filename = Node.get_filepath_from_uuid(sprite_frame['rawTextureUuid'])
+
+                original_frame_name = sprite_frame['frameName']
+                sprite_frame_name = original_frame_name.replace('-','_')
+                sprite_frame_name = sprite_frame_name.replace('.','_')
+
+                # name:string;
+                # texturePath:string;
+                # rect:Rect;
+                # offset:Vec2;
+                # rotated:bool;
+                # originalSize:Size;
+                frame = {}
+                frame['name'] = original_frame_name
+                frame['texturePath'] = state._assetpath + texture_filename
+                frame['rect'] = {'x':sprite_frame['trimX'], 'y':sprite_frame['trimY'], 'w': sprite_frame['width'], 'h': sprite_frame['height'] }
+                frame['offset'] = {'x': sprite_frame['offsetX'], 'y': sprite_frame['offsetY']}
+                frame['rotated'] = sprite_frame['rotated']
+                frame['originalSize'] = {'w': sprite_frame['rawWidth'], 'h': sprite_frame['rawHeight'] }
+
+                # does it have a capInsets?
+                if sprite_frame['borderTop'] != 0 or sprite_frame['borderBottom'] != 0 or sprite_frame['borderLeft'] != 0 or sprite_frame['borderRight'] != 0:
+                    x = sprite_frame['borderLeft']
+                    y = sprite_frame['borderTop']
+                    w = sprite_frame['width'] - sprite_frame['borderRight'] - x
+                    h = sprite_frame['height'] - sprite_frame['borderBottom'] - y
+                    frame['centerRect'] = {'x':x, 'y':y, 'w':w, 'h':h }
+
+                sprite_frames.append(frame)
+            else:
+                log("Ignoring '%s'... No rawTextureUuid" % sprite_frame['frameName'])
+
+        self._json_output['spriteFrames'] = sprite_frames
 
 
     def create_file(self, filename):
