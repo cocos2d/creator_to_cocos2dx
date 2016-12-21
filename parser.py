@@ -524,7 +524,7 @@ class Button(Node):
         spr_component = Node.get_node_component_of_type(self._node_data, 'cc.Sprite')
         but_component = Node.get_node_component_of_type(self._node_data, 'cc.Button')
 
-        self._normalSprite = Node.get_filepath_from_uuid(but_component['_N$normalSprite']['__uuid__'])
+        self._properties['spriteFrameName'] = Node.get_filepath_from_uuid(but_component['_N$normalSprite']['__uuid__'])
         self._properties['ignoreContentAdaptWithSize'] = False
 
 
