@@ -276,7 +276,6 @@ class Node(object):
     def to_json(self, depth, sibling_idx):
         self.to_json_begin(depth, sibling_idx)
         self.to_json_properties()
-        self.to_json_end()
 
         for idx, child in enumerate(self._children):
             jsonChild = child.to_json(depth+1, idx)
@@ -290,9 +289,6 @@ class Node(object):
 
     def to_json_properties(self):
         self._jsonNode['object'] = self._properties
-
-    def to_json_end(self):
-        '''epilogue'''
 
     def adjust_child_parameters(self, child):
         '''Only useful when a parent wants to override some child parameter
@@ -338,6 +334,7 @@ class Canvas(Node):
 #
 ################################################################################
 class Sprite(Node):
+
     SPRITE_TYPES = ('Simple', 'Sliced', 'Tiled', 'Filled')
 
     def __init__(self, data):
@@ -368,15 +365,9 @@ class Sprite(Node):
     def get_description(self, tab):
         return "%s%s('%s')" % ('-' * tab, self.get_class_name(), self._properties['spriteFrame'])
 
-    def to_json_end(self):
-        super(Sprite, self).to_json_end()
-        #if self._sprite_type == Sprite.TILED:
-        #    State.Instance()._file_cpp.write("    creator_tile_sprite(%s);\n" % self._cpp_node_name)
-
 
 class Label(Node):
 
-    FONT_SYSTEM, FONT_TTF, FONT_BM = range(3)
     H_ALIGNMENTS = ('Left', 'Center', 'Right')
     V_ALIGNMENTS = ('Top', 'Center', 'Bottom')
 
@@ -496,7 +487,6 @@ class Button(Node):
     # "duration": 0.1,
     # "pressedSprite": { "__uuid__":
     # "hoverSprite": { "__uuid__":
-    TRANSITION_NONE, TRANSITION_COLOR, TRANSITION_SPRITE = range(3)
 
     def __init__(self, data):
         super(Button, self).__init__(data)
@@ -607,9 +597,6 @@ class ScrollView(Node):
     # "_N$horizontalScrollBar": null,
     # "_N$verticalScrollBar": { "__id__": 23 }
 
-    # for the sprites used internally
-    SIMPLE, SLICED, TILED, FILLED = range(4)
-
     def __init__(self, data):
         super(ScrollView, self).__init__(data)
         self._jsonNode['object_type'] = 'ScrollView'
@@ -706,18 +693,6 @@ class ScrollView(Node):
 
     def get_class_name(self):
         return 'ui::ScrollView'
-
-    def to_json_end(self):
-        super(ScrollView, self).to_json_end()
-        # FIXME: Call setJumpToPercent at the end, because it depens
-        # on having the contentSize correct
-        # FIXME: uses the anchorPoint for the percent in the bar, but
-        # this migh break if it changes the position of the bar
-        # content node
-        #state = State.Instance()
-        #state._file_cpp.write("    %s->jumpToPercentVertical(%g * 100);\n" % (self._cpp_node_name, (1-self._content_ap['y'])))
-        #state._file_cpp.write("    %s->jumpToPercentHorizontal(%g * 100);\n" % (self._cpp_node_name, self._content_ap['x']))
-
 
     def adjust_child_parameters(self, child):
         # FIXME: adjust child position since innerContainer doesn't honor
