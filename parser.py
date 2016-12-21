@@ -597,6 +597,9 @@ class ScrollView(Node):
     # "_N$horizontalScrollBar": null,
     # "_N$verticalScrollBar": { "__id__": 23 }
 
+    # for the sprites used internally
+    SIMPLE, SLICED, TILED, FILLED = range(4)
+
     def __init__(self, data):
         super(ScrollView, self).__init__(data)
         self._jsonNode['object_type'] = 'ScrollView'
