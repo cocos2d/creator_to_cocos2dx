@@ -294,12 +294,6 @@ class Node(object):
     def to_json_end(self):
         '''epilogue'''
 
-    def to_json_add_child(self, child):
-        '''adds a child to self'''
-
-    def to_json_create_params(self):
-        return 'create()'
-
     def adjust_child_parameters(self, child):
         '''Only useful when a parent wants to override some child parameter
            As an example, ScrollView needs to adjust its children position
@@ -455,9 +449,6 @@ class ParticleSystem(Node):
     def get_class_name(self):
         return 'ParticleSystemQuad'
 
-    def to_json_create_params(self):
-        return 'create("' + State.Instance()._assetpath + self._particle_system_file + '")'
-
 
 class TiledMap(Node):
     def __init__(self, data):
@@ -478,9 +469,6 @@ class TiledMap(Node):
 
     def get_class_name(self):
         return 'TMXTiledMap'
-
-    def to_json_create_params(self):
-        return 'create("' + State.Instance()._assetpath + self._tmx_file + '")'
 
 
 ################################################################################
@@ -531,16 +519,6 @@ class Button(Node):
     def get_class_name(self):
         return 'ui::Button'
 
-    def to_json_create_params(self):
-        return 'create("%s", "", "", ui::Widget::TextureResType::PLIST)' % self._normalSprite
-
-    def to_json_add_child(self, child):
-        pass
-        #state = State.Instance()
-        ## replaces addChild() with setTitleLabel()
-        #state._file_cpp.write("    %s->setTitleLabel(%s);\n" % (self._cpp_node_name, child._cpp_node_name))
-        #state._file_cpp.write("")
-
 
 class EditBox(Node):
     # custom properties
@@ -588,13 +566,6 @@ class EditBox(Node):
     def get_class_name(self):
         return 'ui::EditBox'
 
-    def to_json_create_params(self):
-        pass
-        #s = self._node_data['_contentSize']
-        #w = s['width']
-        #h = s['height']
-        #return 'create(Size(%d,%d), "%s", ui::Widget::TextureResType::PLIST)' % (w, h, self._backgroundImage)
-
 
 class ProgressBar(Node):
     # custom properties
@@ -621,9 +592,6 @@ class ProgressBar(Node):
 
     def get_class_name(self):
         return 'ui::LoadingBar'
-
-    def to_json_create_params(self):
-        return 'create()'
 
 
 class ScrollView(Node):
@@ -738,9 +706,6 @@ class ScrollView(Node):
 
     def get_class_name(self):
         return 'ui::ScrollView'
-
-    def to_json_create_params(self):
-        return 'create()'
 
     def to_json_end(self):
         super(ScrollView, self).to_json_end()
