@@ -91,7 +91,7 @@
                     }
                 ],
                 "object": {
-                    "ignoreContentAdaptWithSize": "false",
+                    "ignoreContentAdaptWithSize": false,
                     "node": {
                         "anchorPoint": {
                             "x": 0.5,
@@ -176,7 +176,7 @@
                     }
                 ],
                 "object": {
-                    "ignoreContentAdaptWithSize": "false",
+                    "ignoreContentAdaptWithSize": false,
                     "node": {
                         "anchorPoint": {
                             "x": 0.5,
@@ -261,7 +261,7 @@
                     }
                 ],
                 "object": {
-                    "ignoreContentAdaptWithSize": "false",
+                    "ignoreContentAdaptWithSize": false,
                     "node": {
                         "anchorPoint": {
                             "x": 0.5,
@@ -431,7 +431,7 @@
                             }
                         ],
                         "object": {
-                            "ignoreContentAdaptWithSize": "false",
+                            "ignoreContentAdaptWithSize": false,
                             "node": {
                                 "anchorPoint": {
                                     "x": 0.5,
@@ -469,15 +469,15 @@
                     }
                 ],
                 "object": {
-                    "backGroundImage": "\"default_panel\", ui::Widget::TextureResType::PLIST",
-                    "backGroundImageColor": {
+                    "backgroundImage": "default_panel",
+                    "backgroundImageColor": {
                         "b": 108,
                         "g": 108,
                         "r": 122
                     },
-                    "backGroundImageScale9Enabled": "true",
+                    "backgroundImageScale9Enabled": true,
                     "bounceEnabled": true,
-                    "direction": "ui::ScrollView::Direction::VERTICAL",
+                    "direction": "Vertical",
                     "innerContainerSize": {
                         "h": 400,
                         "w": 220
@@ -721,15 +721,15 @@
                     }
                 ],
                 "object": {
-                    "backGroundImage": "\"default_panel\", ui::Widget::TextureResType::PLIST",
-                    "backGroundImageColor": {
+                    "backgroundImage": "default_panel",
+                    "backgroundImageColor": {
                         "b": 100,
                         "g": 100,
                         "r": 235
                     },
-                    "backGroundImageScale9Enabled": "true",
+                    "backgroundImageScale9Enabled": true,
                     "bounceEnabled": true,
-                    "direction": "ui::ScrollView::Direction::HORIZONTAL",
+                    "direction": "Horizontal",
                     "innerContainerSize": {
                         "h": 200,
                         "w": 400
@@ -819,7 +819,7 @@
                             }
                         ],
                         "object": {
-                            "ignoreContentAdaptWithSize": "false",
+                            "ignoreContentAdaptWithSize": false,
                             "node": {
                                 "anchorPoint": {
                                     "x": 0.5,
@@ -903,7 +903,7 @@
                             }
                         ],
                         "object": {
-                            "ignoreContentAdaptWithSize": "false",
+                            "ignoreContentAdaptWithSize": false,
                             "node": {
                                 "anchorPoint": {
                                     "x": 0.5,
@@ -987,7 +987,7 @@
                             }
                         ],
                         "object": {
-                            "ignoreContentAdaptWithSize": "false",
+                            "ignoreContentAdaptWithSize": false,
                             "node": {
                                 "anchorPoint": {
                                     "x": 0.5,
@@ -1071,7 +1071,7 @@
                             }
                         ],
                         "object": {
-                            "ignoreContentAdaptWithSize": "false",
+                            "ignoreContentAdaptWithSize": false,
                             "node": {
                                 "anchorPoint": {
                                     "x": 0.5,
@@ -1155,7 +1155,7 @@
                             }
                         ],
                         "object": {
-                            "ignoreContentAdaptWithSize": "false",
+                            "ignoreContentAdaptWithSize": false,
                             "node": {
                                 "anchorPoint": {
                                     "x": 0.5,
@@ -1239,7 +1239,7 @@
                             }
                         ],
                         "object": {
-                            "ignoreContentAdaptWithSize": "false",
+                            "ignoreContentAdaptWithSize": false,
                             "node": {
                                 "anchorPoint": {
                                     "x": 0.5,
@@ -1317,15 +1317,15 @@
                     }
                 ],
                 "object": {
-                    "backGroundImage": "\"default_panel\", ui::Widget::TextureResType::PLIST",
-                    "backGroundImageColor": {
+                    "backgroundImage": "default_panel",
+                    "backgroundImageColor": {
                         "b": 61,
                         "g": 255,
                         "r": 0
                     },
-                    "backGroundImageScale9Enabled": "true",
+                    "backgroundImageScale9Enabled": true,
                     "bounceEnabled": true,
-                    "direction": "ui::ScrollView::Direction::BOTH",
+                    "direction": "Both",
                     "innerContainerSize": {
                         "h": 200,
                         "w": 400
@@ -1368,14 +1368,15 @@
             {
                 "children": [],
                 "object": {
+                    "backgroundImage": "default_progressbar",
                     "fontColor": {
                         "b": 51,
                         "g": 255,
                         "r": 0
                     },
                     "fontSize": 29,
-                    "inputFlag": "ui::EditBox::InputFlag::LOWERCASE_ALL_CHARACTERS",
-                    "inputMode": "ui::EditBox::InputMode::SINGLE_LINE",
+                    "inputFlag": "LowercaseAllCharacters",
+                    "inputMode": "SingleLine",
                     "maxLength": 14,
                     "node": {
                         "anchorPoint": {
@@ -1409,14 +1410,14 @@
                         "skewY": 0,
                         "tag": -1
                     },
-                    "placeHolder": "Enter text here...",
+                    "placeholder": "Enter text here...",
                     "placeholderFontColor": {
-                        "b": 127.5,
-                        "g": 127.5,
-                        "r": 127.5
+                        "b": 127,
+                        "g": 127,
+                        "r": 127
                     },
                     "placeholderFontSize": 20,
-                    "returnType": "ui::EditBox::KeyboardReturnType::DEFAULT",
+                    "returnType": "Default",
                     "text": "Hello World"
                 },
                 "object_type": "EditBox"
@@ -1424,14 +1425,15 @@
             {
                 "children": [],
                 "object": {
+                    "backgroundImage": "default_progressbar",
                     "fontColor": {
                         "b": 0,
                         "g": 0,
                         "r": 255
                     },
                     "fontSize": 29,
-                    "inputFlag": "ui::EditBox::InputFlag::LOWERCASE_ALL_CHARACTERS",
-                    "inputMode": "ui::EditBox::InputMode::EMAIL_ADDRESS",
+                    "inputFlag": "LowercaseAllCharacters",
+                    "inputMode": "EmailAddress",
                     "maxLength": 40,
                     "node": {
                         "anchorPoint": {
@@ -1465,14 +1467,14 @@
                         "skewY": 0,
                         "tag": -1
                     },
-                    "placeHolder": "Enter your email",
+                    "placeholder": "Enter your email",
                     "placeholderFontColor": {
                         "b": 255,
                         "g": 5,
                         "r": 15
                     },
                     "placeholderFontSize": 20,
-                    "returnType": "ui::EditBox::KeyboardReturnType::DEFAULT",
+                    "returnType": "Default",
                     "text": ""
                 },
                 "object_type": "EditBox"
@@ -1480,14 +1482,15 @@
             {
                 "children": [],
                 "object": {
+                    "backgroundImage": "default_progressbar",
                     "fontColor": {
                         "b": 0,
                         "g": 0,
                         "r": 0
                     },
                     "fontSize": 29,
-                    "inputFlag": "ui::EditBox::InputFlag::PASSWORD",
-                    "inputMode": "ui::EditBox::InputMode::SINGLE_LINE",
+                    "inputFlag": "Password",
+                    "inputMode": "SingleLine",
                     "maxLength": 16,
                     "node": {
                         "anchorPoint": {
@@ -1521,14 +1524,14 @@
                         "skewY": 0,
                         "tag": -1
                     },
-                    "placeHolder": "Enter your password",
+                    "placeholder": "Enter your password",
                     "placeholderFontColor": {
                         "b": 131,
                         "g": 141,
                         "r": 19
                     },
                     "placeholderFontSize": 20,
-                    "returnType": "ui::EditBox::KeyboardReturnType::DEFAULT",
+                    "returnType": "Default",
                     "text": ""
                 },
                 "object_type": "EditBox"

@@ -233,7 +233,7 @@ class Node(object):
             r = data.get(value)['r']
             g = data.get(value)['g']
             b = data.get(value)['b']
-            self._properties[newkey] = {'r':r, 'g':g, 'b':b}
+            self._properties[newkey] = {'r':int(r), 'g':int(g), 'b':int(b)}
 
     def add_property_bool(self, newkey, value, data):
         if value in data:
@@ -525,7 +525,7 @@ class Button(Node):
         but_component = Node.get_node_component_of_type(self._node_data, 'cc.Button')
 
         self._normalSprite = Node.get_filepath_from_uuid(but_component['_N$normalSprite']['__uuid__'])
-        self._properties['ignoreContentAdaptWithSize'] = 'false'
+        self._properties['ignoreContentAdaptWithSize'] = False
 
 
     def get_class_name(self):
@@ -556,31 +556,9 @@ class EditBox(Node):
     # "_N$placeholderFontColor": { "__type__": "cc.Color" }
     # "_N$maxLength": 8
 
-    INPUT_MODE = ( 'ui::EditBox::InputMode::ANY',
-            'ui::EditBox::InputMode::EMAIL_ADDRESS',
-            'ui::EditBox::InputMode::NUMERIC',
-            'ui::EditBox::InputMode::PHONE_NUMBER',
-            'ui::EditBox::InputMode::URL',
-            'ui::EditBox::InputMode::DECIMAL',
-            'ui::EditBox::InputMode::SINGLE_LINE'
-            )
-
-    INPUT_FLAG = (
-            'ui::EditBox::InputFlag::PASSWORD',
-            'ui::EditBox::InputFlag::SENSITIVE',
-            'ui::EditBox::InputFlag::INITIAL_CAPS_WORD',
-            'ui::EditBox::InputFlag::INITIAL_CAPS_SENTENCE',
-            'ui::EditBox::InputFlag::INITIAL_CAPS_ALL_CHARACTERS',
-            'ui::EditBox::InputFlag::LOWERCASE_ALL_CHARACTERS',
-            )
-
-    RETURN_TYPE = (
-            'ui::EditBox::KeyboardReturnType::DEFAULT',
-            'ui::EditBox::KeyboardReturnType::DONE',
-            'ui::EditBox::KeyboardReturnType::SEND',
-            'ui::EditBox::KeyboardReturnType::SEARCH',
-            'ui::EditBox::KeyboardReturnType::GO',
-            )
+    INPUT_MODE = ('Any', 'EmailAddress', 'Numeric', 'PhoneNumber', 'URL', 'Decime', 'SingleLine')
+    INPUT_FLAG = ('Password', 'Sensitive', 'InitialCapsWord', 'InitialCapsSentence', 'InitialCapsAllCharacters', 'LowercaseAllCharacters')
+    RETURN_TYPE = ('Default', 'Done', 'Send', 'Search', 'Go')
 
     def __init__(self, data):
         super(EditBox, self).__init__(data)
@@ -594,14 +572,14 @@ class EditBox(Node):
 
         # search for sprite frame name
         component = Node.get_node_component_of_type(self._node_data, 'cc.EditBox')
-        self._backgroundImage = Node.get_filepath_from_uuid(component['_N$backgroundImage']['__uuid__'])
+        self._properties['backgroundImage'] = Node.get_filepath_from_uuid(component['_N$backgroundImage']['__uuid__'])
         self._properties['returnType'] = EditBox.RETURN_TYPE[component['_N$returnType']]
         self._properties['inputFlag'] = EditBox.INPUT_FLAG[component['_N$inputFlag']]
         self._properties['inputMode'] = EditBox.INPUT_MODE[component['_N$inputMode']]
         self.add_property_int('fontSize', '_N$fontSize', component)
 #        self.add_property_int('setLineHeight', '_N$lineHeight', component)
         self.add_property_rgb('fontColor', '_N$fontColor', component)
-        self.add_property_str('placeHolder', '_N$placeholder', component)
+        self.add_property_str('placeholder', '_N$placeholder', component)
         self.add_property_int('placeholderFontSize', '_N$placeholderFontSize', component)
         self.add_property_rgb('placeholderFontColor', '_N$placeholderFontColor', component)
         self.add_property_int('maxLength', '_N$maxLength', component)
@@ -611,10 +589,11 @@ class EditBox(Node):
         return 'ui::EditBox'
 
     def to_json_create_params(self):
-        s = self._node_data['_contentSize']
-        w = s['width']
-        h = s['height']
-        return 'create(Size(%d,%d), "%s", ui::Widget::TextureResType::PLIST)' % (w, h, self._backgroundImage)
+        pass
+        #s = self._node_data['_contentSize']
+        #w = s['width']
+        #h = s['height']
+        #return 'create(Size(%d,%d), "%s", ui::Widget::TextureResType::PLIST)' % (w, h, self._backgroundImage)
 
 
 class ProgressBar(Node):
@@ -711,29 +690,29 @@ class ScrollView(Node):
         # super(ScrollView, self).parse_properties()
 
         # data from 'node' component
-        self.add_property_rgb('backGroundImageColor', '_color', self._node_data)
+        self.add_property_rgb('backgroundImageColor', '_color', self._node_data)
 
         # data from sprite component
         component_spr = Node.get_node_component_of_type(self._node_data, 'cc.Sprite')
         sprite_frame_uuid = component_spr['_spriteFrame']['__uuid__']
-        self._properties['backGroundImage'] =  '"%s", ui::Widget::TextureResType::PLIST' % state._sprite_frames[sprite_frame_uuid]['frameName']
+        self._properties['backgroundImage'] =  state._sprite_frames[sprite_frame_uuid]['frameName']
 
         # Sliced ?
         if component_spr['_type'] == ScrollView.SLICED:
-            self._properties['backGroundImageScale9Enabled'] = "true"
+            self._properties['backgroundImageScale9Enabled'] = True
         else:
-            self._properties['backGroundImageScale9Enabled'] = "false"
+            self._properties['backgroundImageScale9Enabled'] = False
 
         # data from scroll view component
         component_sv = Node.get_node_component_of_type(self._node_data, 'cc.ScrollView')
         if component_sv['horizontal'] and component_sv['vertical']:
-            self._properties['direction'] = 'ui::ScrollView::Direction::BOTH'
+            self._properties['direction'] = 'Both'
         elif component_sv['horizontal']:
-            self._properties['direction'] = 'ui::ScrollView::Direction::HORIZONTAL'
+            self._properties['direction'] = 'Horizontal'
         elif component_sv['vertical']:
-            self._properties['direction'] = 'ui::ScrollView::Direction::VERTICAL'
+            self._properties['direction'] = 'Vertical'
         else:
-            self._properties['direction'] = 'ui::ScrollView::Direction::NONE'
+            self._properties['direction'] = 'None'
         self.add_property_bool('bounceEnabled', 'elastic', component_sv)
 
         # content node
@@ -947,7 +926,7 @@ class FireParser(object):
 
 def help():
     print("%s v0.1 - parses Cocos Creator project files\n" % os.path.basename(sys.argv[0]))
-    print("Example:\n%s --assetpath creator_assets assets/*.fire" % os.path.basename(sys.argv[0]))
+    print("Example:\n%s --assetpath creator/assets assets/*.fire" % os.path.basename(sys.argv[0]))
     sys.exit(-1)
 
 
