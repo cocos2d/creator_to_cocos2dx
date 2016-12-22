@@ -69,9 +69,6 @@ class State(object):
     def __init__(self):
         self._filename = ""
 
-        # Needed resources
-        self._resources_needed = set()
-
         # the .fire file being parsed
         self._json_data = []
 
@@ -131,7 +128,7 @@ class Node(object):
     @classmethod
     def guess_type_from_components(cls, components):
         # ScrollView, Button & ProgressBar should be before Sprite
-        supported_components = ('cc.Button', 'cc.ProgressBar', 'cc.ScrollView', 'cc.EditBox', 'cc.Label', 'cc.Sprite', 'cc.ParticleSystem', 'cc.TiledMap', 'cc.Canvas')
+        supported_components = ('cc.Button', 'cc.ProgressBar', 'cc.ScrollView', 'cc.EditBox', 'cc.Label', 'cc.Sprite', 'cc.ParticleSystem', 'cc.TiledMap', 'cc.Canvas', 'cc.RichText')
         node_components = [x['__type__'] for x in components]
         for supported in supported_components:
             if supported in node_components:
@@ -148,6 +145,8 @@ class Node(object):
             n = Sprite(state._json_data[node_idx])
         elif node_type == 'cc.Label':
             n = Label(state._json_data[node_idx])
+        elif node_type == 'cc.RichText':
+            n = RichText(state._json_data[node_idx])
         elif node_type == 'cc.ParticleSystem':
             n = ParticleSystem(state._json_data[node_idx])
         elif node_type == 'cc.TiledMap':
@@ -362,9 +361,6 @@ class Sprite(Node):
 
         self._properties['spriteType'] = Sprite.SPRITE_TYPES[component['_type']]
 
-    def get_description(self, tab):
-        return "%s%s('%s')" % ('-' * tab, self.get_class_name(), self._properties['spriteFrame'])
-
 
 class Label(Node):
 
@@ -417,49 +413,88 @@ class Label(Node):
             # needed for multiline. lineHeight not supported in SystemFONT
             self.add_property_int('lineHeight' ,'_lineHeight', component)
 
-    def get_description(self, tab):
-        return "%s%s('%s')" % ('-' * tab, self.get_class_name(), self._label_text)
+
+class RichText(Node):
+
+    #"_enabled": true,
+    #"_N$string": "<color=#00ff00>Rich</c><color=#0fffff>Text</color>",
+    #"_N$horizontalAlign": 0,
+    #"_N$fontSize": 40,
+    #"_N$font": null,
+    #"_N$maxWidth": 0,
+    #"_N$lineHeight": 50,
+    #"_N$imageAtlas": null
+
+    H_ALIGNMENTS = ('Left', 'Center', 'Right')
+
+    def __init__(self, data):
+        super(RichText, self).__init__(data)
+        self._label_text = ""
+        self._jsonNode['object_type'] = 'RichText'
+
+        # Move Node properties into 'node' and clean _properties
+        self._properties = {'node': self._properties}
+
+        print("WARNING: RichText is in support is an experimental feature")
+
+    def parse_properties(self):
+        super(RichText, self).parse_properties()
+
+        state = State.Instance()
+
+        # search for sprite frame name
+        component = Node.get_node_component_of_type(self._node_data, 'cc.RichText')
+
+        self._properties['text'] = component['_N$string']
+        self._properties['horizontalAlignment'] = Label.H_ALIGNMENTS[component['_N$horizontalAlign']]
+        self._properties['fontSize'] = component['_N$fontSize']
+        self._properties['maxWidth'] = component['_N$maxWidth']
+        self._properties['lineHeight'] = component['_N$lineHeight']
+        #self._properties['imageAtlas'] = component['_N$imageAtlas']
+        f = component['_N$font']
+        if f is not None:
+            fontName = Node.get_filepath_from_uuid(f['__uuid__'])
+            self._properties['fontFilename'] = state._assetpath + fontName
 
 
 class ParticleSystem(Node):
     def __init__(self, data):
         super(ParticleSystem, self).__init__(data)
-
-        component = Node.get_node_component_of_type(self._node_data, 'cc.ParticleSystem')
-
-        self._particle_system_file = Node.get_filepath_from_uuid(component['_file']['__uuid__'])
-
-        # tag it as needed resourse
-        State.Instance()._resources_needed.add(self._particle_system_file)
-
         self._jsonNode['object_type'] = 'Particle'
 
         # Move Node properties into 'node' and clean _properties
         self._properties = {'node':self._properties}
 
-    def get_class_name(self):
-        return 'ParticleSystemQuad'
+    def parse_properties(self):
+        super(ParticleSystem, self).parse_properties()
+
+        state = State.Instance()
+        component = Node.get_node_component_of_type(self._node_data, 'cc.ParticleSystem')
+        self._properties['particleFilename'] = state._assetpath + Node.get_filepath_from_uuid(component['_file']['__uuid__'])
 
 
 class TiledMap(Node):
     def __init__(self, data):
         super(TiledMap, self).__init__(data)
-
-        component = Node.get_node_component_of_type(self._node_data, 'cc.TiledMap')
-        self._tmx_file = Node.get_filepath_from_uuid(component['_tmxFile']['__uuid__'])
-
-        # tag it as needed resourse
-        State.Instance()._resources_needed.add(self._tmx_file)
-
-        # for some reason, changing the contentSize breaks the TMX
-        del self._properties['contentSize']
         self._jsonNode['object_type'] = 'TileMap'
 
         # Move Node properties into 'node' and clean _properties
         self._properties = {'node': self._properties}
 
-    def get_class_name(self):
-        return 'TMXTiledMap'
+    def parse_properties(self):
+        super(TiledMap, self).parse_properties()
+
+        # changing the contentSize doesn't change the size
+        # but it will affect the anchorPoint, so, it should not be set
+        # instead, create a new property `desiredContentSize` and manually 
+        # scale the tmx from there
+        cs = self._properties['node']['contentSize']
+        del self._properties['node']['contentSize']
+
+        state = State.Instance()
+        component = Node.get_node_component_of_type(self._node_data, 'cc.TiledMap')
+        self._properties['tmxFilename'] = state._assetpath + Node.get_filepath_from_uuid(component['_tmxFile']['__uuid__'])
+        self._properties['desiredContentSize'] = cs
 
 
 ################################################################################
@@ -506,10 +541,6 @@ class Button(Node):
         self._properties['ignoreContentAdaptWithSize'] = False
 
 
-    def get_class_name(self):
-        return 'ui::Button'
-
-
 class EditBox(Node):
     # custom properties
     # "_N$backgroundImage": { "__uuid__": }
@@ -553,9 +584,6 @@ class EditBox(Node):
         self.add_property_int('maxLength', '_N$maxLength', component)
         self.add_property_str('text', '_string', component)
 
-    def get_class_name(self):
-        return 'ui::EditBox'
-
 
 class ProgressBar(Node):
     # custom properties
@@ -578,10 +606,6 @@ class ProgressBar(Node):
         # search for sprite frame name
         component = Node.get_node_component_of_type(self._node_data, 'cc.ProgressBar')
         self._properties['percent'] = component['_N$progress'] * 100
-
-
-    def get_class_name(self):
-        return 'ui::LoadingBar'
 
 
 class ScrollView(Node):
@@ -693,9 +717,6 @@ class ScrollView(Node):
         # add its children
         for child_idx in content_node["_children"]:
             self.parse_child(child_idx['__id__'])
-
-    def get_class_name(self):
-        return 'ui::ScrollView'
 
     def adjust_child_parameters(self, child):
         # FIXME: adjust child position since innerContainer doesn't honor

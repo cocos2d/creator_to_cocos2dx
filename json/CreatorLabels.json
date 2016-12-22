@@ -266,6 +266,136 @@
                     "verticalAlignment": "Center"
                 },
                 "object_type": "Label"
+            },
+            {
+                "children": [],
+                "object": {
+                    "fontSize": 40,
+                    "horizontalAlignment": "Left",
+                    "lineHeight": 50,
+                    "maxWidth": 0,
+                    "node": {
+                        "anchorPoint": {
+                            "x": 0.5,
+                            "y": 0.5
+                        },
+                        "cascadeOpacityEnabled": true,
+                        "color": {
+                            "b": 255,
+                            "g": 255,
+                            "r": 255
+                        },
+                        "contentSize": {
+                            "h": 100,
+                            "w": 304.67
+                        },
+                        "globalZOrder": 0,
+                        "localZOrder": 0,
+                        "name": "richText",
+                        "opacity": 255,
+                        "opacityModifyRGB": false,
+                        "position": {
+                            "x": 172,
+                            "y": 569
+                        },
+                        "rotationSkewX": 0,
+                        "rotationSkewY": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "skewX": 0,
+                        "skewY": 0,
+                        "tag": -1
+                    },
+                    "text": "<color=#00ff00>Rich</c><color=#0fffff>Text</color><br/>using default font"
+                },
+                "object_type": "RichText"
+            },
+            {
+                "children": [],
+                "object": {
+                    "fontFilename": "creator/assets/American Typewriter.ttf",
+                    "fontSize": 40,
+                    "horizontalAlignment": "Center",
+                    "lineHeight": 50,
+                    "maxWidth": 0,
+                    "node": {
+                        "anchorPoint": {
+                            "x": 0.5,
+                            "y": 0.5
+                        },
+                        "cascadeOpacityEnabled": true,
+                        "color": {
+                            "b": 255,
+                            "g": 255,
+                            "r": 255
+                        },
+                        "contentSize": {
+                            "h": 100,
+                            "w": 194.92
+                        },
+                        "globalZOrder": 0,
+                        "localZOrder": 0,
+                        "name": "richText",
+                        "opacity": 255,
+                        "opacityModifyRGB": false,
+                        "position": {
+                            "x": 491,
+                            "y": 568
+                        },
+                        "rotationSkewX": 0,
+                        "rotationSkewY": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "skewX": 0,
+                        "skewY": 0,
+                        "tag": -1
+                    },
+                    "text": "<color=#00ff00>Rich</c><color=#0fffff>Text</color><br/>using TTF"
+                },
+                "object_type": "RichText"
+            },
+            {
+                "children": [],
+                "object": {
+                    "fontSize": 40,
+                    "horizontalAlignment": "Right",
+                    "lineHeight": 50,
+                    "maxWidth": 0,
+                    "node": {
+                        "anchorPoint": {
+                            "x": 0.5,
+                            "y": 0.5
+                        },
+                        "cascadeOpacityEnabled": true,
+                        "color": {
+                            "b": 255,
+                            "g": 255,
+                            "r": 255
+                        },
+                        "contentSize": {
+                            "h": 100,
+                            "w": 217.93
+                        },
+                        "globalZOrder": 0,
+                        "localZOrder": 0,
+                        "name": "richText",
+                        "opacity": 255,
+                        "opacityModifyRGB": false,
+                        "position": {
+                            "x": 827,
+                            "y": 568
+                        },
+                        "rotationSkewX": 0,
+                        "rotationSkewY": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "skewX": 0,
+                        "skewY": 0,
+                        "tag": -1
+                    },
+                    "text": "<color=#00ff00>Rich</c><color=#0fffff>Text</color><br/>right aligned"
+                },
+                "object_type": "RichText"
             }
         ],
         "object": {
