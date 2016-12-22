@@ -48,6 +48,7 @@
                     {
                         "children": [],
                         "object": {
+                            "enableWrap": false,
                             "fontName": "arial",
                             "fontSize": 30,
                             "fontType": "System",
@@ -134,6 +135,7 @@
                     {
                         "children": [],
                         "object": {
+                            "enableWrap": false,
                             "fontName": "creator/assets/A Damn Mess.ttf",
                             "fontSize": 40,
                             "fontType": "TTF",
@@ -221,6 +223,7 @@
                     {
                         "children": [],
                         "object": {
+                            "enableWrap": false,
                             "fontName": "creator/assets/American Typewriter.ttf",
                             "fontSize": 20,
                             "fontType": "TTF",
@@ -348,6 +351,7 @@
                     {
                         "children": [],
                         "object": {
+                            "enableWrap": true,
                             "fontName": "arial",
                             "fontSize": 16,
                             "fontType": "System",
@@ -395,6 +399,7 @@
                             {
                                 "children": [],
                                 "object": {
+                                    "enableWrap": false,
                                     "fontName": "arial",
                                     "fontSize": 20,
                                     "fontType": "System",
@@ -785,6 +790,7 @@
                             {
                                 "children": [],
                                 "object": {
+                                    "enableWrap": false,
                                     "fontName": "arial",
                                     "fontSize": 20,
                                     "fontType": "System",
@@ -871,6 +877,7 @@
                             {
                                 "children": [],
                                 "object": {
+                                    "enableWrap": false,
                                     "fontName": "arial",
                                     "fontSize": 20,
                                     "fontType": "System",
@@ -957,6 +964,7 @@
                             {
                                 "children": [],
                                 "object": {
+                                    "enableWrap": false,
                                     "fontName": "arial",
                                     "fontSize": 20,
                                     "fontType": "System",
@@ -1043,6 +1051,7 @@
                             {
                                 "children": [],
                                 "object": {
+                                    "enableWrap": false,
                                     "fontName": "arial",
                                     "fontSize": 20,
                                     "fontType": "System",
@@ -1129,6 +1138,7 @@
                             {
                                 "children": [],
                                 "object": {
+                                    "enableWrap": false,
                                     "fontName": "arial",
                                     "fontSize": 20,
                                     "fontType": "System",
@@ -1215,6 +1225,7 @@
                             {
                                 "children": [],
                                 "object": {
+                                    "enableWrap": false,
                                     "fontName": "arial",
                                     "fontSize": 20,
                                     "fontType": "System",

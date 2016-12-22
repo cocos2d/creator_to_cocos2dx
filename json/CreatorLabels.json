@@ -46,6 +46,7 @@
             {
                 "children": [],
                 "object": {
+                    "enableWrap": true,
                     "fontName": "arial",
                     "fontSize": 32,
                     "fontType": "System",
@@ -91,6 +92,7 @@
             {
                 "children": [],
                 "object": {
+                    "enableWrap": true,
                     "fontName": "creator/assets/arial16.fnt",
                     "fontSize": 40,
                     "fontType": "BMFont",
@@ -137,6 +139,7 @@
             {
                 "children": [],
                 "object": {
+                    "enableWrap": true,
                     "fontName": "creator/assets/A Damn Mess.ttf",
                     "fontSize": 64,
                     "fontType": "TTF",
@@ -183,6 +186,7 @@
             {
                 "children": [],
                 "object": {
+                    "enableWrap": true,
                     "fontName": "creator/assets/American Typewriter.ttf",
                     "fontSize": 32,
                     "fontType": "TTF",
@@ -229,6 +233,7 @@
             {
                 "children": [],
                 "object": {
+                    "enableWrap": true,
                     "fontName": "creator/assets/American Typewriter.ttf",
                     "fontSize": 32,
                     "fontType": "TTF",

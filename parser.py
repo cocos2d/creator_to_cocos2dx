@@ -398,6 +398,7 @@ class Label(Node):
         self._properties['verticalAlignment'] = Label.V_ALIGNMENTS[component['_N$verticalAlign']]
 
         self._properties['overflowType'] = Label.OVERFLOW_TYPE[component['_N$overflow']]
+        self.add_property_bool('enableWrap', '_enableWrapText', component)
 
         if is_system_font:
             self._properties['fontType'] = 'System'
