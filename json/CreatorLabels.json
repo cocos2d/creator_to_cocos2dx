@@ -83,6 +83,7 @@
                         "skewY": 0,
                         "tag": -1
                     },
+                    "overflowType": "None",
                     "verticalAlignment": "Center"
                 },
                 "object_type": "Label"
@@ -128,6 +129,7 @@
                         "skewY": 0,
                         "tag": -1
                     },
+                    "overflowType": "None",
                     "verticalAlignment": "Top"
                 },
                 "object_type": "Label"
@@ -173,6 +175,7 @@
                         "skewY": 0,
                         "tag": -1
                     },
+                    "overflowType": "None",
                     "verticalAlignment": "Top"
                 },
                 "object_type": "Label"
@@ -218,6 +221,7 @@
                         "skewY": 0,
                         "tag": -1
                     },
+                    "overflowType": "None",
                     "verticalAlignment": "Center"
                 },
                 "object_type": "Label"
@@ -263,6 +267,7 @@
                         "skewY": 0,
                         "tag": -1
                     },
+                    "overflowType": "None",
                     "verticalAlignment": "Center"
                 },
                 "object_type": "Label"
