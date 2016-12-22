@@ -46,6 +46,7 @@
             {
                 "children": [],
                 "object": {
+                    "dstBlend": 771,
                     "node": {
                         "anchorPoint": {
                             "x": 0.5,
@@ -58,12 +59,12 @@
                             "r": 255
                         },
                         "contentSize": {
-                            "h": 116,
-                            "w": 50
+                            "h": 139,
+                            "w": 52
                         },
                         "globalZOrder": 0,
                         "localZOrder": 0,
-                        "name": "grossinis_sister1",
+                        "name": "grossinis_sister_ok",
                         "opacity": 255,
                         "opacityModifyRGB": false,
                         "position": {
@@ -78,14 +79,18 @@
                         "skewY": 0,
                         "tag": -1
                     },
+                    "sizeMode": "Raw",
                     "spriteFrameName": "grossinis_sister1.png",
-                    "spriteType": "Simple"
+                    "spriteType": "Simple",
+                    "srcBlend": 770,
+                    "trimEnabled": false
                 },
                 "object_type": "Sprite"
             },
             {
                 "children": [],
                 "object": {
+                    "dstBlend": 1,
                     "node": {
                         "anchorPoint": {
                             "x": 0.5,
@@ -118,14 +123,18 @@
                         "skewY": 0,
                         "tag": -1
                     },
+                    "sizeMode": "Raw",
                     "spriteFrameName": "grossinis_sister2.png",
-                    "spriteType": "Simple"
+                    "spriteType": "Simple",
+                    "srcBlend": 1,
+                    "trimEnabled": false
                 },
                 "object_type": "Sprite"
             },
             {
                 "children": [],
                 "object": {
+                    "dstBlend": 771,
                     "node": {
                         "anchorPoint": {
                             "x": 0.5,
@@ -158,14 +167,18 @@
                         "skewY": 0,
                         "tag": -1
                     },
+                    "sizeMode": "Raw",
                     "spriteFrameName": "grossinis_sister2.png",
-                    "spriteType": "Simple"
+                    "spriteType": "Simple",
+                    "srcBlend": 770,
+                    "trimEnabled": false
                 },
                 "object_type": "Sprite"
             },
             {
                 "children": [],
                 "object": {
+                    "dstBlend": 1,
                     "node": {
                         "anchorPoint": {
                             "x": 0.5,
@@ -198,14 +211,18 @@
                         "skewY": 0,
                         "tag": -1
                     },
+                    "sizeMode": "Raw",
                     "spriteFrameName": "grossinis_sister1.png",
-                    "spriteType": "Simple"
+                    "spriteType": "Simple",
+                    "srcBlend": 1,
+                    "trimEnabled": false
                 },
                 "object_type": "Sprite"
             },
             {
                 "children": [],
                 "object": {
+                    "dstBlend": 771,
                     "node": {
                         "anchorPoint": {
                             "x": 0.5,
@@ -238,14 +255,18 @@
                         "skewY": 0,
                         "tag": -1
                     },
+                    "sizeMode": "Raw",
                     "spriteFrameName": "grossinis_sister1.png",
-                    "spriteType": "Simple"
+                    "spriteType": "Simple",
+                    "srcBlend": 770,
+                    "trimEnabled": false
                 },
                 "object_type": "Sprite"
             },
             {
                 "children": [],
                 "object": {
+                    "dstBlend": 771,
                     "node": {
                         "anchorPoint": {
                             "x": 0.5,
@@ -278,14 +299,18 @@
                         "skewY": 0,
                         "tag": -1
                     },
+                    "sizeMode": "Raw",
                     "spriteFrameName": "grossinis_sister1.png",
-                    "spriteType": "Simple"
+                    "spriteType": "Simple",
+                    "srcBlend": 770,
+                    "trimEnabled": false
                 },
                 "object_type": "Sprite"
             },
             {
                 "children": [],
                 "object": {
+                    "dstBlend": 771,
                     "node": {
                         "anchorPoint": {
                             "x": 0.5,
@@ -318,14 +343,18 @@
                         "skewY": 20,
                         "tag": -1
                     },
+                    "sizeMode": "Trimmed",
                     "spriteFrameName": "grossinis_sister2.png",
-                    "spriteType": "Simple"
+                    "spriteType": "Simple",
+                    "srcBlend": 770,
+                    "trimEnabled": true
                 },
                 "object_type": "Sprite"
             },
             {
                 "children": [],
                 "object": {
+                    "dstBlend": 771,
                     "node": {
                         "anchorPoint": {
                             "x": 0.5,
@@ -358,14 +387,18 @@
                         "skewY": -20,
                         "tag": -1
                     },
+                    "sizeMode": "Trimmed",
                     "spriteFrameName": "grossinis_sister2.png",
-                    "spriteType": "Simple"
+                    "spriteType": "Simple",
+                    "srcBlend": 770,
+                    "trimEnabled": true
                 },
                 "object_type": "Sprite"
             },
             {
                 "children": [],
                 "object": {
+                    "dstBlend": 771,
                     "node": {
                         "anchorPoint": {
                             "x": 0.5,
@@ -398,14 +431,18 @@
                         "skewY": 0,
                         "tag": -1
                     },
+                    "sizeMode": "Raw",
                     "spriteFrameName": "grossinis_sister2.png",
-                    "spriteType": "Simple"
+                    "spriteType": "Simple",
+                    "srcBlend": 770,
+                    "trimEnabled": false
                 },
                 "object_type": "Sprite"
             },
             {
                 "children": [],
                 "object": {
+                    "dstBlend": 771,
                     "node": {
                         "anchorPoint": {
                             "x": 0.5,
@@ -438,14 +475,18 @@
                         "skewY": 0,
                         "tag": -1
                     },
+                    "sizeMode": "Raw",
                     "spriteFrameName": "grossinis_sister1.png",
-                    "spriteType": "Simple"
+                    "spriteType": "Simple",
+                    "srcBlend": 770,
+                    "trimEnabled": false
                 },
                 "object_type": "Sprite"
             },
             {
                 "children": [],
                 "object": {
+                    "dstBlend": 771,
                     "node": {
                         "anchorPoint": {
                             "x": 0,
@@ -478,14 +519,18 @@
                         "skewY": 0,
                         "tag": -1
                     },
+                    "sizeMode": "Raw",
                     "spriteFrameName": "grossinis_sister1.png",
-                    "spriteType": "Simple"
+                    "spriteType": "Simple",
+                    "srcBlend": 770,
+                    "trimEnabled": false
                 },
                 "object_type": "Sprite"
             },
             {
                 "children": [],
                 "object": {
+                    "dstBlend": 771,
                     "node": {
                         "anchorPoint": {
                             "x": 0.5,
@@ -518,14 +563,18 @@
                         "skewY": 0,
                         "tag": -1
                     },
+                    "sizeMode": "Raw",
                     "spriteFrameName": "grossinis_sister1.png",
-                    "spriteType": "Simple"
+                    "spriteType": "Simple",
+                    "srcBlend": 770,
+                    "trimEnabled": false
                 },
                 "object_type": "Sprite"
             },
             {
                 "children": [],
                 "object": {
+                    "dstBlend": 771,
                     "node": {
                         "anchorPoint": {
                             "x": 0.5,
@@ -558,14 +607,18 @@
                         "skewY": 0,
                         "tag": -1
                     },
+                    "sizeMode": "Raw",
                     "spriteFrameName": "grossinis_sister1.png",
-                    "spriteType": "Simple"
+                    "spriteType": "Simple",
+                    "srcBlend": 770,
+                    "trimEnabled": false
                 },
                 "object_type": "Sprite"
             },
             {
                 "children": [],
                 "object": {
+                    "dstBlend": 771,
                     "node": {
                         "anchorPoint": {
                             "x": 1,
@@ -598,14 +651,18 @@
                         "skewY": 0,
                         "tag": -1
                     },
+                    "sizeMode": "Raw",
                     "spriteFrameName": "grossinis_sister1.png",
-                    "spriteType": "Simple"
+                    "spriteType": "Simple",
+                    "srcBlend": 770,
+                    "trimEnabled": false
                 },
                 "object_type": "Sprite"
             },
             {
                 "children": [],
                 "object": {
+                    "dstBlend": 771,
                     "node": {
                         "anchorPoint": {
                             "x": 0,
@@ -638,14 +695,18 @@
                         "skewY": 0,
                         "tag": -1
                     },
+                    "sizeMode": "Custom",
                     "spriteFrameName": "grossini_dance_08",
-                    "spriteType": "Tiled"
+                    "spriteType": "Tiled",
+                    "srcBlend": 770,
+                    "trimEnabled": false
                 },
                 "object_type": "Sprite"
             },
             {
                 "children": [],
                 "object": {
+                    "dstBlend": 771,
                     "node": {
                         "anchorPoint": {
                             "x": 1,
@@ -678,14 +739,18 @@
                         "skewY": 0,
                         "tag": -1
                     },
+                    "sizeMode": "Raw",
                     "spriteFrameName": "grossini_dance_08",
-                    "spriteType": "Tiled"
+                    "spriteType": "Tiled",
+                    "srcBlend": 770,
+                    "trimEnabled": false
                 },
                 "object_type": "Sprite"
             },
             {
                 "children": [],
                 "object": {
+                    "dstBlend": 771,
                     "node": {
                         "anchorPoint": {
                             "x": 0.5,
@@ -718,14 +783,18 @@
                         "skewY": 0,
                         "tag": -1
                     },
+                    "sizeMode": "Custom",
                     "spriteFrameName": "grossinis_sister1.png",
-                    "spriteType": "Sliced"
+                    "spriteType": "Sliced",
+                    "srcBlend": 770,
+                    "trimEnabled": false
                 },
                 "object_type": "Sprite"
             },
             {
                 "children": [],
                 "object": {
+                    "dstBlend": 771,
                     "node": {
                         "anchorPoint": {
                             "x": 0.5,
@@ -758,14 +827,18 @@
                         "skewY": 0,
                         "tag": -1
                     },
+                    "sizeMode": "Custom",
                     "spriteFrameName": "grossinis_sister2.png",
-                    "spriteType": "Sliced"
+                    "spriteType": "Sliced",
+                    "srcBlend": 770,
+                    "trimEnabled": false
                 },
                 "object_type": "Sprite"
             },
             {
                 "children": [],
                 "object": {
+                    "dstBlend": 771,
                     "node": {
                         "anchorPoint": {
                             "x": 0,
@@ -798,14 +871,18 @@
                         "skewY": 0,
                         "tag": -1
                     },
+                    "sizeMode": "Trimmed",
                     "spriteFrameName": "grossini_dance_08",
-                    "spriteType": "Simple"
+                    "spriteType": "Simple",
+                    "srcBlend": 770,
+                    "trimEnabled": true
                 },
                 "object_type": "Sprite"
             },
             {
                 "children": [],
                 "object": {
+                    "dstBlend": 771,
                     "node": {
                         "anchorPoint": {
                             "x": 0.5,
@@ -838,8 +915,11 @@
                         "skewY": 0,
                         "tag": -1
                     },
+                    "sizeMode": "Custom",
                     "spriteFrameName": "grossinis_sister1.png",
-                    "spriteType": "Tiled"
+                    "spriteType": "Tiled",
+                    "srcBlend": 770,
+                    "trimEnabled": true
                 },
                 "object_type": "Sprite"
             }

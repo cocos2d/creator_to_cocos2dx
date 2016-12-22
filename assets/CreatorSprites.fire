@@ -173,7 +173,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "grossinis_sister1",
+    "_name": "grossinis_sister_ok",
     "_objFlags": 0,
     "_opacity": 255,
     "_color": {
@@ -194,8 +194,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 50,
-      "height": 116
+      "width": 52,
+      "height": 139
     },
     "_children": [],
     "_rotationX": 0,
@@ -235,7 +235,7 @@
       "__uuid__": "e063a33b-d42b-472c-a340-a09256abadaf"
     },
     "_type": 0,
-    "_sizeMode": 1,
+    "_sizeMode": 2,
     "_fillType": 0,
     "_fillCenter": {
       "__type__": "cc.Vec2",
@@ -244,7 +244,7 @@
     },
     "_fillStart": 0,
     "_fillRange": 0,
-    "_isTrimmedMode": true,
+    "_isTrimmedMode": false,
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
     "_atlas": {
@@ -325,8 +325,8 @@
     "_fillStart": 0,
     "_fillRange": 0,
     "_isTrimmedMode": false,
-    "_srcBlendFactor": 770,
-    "_dstBlendFactor": 771,
+    "_srcBlendFactor": 1,
+    "_dstBlendFactor": 1,
     "_atlas": {
       "__uuid__": "ebceda0f-2a27-4ed9-a9be-d4e3409e05c5"
     }
@@ -485,8 +485,8 @@
     "_fillStart": 0,
     "_fillRange": 0,
     "_isTrimmedMode": false,
-    "_srcBlendFactor": 770,
-    "_dstBlendFactor": 771,
+    "_srcBlendFactor": 1,
+    "_dstBlendFactor": 1,
     "_atlas": {
       "__uuid__": "ebceda0f-2a27-4ed9-a9be-d4e3409e05c5"
     }

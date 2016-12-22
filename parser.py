@@ -335,6 +335,7 @@ class Canvas(Node):
 class Sprite(Node):
 
     SPRITE_TYPES = ('Simple', 'Sliced', 'Tiled', 'Filled')
+    SIZE_MODES = ('Custom', 'Trimmed', 'Raw')
 
     def __init__(self, data):
         super(Sprite, self).__init__(data)
@@ -360,6 +361,10 @@ class Sprite(Node):
         log(state._sprite_frames[sprite_frame_uuid])
 
         self._properties['spriteType'] = Sprite.SPRITE_TYPES[component['_type']]
+        self.add_property_int('srcBlend', '_srcBlendFactor', component)
+        self.add_property_int('dstBlend', '_dstBlendFactor', component)
+        self.add_property_bool('trimEnabled', '_isTrimmedMode', component)
+        self._properties['sizeMode'] = Sprite.SIZE_MODES[component['_sizeMode']]
 
 
 class Label(Node):
