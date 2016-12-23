@@ -192,12 +192,12 @@
     ],
     "_rotationX": 0,
     "_rotationY": 0,
-    "_scaleX": 4,
-    "_scaleY": 4,
+    "_scaleX": 1,
+    "_scaleY": 1,
     "_position": {
       "__type__": "cc.Vec2",
-      "x": 0,
-      "y": 0
+      "x": -422,
+      "y": 253
     },
     "_skewX": 0,
     "_skewY": 0,
