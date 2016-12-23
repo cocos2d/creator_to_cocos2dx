@@ -8,7 +8,97 @@
     "root": {
         "children": [
             {
-                "children": [],
+                "children": [
+                    {
+                        "children": [
+                            {
+                                "children": [],
+                                "object": {
+                                    "dstBlend": 771,
+                                    "node": {
+                                        "anchorPoint": {
+                                            "x": 0.5,
+                                            "y": 0.5
+                                        },
+                                        "cascadeOpacityEnabled": true,
+                                        "color": {
+                                            "b": 255,
+                                            "g": 255,
+                                            "r": 255
+                                        },
+                                        "contentSize": {
+                                            "h": 109,
+                                            "w": 51
+                                        },
+                                        "globalZOrder": 0,
+                                        "localZOrder": 0,
+                                        "name": "grossini_child",
+                                        "opacity": 255,
+                                        "opacityModifyRGB": false,
+                                        "position": {
+                                            "x": 8,
+                                            "y": 2
+                                        },
+                                        "rotationSkewX": 90,
+                                        "rotationSkewY": 90,
+                                        "scaleX": 1,
+                                        "scaleY": 1,
+                                        "skewX": 0,
+                                        "skewY": 0,
+                                        "tag": -1
+                                    },
+                                    "sizeMode": "Trimmed",
+                                    "spriteFrameName": "grossini_dance_08",
+                                    "spriteType": "Simple",
+                                    "srcBlend": 770,
+                                    "trimEnabled": true
+                                },
+                                "object_type": "Sprite"
+                            }
+                        ],
+                        "object": {
+                            "dstBlend": 771,
+                            "node": {
+                                "anchorPoint": {
+                                    "x": 0.5,
+                                    "y": 0.5
+                                },
+                                "cascadeOpacityEnabled": true,
+                                "color": {
+                                    "b": 255,
+                                    "g": 255,
+                                    "r": 255
+                                },
+                                "contentSize": {
+                                    "h": 109,
+                                    "w": 51
+                                },
+                                "globalZOrder": 0,
+                                "localZOrder": 0,
+                                "name": "grossini_parent",
+                                "opacity": 255,
+                                "opacityModifyRGB": false,
+                                "position": {
+                                    "x": 0,
+                                    "y": 0
+                                },
+                                "rotationSkewX": 0,
+                                "rotationSkewY": 0,
+                                "scaleX": 4,
+                                "scaleY": 4,
+                                "skewX": 0,
+                                "skewY": 0,
+                                "tag": -1
+                            },
+                            "sizeMode": "Trimmed",
+                            "spriteFrameName": "grossini_dance_08",
+                            "spriteType": "Simple",
+                            "srcBlend": 770,
+                            "trimEnabled": true
+                        },
+                        "object_type": "Sprite"
+                    }
+                ],
                 "object": {
                     "anchorPoint": {
                         "x": 0.5,
@@ -26,7 +116,7 @@
                     },
                     "globalZOrder": 0,
                     "localZOrder": 0,
-                    "name": "Canvas",
+                    "name": "canvas_root",
                     "opacity": 255,
                     "opacityModifyRGB": false,
                     "position": {
@@ -132,7 +222,52 @@
                 "object_type": "Sprite"
             },
             {
-                "children": [],
+                "children": [
+                    {
+                        "children": [],
+                        "object": {
+                            "dstBlend": 771,
+                            "node": {
+                                "anchorPoint": {
+                                    "x": 0.5,
+                                    "y": 0.5
+                                },
+                                "cascadeOpacityEnabled": true,
+                                "color": {
+                                    "b": 255,
+                                    "g": 255,
+                                    "r": 255
+                                },
+                                "contentSize": {
+                                    "h": 130,
+                                    "w": 55
+                                },
+                                "globalZOrder": 0,
+                                "localZOrder": 0,
+                                "name": "grossinis_sister2_child",
+                                "opacity": 255,
+                                "opacityModifyRGB": false,
+                                "position": {
+                                    "x": 10,
+                                    "y": 0
+                                },
+                                "rotationSkewX": 90,
+                                "rotationSkewY": 90,
+                                "scaleX": 1,
+                                "scaleY": 1,
+                                "skewX": 0,
+                                "skewY": 0,
+                                "tag": -1
+                            },
+                            "sizeMode": "Trimmed",
+                            "spriteFrameName": "grossinis_sister2.png",
+                            "spriteType": "Simple",
+                            "srcBlend": 770,
+                            "trimEnabled": true
+                        },
+                        "object_type": "Sprite"
+                    }
+                ],
                 "object": {
                     "dstBlend": 771,
                     "node": {
@@ -152,12 +287,12 @@
                         },
                         "globalZOrder": 0,
                         "localZOrder": 0,
-                        "name": "grossinis_sister2",
+                        "name": "grossinis_sister2_mother",
                         "opacity": 255,
                         "opacityModifyRGB": false,
                         "position": {
-                            "x": 122,
-                            "y": 273
+                            "x": 135,
+                            "y": 271
                         },
                         "rotationSkewX": 0,
                         "rotationSkewY": 0,
