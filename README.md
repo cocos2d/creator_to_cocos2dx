@@ -37,3 +37,23 @@ support, just use Creator.
 
 
 ### From .fire to .json
+
+The Python script to convert .fire to .json is called:
+
+* [convert_fire_to_json.py](https://github.com/ricardoquesada/creator_to_cocos2d/blob/master/convert_fire_to_json.py)
+
+And can be downloaded from this repository:
+
+* https://github.com/ricardoquesada/creator_to_cocos2d
+
+<small>The respository also includes a Creator project that is used for testing</small>
+
+
+How to use it:
+
+./convert_fire_to_json.py \[--cocospath path\] \[--creatorassets\] fire_files_to_parse
+
+
+
+
+
