@@ -445,7 +445,7 @@ class RichText(Node):
         # Move Node properties into 'node' and clean _properties
         self._properties = {'node': self._properties}
 
-        print("WARNING: RichText is in support is an experimental feature")
+        print("WARNING: RichText support is an experimental feature")
 
     def parse_properties(self):
         super(RichText, self).parse_properties()
@@ -610,6 +610,8 @@ class ProgressBar(Node):
         # Move Node properties into 'node' and clean _properties
         self._properties = {'node': self._properties}
 
+        print("WARNING: ProgressBar support is an experimental feature")
+
     def parse_properties(self):
         super(ProgressBar, self).parse_properties()
 
@@ -749,10 +751,11 @@ class FireParser(object):
         self._state = State.Instance()
         self._json_file = None
         self._json_output = {'version':'1.0', 'root':{}}
+        self._creatorassets = None
 
     def populate_meta_files(self, path):
         metas1 = glob.glob(path + '/*.meta')
-        metas2 = glob.glob('temp/*/*/*.meta')
+        metas2 = glob.glob(self._creatorassets + '*/*/*.meta')
         metas = metas1 + metas2
         log(metas)
         for meta_filename in metas:
@@ -861,7 +864,11 @@ class FireParser(object):
         return open(filename, "w")
 
 
-    def run(self, filename, assetpath):
+    def run(self, filename, assetpath, creatorassets):
+
+        self._creatorassets = creatorassets
+        if not os.path.isdir(creatorassets):
+            raise Exception("Specify where the default Creator assets are located with the --creatorassets parameter.")
 
         self._state._assetpath = assetpath
         self._state._filename = os.path.splitext(os.path.basename(filename))[0]
@@ -900,7 +907,7 @@ class FireParser(object):
 
 def help():
     print("%s v0.2 - converts .fire to cocos2d-x flatbuffer .json files\n" % os.path.basename(sys.argv[0]))
-    print("Example:\n%s --assetpath creator/assets assets/*.fire" % os.path.basename(sys.argv[0]))
+    print("Example:\n%s --cocospath creator/assets --creatorassets temp assets/*.fire" % os.path.basename(sys.argv[0]))
     sys.exit(-1)
 
 
@@ -909,18 +916,23 @@ if __name__ == "__main__":
         help()
 
     assetpath = ""
+    creatorassets = "temp/"
     argv = sys.argv[1:]
     try:
-        opts, args = getopt.getopt(argv, "p:", ["assetpath="])
+        opts, args = getopt.getopt(argv, "p:a:", ["cocospath=","creatorassets="])
         for opt, arg in opts:
-            if opt in ("-p", "--assetpath"):
+            if opt in ("-p", "--cocospath"):
                 assetpath = arg
                 if assetpath[-1] != '/':
                     assetpath += '/'
+            if opt in ("-a", "--creatorassets"):
+                creatorassets = arg
+                if creatorassets[-1] != '/':
+                    creatorassets += '/'
 
         for f in args:
             parser = FireParser()
-            parser.run(f, assetpath)
+            parser.run(f, assetpath, creatorassets)
     except getopt.GetoptError, e:
         print(e)
 
