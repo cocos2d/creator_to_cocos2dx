@@ -61,13 +61,13 @@ Example:
 # should load assets from Resources folder in the game
 # Creator default assets are in temp
 # The .fire files are located in assets
-./convert_fire_to_json.py --cocospath Resources --creatorassets temp assets/*.fire
+$ ./convert_fire_to_json.py --cocospath Resources --creatorassets temp assets/*.fire
 ```
 
 This Github respository also includes a Creator project that is used for testing. For example, this should work:
 
 ```
-./convert_fire_to_json.py --cocospath Resources --creatorassets creator_project/temp creator_project/assets/*.fire
+$ ./convert_fire_to_json.py --cocospath Resources --creatorassets creator_project/temp creator_project/assets/*.fire
 ```
 
 The generated .json files will be placed in a folder named "json"
@@ -82,8 +82,16 @@ Instead a binary file based on [Flatbuffers](https://google.github.io/flatbuffer
 
 In order to generate the binary files, the following are needed:
 
-* the schema (.fbs) file
+* the schema ([CreatorReader.fbs]()) file
 * that `flatc` (flatbuffer) compiler
 
+And in order to generate the binary files just do:
+
+```sh
+$ flatc -b -c CreatorReader.fbs json/*.json
+```
+
+* `-b`: means generate "binary file"
+* `-c`: means generate "c" output. This is optional.
 
 
