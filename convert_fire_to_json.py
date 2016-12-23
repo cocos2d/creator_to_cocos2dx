@@ -3,7 +3,8 @@
 # Parses Cocos Creator projects
 # ----------------------------------------------------------------------------
 '''
-Tool that converts Cocos Creator into cocos2d-x
+Tool that converts Cocos Creator .fire files into .json files
+compatible with the Cocos2d-x flatbuffer schema
 '''
 from __future__ import division, unicode_literals, print_function
 import sys
@@ -898,7 +899,7 @@ class FireParser(object):
 
 
 def help():
-    print("%s v0.1 - parses Cocos Creator project files\n" % os.path.basename(sys.argv[0]))
+    print("%s v0.2 - converts .fire to cocos2d-x flatbuffer .json files\n" % os.path.basename(sys.argv[0]))
     print("Example:\n%s --assetpath creator/assets assets/*.fire" % os.path.basename(sys.argv[0]))
     sys.exit(-1)
 
