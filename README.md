@@ -46,14 +46,44 @@ And can be downloaded from this repository:
 
 * https://github.com/ricardoquesada/creator_to_cocos2d
 
-<small>The respository also includes a Creator project that is used for testing</small>
 
-
-How to use it:
+#### How to use it:
 
 ./convert_fire_to_json.py \[--cocospath path\] \[--creatorassets\] fire_files_to_parse
 
+* --cocospath: where the assets should be loaded in the cocos2d-x project. It will prepend this path to all the creator assets
+* --creatorassets: where the default Creator assets are located. Usually they are in the `temp` directory of the project's root folder
+* fire_files_to_parse: it could be one more multiple files. Glob patters are supported
 
+Example:
+
+```sh
+# should load assets from Resources folder in the game
+# Creator default assets are in temp
+# The .fire files are located in assets
+./convert_fire_to_json.py --cocospath Resources --creatorassets temp assets/*.fire
+```
+
+This Github respository also includes a Creator project that is used for testing. For example, this should work:
+
+```
+./convert_fire_to_json.py --cocospath Resources --creatorassets temp assets/*.fire
+```
+
+The generated .json files will be placed in a folder named "json"
+
+
+### From .json to binary files
+
+The JSON files are only generated as a temporary file format. It will not be efficient to parse JSON files
+in a game.
+
+Instead a binary file based on [Flatbuffers](https://google.github.io/flatbuffers/) will be used instead
+
+In order to generate the binary files, the following are needed:
+
+* the schema (.fbs) file
+* that `flatc` (flatbuffer) compiler
 
 
 

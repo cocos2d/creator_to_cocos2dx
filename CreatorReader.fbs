@@ -1,0 +1,232 @@
+namespace creator.buffers;
+
+enum FontType:byte { System = 0, BMFont = 1, TTF = 2 }
+enum VerticalAlignment:byte { Top = 0, Center = 1, Bottom = 2 }
+enum HorizontalAlignment:byte { Left = 0, Center = 1, Right = 2 }
+enum SpriteType:byte {Simple, Sliced, Tiled, Filled}
+enum SpriteSizeMode:byte {Custom, Trimmed, Raw}
+enum ScrollViewDirection:byte {None, Vertical, Horizontal, Both}
+enum EditBoxReturnType:byte {Default, Done, Send, Search, Go}
+enum EditBoxInputFlag:byte {Password, Sensitive, InitialCapsWord, InitialCapsSentence, InitialCapsAllCharacters, LowercaseAllCharacters}
+enum EditBoxInputMode:byte {Any, EmailAddress, Numeric, PhoneNumber, URL, Decime, SingleLine}
+enum LabelOverflowType:byte {None, Clamp, Shrink, ResizeHeight}
+
+// New nodes should be added at the end of the union
+// no more than 255 union objects can be added
+union AnyNode {Scene, Sprite, Label, Particle, TileMap, Node, Button, ProgressBar, ScrollView, CreatorScene, EditBox, RichText}
+
+table SceneGraph
+{
+    version:string;
+
+    root:NodeTree;
+
+    designResolution:Size;
+    resolutionFitWidth:bool = false;
+    resolutionFitHeight:bool = false;
+
+    // Frames needed for the Scene
+    spriteFrames:[SpriteFrame];
+}
+
+table NodeTree
+{
+    // Flatbuffers doesn't support array of unions
+    // so split the tree from node
+    children:[NodeTree];
+    object:AnyNode;
+}
+
+table SpriteFrame
+{
+    name:string;
+    texturePath:string;
+    rect:Rect;
+    offset:Vec2;
+    rotated:bool;
+    originalSize:Size;
+    centerRect:Rect;        // rect in pixels. top-left origin
+}
+
+table CreatorScene
+{
+    // fbs file. An fbs can contain another fbs
+    filename:string;
+}
+
+table Node
+{
+    contentSize:Size;
+    enabled:bool = true;
+    name:string;
+    anchorPoint:Vec2;
+    cascadeOpacityEnabled:bool = true;
+    color:RGB;
+    globalZOrder:float = 0;
+    localZOrder:int = 0;
+    opacity:ubyte = 255;
+    opacityModifyRGB:bool = true;
+    position:Vec2;
+    rotationSkewX:float = 0;
+    rotationSkewY:float = 0;
+    scaleX:float = 1;
+    scaleY:float = 1;
+    skewX:float = 0;
+    skewY:float = 0;
+    tag:int = 0;
+}
+
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+// Render Nodes
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+table Sprite
+{
+    node:Node;
+    spriteFrameName:string;
+    spriteType:SpriteType;
+    srcBlend:int = 770;
+    dstBlend:int = 771;
+    trimEnabled:bool = false;
+    sizeMode:SpriteSizeMode;
+}
+
+table Label
+{
+    node:Node;
+
+    labelText:string;
+    horizontalAlignment:HorizontalAlignment;
+    verticalAlignment:VerticalAlignment;
+    lineHeight:float;
+    fontName:string;
+    fontSize:float;
+    fontType:FontType;
+    overflowType:LabelOverflowType;
+    enableWrap:bool;
+}
+
+table RichText
+{
+    node:Node;
+    text:string;
+    horizontalAlignment:HorizontalAlignment;
+    fontSize:float;
+    maxWidth:float;
+    lineHeight:float;
+    fontFilename:string;
+}
+
+table Particle
+{
+    node:Node;
+    particleFilename:string;
+}
+
+
+table TileMap
+{
+    node:Node;
+    tmxFilename:string;
+    desiredContentSize:Size;
+}
+
+table Scene
+{
+    node:Node;
+}
+
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+// Render Nodes
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+table Button
+{
+    node:Node;
+    spriteFrameName:string;
+    ignoreContentAdaptWithSize:bool = false;
+}
+
+table ProgressBar
+{
+    node:Node;
+    percent:float;
+}
+
+table ScrollView
+{
+    node:Node;
+    backgroundImage:string;                         // it is a spriteFrameName
+    backgroundImageScale9Enabled:bool;
+    backgroundImageColor:RGB;
+    direction:ScrollViewDirection;
+    bounceEnabled:bool;
+    innerContainerSize:Size;
+}
+
+table EditBox
+{
+    node:Node;
+    backgroundImage:string;
+    returnType:EditBoxReturnType;
+    inputFlag:EditBoxInputFlag;
+    inputMode:EditBoxInputMode;
+    fontSize:int;
+    fontColor:RGB;
+    placeholder:string;
+    placeholderFontSize:int;
+    placeholderFontColor:RGB;
+    maxLength:int;
+    text:string;
+}
+
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+// Structs
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+struct Vec2
+{
+    x:float;
+    y:float;
+}
+
+struct Vec3
+{
+    x:float;
+    y:float;
+    z:float;
+}
+
+struct Size
+{
+    w:float;
+    h:float;
+}
+
+struct Rect
+{
+    x:float;
+    y:float;
+    w:float;
+    h:float;
+}
+
+struct RGB
+{
+    r:ubyte;
+    g:ubyte;
+    b:ubyte;
+}
+
+struct RGBA
+{
+    r:ubyte;
+    g:ubyte;
+    b:ubyte;
+    a:ubyte;
+}
+
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+// Root and misc
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+root_type SceneGraph;
+
+file_identifier "CCRE";
+file_extension "ccreator";
