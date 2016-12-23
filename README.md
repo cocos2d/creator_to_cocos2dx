@@ -67,7 +67,7 @@ Example:
 This Github respository also includes a Creator project that is used for testing. For example, this should work:
 
 ```
-./convert_fire_to_json.py --cocospath Resources --creatorassets temp assets/*.fire
+./convert_fire_to_json.py --cocospath Resources --creatorassets creator_project/temp creator_project/assets/*.fire
 ```
 
 The generated .json files will be placed in a folder named "json"

@@ -907,7 +907,7 @@ class FireParser(object):
 
 def help():
     print("%s v0.2 - converts .fire to cocos2d-x flatbuffer .json files\n" % os.path.basename(sys.argv[0]))
-    print("Example:\n%s --cocospath creator/assets --creatorassets temp assets/*.fire" % os.path.basename(sys.argv[0]))
+    print("Example:\n%s --cocospath creator/assets --creatorassets creator_project/temp creator_project/assets/*.fire" % os.path.basename(sys.argv[0]))
     sys.exit(-1)
 
 
@@ -916,7 +916,7 @@ if __name__ == "__main__":
         help()
 
     assetpath = ""
-    creatorassets = "temp/"
+    creatorassets = "creator_project/temp/"
     argv = sys.argv[1:]
     try:
         opts, args = getopt.getopt(argv, "p:a:", ["cocospath=","creatorassets="])
