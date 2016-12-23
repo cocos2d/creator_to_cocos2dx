@@ -49,7 +49,7 @@ And can be downloaded from this repository:
 
 #### How to use it:
 
-./convert_fire_to_json.py \[--cocospath path\] \[--creatorassets\] fire_files_to_parse
+`$ convert_fire_to_json.py \[--cocospath path\] \[--creatorassets\] fire_files_to_parse`
 
 * `--cocospath`: where the assets should be loaded in the cocos2d-x project. It will prepend this path to all the creator assets
 * `--creatorassets`: where the default Creator assets are located. Usually they are in the `temp` directory of the project's root folder
@@ -61,7 +61,7 @@ Example:
 # should load assets from Resources folder in the game
 # Creator default assets are in temp
 # The .fire files are located in assets
-$ ./convert_fire_to_json.py --cocospath Resources --creatorassets temp assets/*.fire
+$ python convert_fire_to_json.py --cocospath Resources --creatorassets temp assets/*.fire
 ```
 
 This Github respository also includes a Creator project that is used for testing. For example, this should work:
@@ -93,7 +93,11 @@ $ flatc -b CreatorReader.fbs json/*.json
 
 * `-b`: means generate "binary file"
 
-A precompiled binary version of `flatc` for macOS can be found here: [flatc](https://github.com/ricardoquesada/creator_to_cocos2d/raw/master/bin/flatc)
+`flatc` can be found here:
+
+* macOS: precompiled binary [flatc](https://github.com/ricardoquesada/creator_to_cocos2d/raw/master/bin/flatc)
+* win32/linux: source code here: https://github.com/google/flatbuffers
+
 
 Afer running `flatc`, you will find one or more files with the extension `.ccreator`. The `.ccreator` files are the binary files that 
 should be copied to your cocos2d-x project.
