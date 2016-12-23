@@ -8,17 +8,17 @@ subset of Creator features.
 
 Supported nodes:
 
-* Scene
-* Sprites
-* Canvas (but only one per scene)
-* ScrollView
-* Label
-* EditBox
-* Particles
-* Tiled maps
-* Button
-* ProgressBar (experimental support: unfinished)
-* RichText (experimental support: unfinished)
+* `Scene`
+* `Sprite`
+* `Canvas` (but only one per scene)
+* `ScrollView`
+* `Label`
+* `EditBox`
+* `ParticleSystem`
+* `TiledMap`
+* `Button`
+* `ProgressBar` (experimental support: unfinished)
+* `RichText` (experimental support: unfinished)
 
 
 Animations and other nodes are planned.
@@ -51,9 +51,9 @@ And can be downloaded from this repository:
 
 ./convert_fire_to_json.py \[--cocospath path\] \[--creatorassets\] fire_files_to_parse
 
-* --cocospath: where the assets should be loaded in the cocos2d-x project. It will prepend this path to all the creator assets
-* --creatorassets: where the default Creator assets are located. Usually they are in the `temp` directory of the project's root folder
-* fire_files_to_parse: it could be one more multiple files. Glob patters are supported
+* `--cocospath`: where the assets should be loaded in the cocos2d-x project. It will prepend this path to all the creator assets
+* `--creatorassets`: where the default Creator assets are located. Usually they are in the `temp` directory of the project's root folder
+* `fire_files_to_parse`: it could be one more multiple files. Glob patters are supported
 
 Example:
 
@@ -88,10 +88,65 @@ In order to generate the binary files, the following are needed:
 And in order to generate the binary files just do:
 
 ```sh
-$ flatc -b -c CreatorReader.fbs json/*.json
+$ flatc -b CreatorReader.fbs json/*.json
 ```
 
 * `-b`: means generate "binary file"
-* `-c`: means generate "c" output. This is optional.
+
+A precompiled binary version of `flatc` for macOS can be found here: [flatc](https://github.com/ricardoquesada/creator_to_cocos2d/raw/master/bin/flatc)
+
+Afer running `flatc`, you will find one or more files with the extension `.ccreator`. The `.ccreator` files are the binary files that 
+should be copied to your cocos2d-x project.
 
 
+### Copy the generated files to your project
+
+You should copy and include the following files to your Cocos2d-x project
+
+* All the `.ccreator` files
+* The Creator Reader lib:
+   * You can find it here: [reader](https://github.com/ricardoquesada/creator_to_cocos2d/tree/master/reader)
+
+
+### Copy the assets to your project
+
+Finally you have to copy the asset uses by Creator in your project. You should copy:
+
+* *.png, *.plist, *.tmx, *.ttf, *.fnt
+
+Just copy them to the directory specified with `--cocospath` when `convert_fire_to_json.py` was run
+
+You must copy:
+
+* The user generated assets
+* The default Creator assets (usually located in path_to_creator_project/assets)
+
+
+## Using it from C++
+
+```c++
+// mygame.cpp
+
+#include "CreatorReader.h"
+
+void some_function()
+{
+    CreatorReader* reader = CreatorReader::createWithFilename("creator/CreatorSprites.ccreator");
+
+    // will create the needed spritesheets + design resolution
+    reader->setup();
+
+    // get the scene graph
+    Scene* scene = reader->getSceneGraph();
+
+    // ...and use it
+    Director::getInstance()->replaceScene(scene);
+}
+```
+
+
+A working example can be found here:
+
+* https://github.com/ricardoquesada/cocos2d-x/tree/creator_reader
+
+Just run "cpp-tests" and select "CreatorTest"
