@@ -1030,8 +1030,8 @@
                             "r": 255
                         },
                         "contentSize": {
-                            "h": 290,
-                            "w": 125
+                            "h": 400,
+                            "w": 400
                         },
                         "globalZOrder": 0,
                         "localZOrder": 0,
@@ -1044,8 +1044,8 @@
                         },
                         "rotationSkewX": 270,
                         "rotationSkewY": 270,
-                        "scaleX": 1,
-                        "scaleY": 1,
+                        "scaleX": 0.5,
+                        "scaleY": 0.5,
                         "skewX": 0,
                         "skewY": 0,
                         "tag": -1

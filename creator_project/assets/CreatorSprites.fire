@@ -1956,14 +1956,14 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 125,
-      "height": 290
+      "width": 400,
+      "height": 400
     },
     "_children": [],
     "_rotationX": 270,
     "_rotationY": 270,
-    "_scaleX": 1,
-    "_scaleY": 1,
+    "_scaleX": 0.5,
+    "_scaleY": 0.5,
     "_position": {
       "__type__": "cc.Vec2",
       "x": 806,

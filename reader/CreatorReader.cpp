@@ -635,21 +635,39 @@ static void tileSprite(cocos2d::Sprite* sprite)
     const int n_x = std::ceil(f_x);
     const int n_y = std::ceil(f_y);
 
-    PolygonInfo poly;
     const int totalQuads = n_x * n_y;
 
-    V3F_C4B_T2F_Quad* ptr = (V3F_C4B_T2F_Quad*) malloc(sizeof(V3F_C4B_T2F_Quad) * totalQuads);
+    V3F_C4B_T2F_Quad* quads = (V3F_C4B_T2F_Quad*) malloc(sizeof(V3F_C4B_T2F_Quad) * totalQuads);
 
     for (int y=0; y<n_y; ++y) {
         for (int x=0; x<n_x; ++x) {
-            ptr[y * n_x + x] = origQuad;
+            quads[y * n_x + x] = origQuad;
             float x_factor = (orig_rect.size.width * (x+1) <= new_s.width) ? 1 : f_x - (long)f_x;
             float y_factor = (orig_rect.size.height * (y+1) <= new_s.height) ? 1 : f_y - (long)f_y;
             CCLOG("x=%g, y=%g", x_factor, y_factor);
-            setSpriteQuad(&ptr[y * n_x + x], orig_rect.size, x, y, x_factor, y_factor);
+            setSpriteQuad(&quads[y * n_x + x], orig_rect.size, x, y, x_factor, y_factor);
         }
     }
 
-    poly.setQuads(ptr, totalQuads);
+    unsigned short* indices = (unsigned short*) malloc(sizeof(*indices) * totalQuads * 6);
+
+    for( int i=0; i < totalQuads; i++)
+    {
+        indices[i*6+0] = (GLushort) (i*4+0);
+        indices[i*6+1] = (GLushort) (i*4+1);
+        indices[i*6+2] = (GLushort) (i*4+2);
+        indices[i*6+3] = (GLushort) (i*4+3);
+        indices[i*6+4] = (GLushort) (i*4+2);
+        indices[i*6+5] = (GLushort) (i*4+1);
+    }
+
+    TrianglesCommand::Triangles triangles;
+    triangles.vertCount = 4 * totalQuads;
+    triangles.indexCount = 6 * totalQuads;
+    triangles.verts = (V3F_C4B_T2F*) quads;
+    triangles.indices = indices;
+
+    PolygonInfo poly;
+    poly.setTriangles(triangles);
     sprite->setPolygonInfo(poly);
 }
