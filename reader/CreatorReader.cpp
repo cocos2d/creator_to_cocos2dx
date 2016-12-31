@@ -637,8 +637,11 @@ static void tileSprite(cocos2d::Sprite* sprite)
 
     const int totalQuads = n_x * n_y;
 
-    V3F_C4B_T2F_Quad* quads = (V3F_C4B_T2F_Quad*) malloc(sizeof(V3F_C4B_T2F_Quad) * totalQuads);
+    // use new instead of malloc, since Polygon info will release them using delete
+    V3F_C4B_T2F_Quad* quads = new (std::nothrow) V3F_C4B_T2F_Quad[totalQuads];
+    unsigned short* indices = new (std::nothrow) unsigned short[totalQuads * 6];
 
+    // populate the vertices
     for (int y=0; y<n_y; ++y) {
         for (int x=0; x<n_x; ++x) {
             quads[y * n_x + x] = origQuad;
@@ -649,8 +652,7 @@ static void tileSprite(cocos2d::Sprite* sprite)
         }
     }
 
-    unsigned short* indices = (unsigned short*) malloc(sizeof(*indices) * totalQuads * 6);
-
+    // populate the indices
     for( int i=0; i < totalQuads; i++)
     {
         indices[i*6+0] = (GLushort) (i*4+0);
@@ -669,5 +671,8 @@ static void tileSprite(cocos2d::Sprite* sprite)
 
     PolygonInfo poly;
     poly.setTriangles(triangles);
+
+    // FIXME: setPolygonInfo will create new arrays and copy the recently alloced one
+    // there should be a way to pass ownership so that it is not needed to copy them
     sprite->setPolygonInfo(poly);
 }
