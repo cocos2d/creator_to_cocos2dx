@@ -19,6 +19,7 @@ Supported nodes:
 * `Button`
 * `ProgressBar` (experimental support: unfinished)
 * `RichText` (experimental support: unfinished)
+* `SpineSkeleton`
 
 
 Animations and other nodes are planned.
