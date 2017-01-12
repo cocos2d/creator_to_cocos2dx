@@ -129,7 +129,7 @@ class Node(object):
     @classmethod
     def guess_type_from_components(cls, components):
         # ScrollView, Button & ProgressBar should be before Sprite
-        supported_components = ('cc.Button', 'cc.ProgressBar', 'cc.ScrollView', 'cc.EditBox', 'cc.Label', 'cc.Sprite', 'cc.ParticleSystem', 'cc.TiledMap', 'cc.Canvas', 'cc.RichText')
+        supported_components = ('cc.Button', 'cc.ProgressBar', 'cc.ScrollView', 'cc.EditBox', 'cc.Label', 'sp.Skeleton', 'cc.Sprite', 'cc.ParticleSystem', 'cc.TiledMap', 'cc.Canvas', 'cc.RichText')
         node_components = [x['__type__'] for x in components]
         for supported in supported_components:
             if supported in node_components:
@@ -162,6 +162,8 @@ class Node(object):
             n = Button(state._json_data[node_idx])
         elif node_type == 'cc.ScrollView':
             n = ScrollView(state._json_data[node_idx])
+        elif node_type == 'sp.Skeleton':
+            n = SpineSkeleton(state._json_data[node_idx])
         if n is not None:
             n.parse_properties()
         return n
@@ -740,6 +742,40 @@ class ScrollView(Node):
                 'x': x + self._content_size['width'] * self._content_ap['x'],
                 'y': y + self._content_size['height'] * self._content_ap['y'] }
 
+################################################################################
+#
+# Misc Nodes
+# SpineSkeleton
+#
+################################################################################
+class SpineSkeleton(Node):
+
+    def __init__(self, data):
+        super(SpineSkeleton, self).__init__(data)
+        self._jsonNode['object_type'] = 'SpineSkeleton'
+
+        # Move Node properties into 'node' and clean _properties
+        self._properties = {'node': self._properties}
+
+    def parse_properties(self):
+        super(SpineSkeleton, self).parse_properties()
+
+        state = State.Instance()
+
+        # search for spine file
+        component = Node.get_node_component_of_type(self._node_data, 'sp.Skeleton')
+        spineFilepath = Node.get_filepath_from_uuid(component['_N$skeletonData']['__uuid__'])
+
+        self._properties['jsonFile'] = state._assetpath + spineFilepath
+        # remove ".json" extension. append ".atlas" extension
+        self._properties['atlasFile'] = state._assetpath + spineFilepath[:-5] + '.atlas'
+        self.add_property_str('defaultSkin', 'defaultSkin', component)
+        self.add_property_str('defaultAnimation', 'defaultAnimation', component)
+        self.add_property_bool('loop', 'loop', component)
+        self.add_property_bool('premultipliedAlpha', '_premultipliedAlpha', component)
+        self.add_property_int('timeScale', '_N$timeScale', component)
+        self.add_property_bool('debugSlots', '_N$debugSlots', component)
+        self.add_property_bool('debugBones', '_N$debugBones', component)
 
 ################################################################################
 #

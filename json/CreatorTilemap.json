@@ -411,6 +411,25 @@
             "texturePath": "creator/assets/image/default_sprite.png"
         },
         {
+            "name": "goblins",
+            "offset": {
+                "x": -4.5,
+                "y": 0
+            },
+            "originalSize": {
+                "h": 128,
+                "w": 1024
+            },
+            "rect": {
+                "h": 124,
+                "w": 1011,
+                "x": 2,
+                "y": 2
+            },
+            "rotated": false,
+            "texturePath": "creator/assets/goblins.png"
+        },
+        {
             "centerRect": {
                 "h": 28,
                 "w": 32,

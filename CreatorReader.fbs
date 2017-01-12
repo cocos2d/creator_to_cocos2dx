@@ -13,7 +13,7 @@ enum LabelOverflowType:byte {None, Clamp, Shrink, ResizeHeight}
 
 // New nodes should be added at the end of the union
 // no more than 255 union objects can be added
-union AnyNode {Scene, Sprite, Label, Particle, TileMap, Node, Button, ProgressBar, ScrollView, CreatorScene, EditBox, RichText}
+union AnyNode {Scene, Sprite, Label, Particle, TileMap, Node, Button, ProgressBar, ScrollView, CreatorScene, EditBox, RichText, SpineSkeleton}
 
 table SceneGraph
 {
@@ -176,6 +176,23 @@ table EditBox
     placeholderFontColor:RGB;
     maxLength:int;
     text:string;
+}
+
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+// Misc Nodes
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+table SpineSkeleton
+{
+    node:Node;
+    jsonFile:string;
+    atlasFile:string;
+    defaultSkin:string;
+    defaultAnimation:string;
+    loop:bool;
+    premultipliedAlpha:bool;
+    timeScale:float = 1;
+    debugSlots:bool = false;
+    debugBones:bool = false;
 }
 
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-

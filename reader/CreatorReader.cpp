@@ -185,6 +185,9 @@ cocos2d::Node* CreatorReader::createTree(const buffers::NodeTree* tree) const
             break;
         case buffers::AnyNode_CreatorScene:
             break;
+        case buffers::AnyNode_SpineSkeleton:
+            node = createSpineSkeleton(static_cast<const buffers::SpineSkeleton*>(buffer));
+            break;
     }
 
     // recursively add its children
@@ -210,7 +213,7 @@ cocos2d::Node* CreatorReader::createTree(const buffers::NodeTree* tree) const
 
 /*=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  *
- * creators
+ * Render Nodes
  *
  *=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 cocos2d::Scene* CreatorReader::createScene(const buffers::Scene* sceneBuffer) const
@@ -219,85 +222,17 @@ cocos2d::Scene* CreatorReader::createScene(const buffers::Scene* sceneBuffer) co
     return scene;
 }
 
+void CreatorReader::parseScene(cocos2d::Scene* scene, const buffers::Scene* sceneBuffer) const
+{
+
+}
+
 cocos2d::Node* CreatorReader::createNode(const buffers::Node* nodeBuffer) const
 {
     cocos2d::Node* node = cocos2d::Node::create();
     if (node)
         parseNode(node, nodeBuffer);
     return node;
-}
-cocos2d::Sprite* CreatorReader::createSprite(const buffers::Sprite* spriteBuffer) const
-{
-    cocos2d::Sprite* sprite = cocos2d::Sprite::create();
-    if (sprite)
-        parseSprite(sprite, spriteBuffer);
-    return sprite;
-}
-cocos2d::TMXTiledMap* CreatorReader::createTileMap(const buffers::TileMap* tilemapBuffer) const
-{
-    const auto& tmxfilename = tilemapBuffer->tmxFilename();
-    cocos2d::TMXTiledMap* tilemap = TMXTiledMap::create(tmxfilename->str());
-    if (tilemap)
-        parseTilemap(tilemap, tilemapBuffer);
-    return tilemap;
-}
-cocos2d::Label* CreatorReader::createLabel(const buffers::Label* labelBuffer) const
-{
-    cocos2d::Label* label = nullptr;
-    auto text = labelBuffer->labelText();
-    auto fontSize = labelBuffer->fontSize();
-    auto fontName = labelBuffer->fontName();
-
-    auto fontType = labelBuffer->fontType();
-    switch (fontType) {
-        case buffers::FontType_TTF:
-            label = cocos2d::Label::createWithTTF(text->str(), fontName->str(), fontSize);
-            break;
-        case buffers::FontType_BMFont:
-            label = cocos2d::Label::createWithBMFont(fontName->str(), text->str());
-            if (label)
-                label->setBMFontSize(fontSize);
-            break;
-        case buffers::FontType_System:
-            label = cocos2d::Label::createWithSystemFont(text->str(), fontName->str(), fontSize);
-            break;
-    }
-
-    if (label)
-        parseLabel(label, labelBuffer);
-    return label;
-}
-
-cocos2d::ui::RichText* CreatorReader::createRichText(const buffers::RichText* richTextBuffer) const
-{
-    cocos2d::ui::RichText* richText = nullptr;
-    const auto& text = richTextBuffer->text();
-    if (text)
-        richText = cocos2d::ui::RichText::createWithXML(text->str());
-    else
-        richText = cocos2d::ui::RichText::create();
-    parseRichText(richText, richTextBuffer);
-    return richText;
-}
-
-
-cocos2d::ParticleSystemQuad* CreatorReader::createParticle(const buffers::Particle* particleBuffer) const
-{
-    const auto& particleFilename = particleBuffer->particleFilename();
-    cocos2d::ParticleSystemQuad* particle = cocos2d::ParticleSystemQuad::create(particleFilename->str());
-    if (particle)
-        parseParticle(particle, particleBuffer);
-    return particle;
-}
-
-/*=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
- *
- * parsers
- *
- *=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
-void CreatorReader::parseScene(cocos2d::Scene* scene, const buffers::Scene* sceneBuffer) const
-{
-
 }
 
 void CreatorReader::parseNode(cocos2d::Node* node, const buffers::Node* nodeBuffer) const
@@ -348,6 +283,14 @@ void CreatorReader::parseNode(cocos2d::Node* node, const buffers::Node* nodeBuff
     if (contentSize) node->setContentSize(cocos2d::Size(contentSize->w(), contentSize->h()));
 }
 
+cocos2d::Sprite* CreatorReader::createSprite(const buffers::Sprite* spriteBuffer) const
+{
+    cocos2d::Sprite* sprite = cocos2d::Sprite::create();
+    if (sprite)
+        parseSprite(sprite, spriteBuffer);
+    return sprite;
+}
+
 void CreatorReader::parseSprite(cocos2d::Sprite* sprite, const buffers::Sprite* spriteBuffer) const
 {
     // order is important:
@@ -390,6 +333,15 @@ void CreatorReader::parseSprite(cocos2d::Sprite* sprite, const buffers::Sprite* 
 #endif
 }
 
+cocos2d::TMXTiledMap* CreatorReader::createTileMap(const buffers::TileMap* tilemapBuffer) const
+{
+    const auto& tmxfilename = tilemapBuffer->tmxFilename();
+    cocos2d::TMXTiledMap* tilemap = TMXTiledMap::create(tmxfilename->str());
+    if (tilemap)
+        parseTilemap(tilemap, tilemapBuffer);
+    return tilemap;
+}
+
 void CreatorReader::parseTilemap(cocos2d::TMXTiledMap* tilemap, const buffers::TileMap* tilemapBuffer) const
 {
     const auto& nodeBuffer = tilemapBuffer->node();
@@ -410,6 +362,33 @@ void CreatorReader::parseTilemap(cocos2d::TMXTiledMap* tilemap, const buffers::T
     tilemap->setScaleY(hr * sy);
 }
 
+cocos2d::Label* CreatorReader::createLabel(const buffers::Label* labelBuffer) const
+{
+    cocos2d::Label* label = nullptr;
+    auto text = labelBuffer->labelText();
+    auto fontSize = labelBuffer->fontSize();
+    auto fontName = labelBuffer->fontName();
+
+    auto fontType = labelBuffer->fontType();
+    switch (fontType) {
+        case buffers::FontType_TTF:
+            label = cocos2d::Label::createWithTTF(text->str(), fontName->str(), fontSize);
+            break;
+        case buffers::FontType_BMFont:
+            label = cocos2d::Label::createWithBMFont(fontName->str(), text->str());
+            if (label)
+                label->setBMFontSize(fontSize);
+            break;
+        case buffers::FontType_System:
+            label = cocos2d::Label::createWithSystemFont(text->str(), fontName->str(), fontSize);
+            break;
+    }
+
+    if (label)
+        parseLabel(label, labelBuffer);
+    return label;
+}
+
 void CreatorReader::parseLabel(cocos2d::Label* label, const buffers::Label* labelBuffer) const
 {
     const auto& nodeBuffer = labelBuffer->node();
@@ -427,6 +406,18 @@ void CreatorReader::parseLabel(cocos2d::Label* label, const buffers::Label* labe
     label->setHorizontalAlignment(static_cast<cocos2d::TextHAlignment>(horizontalA));
     label->setOverflow(static_cast<cocos2d::Label::Overflow>(overflowType));
     label->enableWrap(enableWrap);
+}
+
+cocos2d::ui::RichText* CreatorReader::createRichText(const buffers::RichText* richTextBuffer) const
+{
+    cocos2d::ui::RichText* richText = nullptr;
+    const auto& text = richTextBuffer->text();
+    if (text)
+        richText = cocos2d::ui::RichText::createWithXML(text->str());
+    else
+        richText = cocos2d::ui::RichText::create();
+    parseRichText(richText, richTextBuffer);
+    return richText;
 }
 
 void CreatorReader::parseRichText(cocos2d::ui::RichText* richText, const buffers::RichText* richTextBuffer) const
@@ -455,12 +446,26 @@ void CreatorReader::parseRichText(cocos2d::ui::RichText* richText, const buffers
 //    richText->ignoreContentAdaptWithSize(false);
 }
 
+cocos2d::ParticleSystemQuad* CreatorReader::createParticle(const buffers::Particle* particleBuffer) const
+{
+    const auto& particleFilename = particleBuffer->particleFilename();
+    cocos2d::ParticleSystemQuad* particle = cocos2d::ParticleSystemQuad::create(particleFilename->str());
+    if (particle)
+        parseParticle(particle, particleBuffer);
+    return particle;
+}
+
 void CreatorReader::parseParticle(cocos2d::ParticleSystemQuad* particle, const buffers::Particle* particleBuffer) const
 {
     const auto& nodeBuffer = particleBuffer->node();
     parseNode(particle, nodeBuffer);
 }
 
+/*=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ *
+ * UI Nodes
+ *
+ *=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 cocos2d::ui::ScrollView* CreatorReader::createScrollView(const buffers::ScrollView* scrollViewBuffer) const
 {
     auto scrollView = ui::ScrollView::create();
@@ -523,6 +528,7 @@ cocos2d::ui::EditBox* CreatorReader::createEditBox(const buffers::EditBox* editB
     parseEditBox(editBox, editBoxBuffer);
     return editBox;
 }
+
 void CreatorReader::parseEditBox(cocos2d::ui::EditBox* editBox, const buffers::EditBox* editBoxBuffer) const
 {
     const auto& nodeBuffer = editBoxBuffer->node();
@@ -579,6 +585,54 @@ void CreatorReader::parseButton(cocos2d::ui::Button* button, const buffers::Butt
     button->ignoreContentAdaptWithSize(ignoreContentAdaptWithSize);
 }
 
+/*=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ *
+ * Misc Nodes
+ *
+ *=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
+spine::SkeletonAnimation* CreatorReader::createSpineSkeleton(const buffers::SpineSkeleton* spineBuffer) const
+{
+    const auto& jsonFile = spineBuffer->jsonFile()->str();
+    const auto& atlasFile = spineBuffer->atlasFile()->str();
+    const auto& timeScale = spineBuffer->timeScale();
+
+    auto spine = spine::SkeletonAnimation::createWithJsonFile(jsonFile, atlasFile, timeScale);
+
+    if (spine)
+        parseSpineSkeleton(spine, spineBuffer);
+    return spine;
+}
+
+void CreatorReader::parseSpineSkeleton(spine::SkeletonAnimation* spine, const buffers::SpineSkeleton* spineBuffer) const
+{
+    const auto& nodeBuffer = spineBuffer->node();
+    parseNode(spine, nodeBuffer);
+
+    // defaultSkin:string;
+    // defaultAnimation:string;
+    // loop:bool;
+    // premultipliedAlpha:bool;
+    // timeScale:float = 1;
+    // debugSlots:bool;
+    // debugBones:bool;
+
+    const auto& defaultSkin = spineBuffer->defaultSkin()->str();
+    const auto& defaultAnimation = spineBuffer->defaultAnimation()->str();
+    const auto& loop = spineBuffer->loop();
+//    const auto& premultipledAlpha = spineBuffer->premultipliedAlpha();
+    const auto& debugSlots = spineBuffer->debugSlots();
+    const auto& debugBones = spineBuffer->debugBones();
+
+    spine->setSkin(defaultSkin);
+    spine->setAnimation(0, defaultAnimation, loop);
+    spine->setDebugSlotsEnabled(debugSlots);
+    spine->setDebugBonesEnabled(debugBones);
+}
+
+
+//
+// Helper methods
+//
 void CreatorReader::adjustPosition(cocos2d::Node* node) const
 {
     const cocos2d::Node* parent = node->getParent();
@@ -594,7 +648,7 @@ void CreatorReader::adjustPosition(cocos2d::Node* node) const
 }
 
 //
-// Helper functions
+// Helper free functions
 //
 static void setSpriteQuad(cocos2d::V3F_C4B_T2F_Quad* quad, const cocos2d::Size& origSize, const int x, const int y, float x_factor, float y_factor)
 {

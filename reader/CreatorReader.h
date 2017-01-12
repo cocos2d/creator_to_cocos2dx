@@ -2,6 +2,7 @@
 
 #include "cocos2d.h"
 #include "ui/CocosGUI.h"
+#include <spine/spine-cocos2dx.h>
 
 #include "CreatorReader_generated.h"
 
@@ -82,6 +83,9 @@ protected:
 
     cocos2d::ui::Button* createButton(const buffers::Button* buttonBuffer) const;
     void parseButton(cocos2d::ui::Button* button, const buffers::Button* buttonBuffer) const;
+
+    spine::SkeletonAnimation* createSpineSkeleton(const buffers::SpineSkeleton* spineBuffer) const;
+    void parseSpineSkeleton(spine::SkeletonAnimation* button, const buffers::SpineSkeleton* spineBuffer) const;
 
     void setupSpriteFrames();
 

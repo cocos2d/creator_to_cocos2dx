@@ -38,6 +38,8 @@ struct ScrollView;
 
 struct EditBox;
 
+struct SpineSkeleton;
+
 struct Vec2;
 
 struct Vec3;
@@ -226,12 +228,13 @@ enum AnyNode {
   AnyNode_CreatorScene = 10,
   AnyNode_EditBox = 11,
   AnyNode_RichText = 12,
+  AnyNode_SpineSkeleton = 13,
   AnyNode_MIN = AnyNode_NONE,
-  AnyNode_MAX = AnyNode_RichText
+  AnyNode_MAX = AnyNode_SpineSkeleton
 };
 
 inline const char **EnumNamesAnyNode() {
-  static const char *names[] = { "NONE", "Scene", "Sprite", "Label", "Particle", "TileMap", "Node", "Button", "ProgressBar", "ScrollView", "CreatorScene", "EditBox", "RichText", nullptr };
+  static const char *names[] = { "NONE", "Scene", "Sprite", "Label", "Particle", "TileMap", "Node", "Button", "ProgressBar", "ScrollView", "CreatorScene", "EditBox", "RichText", "SpineSkeleton", nullptr };
   return names;
 }
 
@@ -287,6 +290,10 @@ template<> struct AnyNodeTraits<EditBox> {
 
 template<> struct AnyNodeTraits<RichText> {
   static const AnyNode enum_value = AnyNode_RichText;
+};
+
+template<> struct AnyNodeTraits<SpineSkeleton> {
+  static const AnyNode enum_value = AnyNode_SpineSkeleton;
 };
 
 inline bool VerifyAnyNode(flatbuffers::Verifier &verifier, const void *union_obj, AnyNode type);
@@ -1479,6 +1486,110 @@ inline flatbuffers::Offset<EditBox> CreateEditBoxDirect(flatbuffers::FlatBufferB
   return CreateEditBox(_fbb, node, backgroundImage ? _fbb.CreateString(backgroundImage) : 0, returnType, inputFlag, inputMode, fontSize, fontColor, placeholder ? _fbb.CreateString(placeholder) : 0, placeholderFontSize, placeholderFontColor, maxLength, text ? _fbb.CreateString(text) : 0);
 }
 
+struct SpineSkeleton FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum {
+    VT_NODE = 4,
+    VT_JSONFILE = 6,
+    VT_ATLASFILE = 8,
+    VT_DEFAULTSKIN = 10,
+    VT_DEFAULTANIMATION = 12,
+    VT_LOOP = 14,
+    VT_PREMULTIPLIEDALPHA = 16,
+    VT_TIMESCALE = 18,
+    VT_DEBUGSLOTS = 20,
+    VT_DEBUGBONES = 22
+  };
+  const Node *node() const { return GetPointer<const Node *>(VT_NODE); }
+  const flatbuffers::String *jsonFile() const { return GetPointer<const flatbuffers::String *>(VT_JSONFILE); }
+  const flatbuffers::String *atlasFile() const { return GetPointer<const flatbuffers::String *>(VT_ATLASFILE); }
+  const flatbuffers::String *defaultSkin() const { return GetPointer<const flatbuffers::String *>(VT_DEFAULTSKIN); }
+  const flatbuffers::String *defaultAnimation() const { return GetPointer<const flatbuffers::String *>(VT_DEFAULTANIMATION); }
+  bool loop() const { return GetField<uint8_t>(VT_LOOP, 0) != 0; }
+  bool premultipliedAlpha() const { return GetField<uint8_t>(VT_PREMULTIPLIEDALPHA, 0) != 0; }
+  float timeScale() const { return GetField<float>(VT_TIMESCALE, 1.0f); }
+  bool debugSlots() const { return GetField<uint8_t>(VT_DEBUGSLOTS, 0) != 0; }
+  bool debugBones() const { return GetField<uint8_t>(VT_DEBUGBONES, 0) != 0; }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_NODE) &&
+           verifier.VerifyTable(node()) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_JSONFILE) &&
+           verifier.Verify(jsonFile()) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_ATLASFILE) &&
+           verifier.Verify(atlasFile()) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_DEFAULTSKIN) &&
+           verifier.Verify(defaultSkin()) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_DEFAULTANIMATION) &&
+           verifier.Verify(defaultAnimation()) &&
+           VerifyField<uint8_t>(verifier, VT_LOOP) &&
+           VerifyField<uint8_t>(verifier, VT_PREMULTIPLIEDALPHA) &&
+           VerifyField<float>(verifier, VT_TIMESCALE) &&
+           VerifyField<uint8_t>(verifier, VT_DEBUGSLOTS) &&
+           VerifyField<uint8_t>(verifier, VT_DEBUGBONES) &&
+           verifier.EndTable();
+  }
+};
+
+struct SpineSkeletonBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_node(flatbuffers::Offset<Node> node) { fbb_.AddOffset(SpineSkeleton::VT_NODE, node); }
+  void add_jsonFile(flatbuffers::Offset<flatbuffers::String> jsonFile) { fbb_.AddOffset(SpineSkeleton::VT_JSONFILE, jsonFile); }
+  void add_atlasFile(flatbuffers::Offset<flatbuffers::String> atlasFile) { fbb_.AddOffset(SpineSkeleton::VT_ATLASFILE, atlasFile); }
+  void add_defaultSkin(flatbuffers::Offset<flatbuffers::String> defaultSkin) { fbb_.AddOffset(SpineSkeleton::VT_DEFAULTSKIN, defaultSkin); }
+  void add_defaultAnimation(flatbuffers::Offset<flatbuffers::String> defaultAnimation) { fbb_.AddOffset(SpineSkeleton::VT_DEFAULTANIMATION, defaultAnimation); }
+  void add_loop(bool loop) { fbb_.AddElement<uint8_t>(SpineSkeleton::VT_LOOP, static_cast<uint8_t>(loop), 0); }
+  void add_premultipliedAlpha(bool premultipliedAlpha) { fbb_.AddElement<uint8_t>(SpineSkeleton::VT_PREMULTIPLIEDALPHA, static_cast<uint8_t>(premultipliedAlpha), 0); }
+  void add_timeScale(float timeScale) { fbb_.AddElement<float>(SpineSkeleton::VT_TIMESCALE, timeScale, 1.0f); }
+  void add_debugSlots(bool debugSlots) { fbb_.AddElement<uint8_t>(SpineSkeleton::VT_DEBUGSLOTS, static_cast<uint8_t>(debugSlots), 0); }
+  void add_debugBones(bool debugBones) { fbb_.AddElement<uint8_t>(SpineSkeleton::VT_DEBUGBONES, static_cast<uint8_t>(debugBones), 0); }
+  SpineSkeletonBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
+  SpineSkeletonBuilder &operator=(const SpineSkeletonBuilder &);
+  flatbuffers::Offset<SpineSkeleton> Finish() {
+    auto o = flatbuffers::Offset<SpineSkeleton>(fbb_.EndTable(start_, 10));
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<SpineSkeleton> CreateSpineSkeleton(flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<Node> node = 0,
+    flatbuffers::Offset<flatbuffers::String> jsonFile = 0,
+    flatbuffers::Offset<flatbuffers::String> atlasFile = 0,
+    flatbuffers::Offset<flatbuffers::String> defaultSkin = 0,
+    flatbuffers::Offset<flatbuffers::String> defaultAnimation = 0,
+    bool loop = false,
+    bool premultipliedAlpha = false,
+    float timeScale = 1.0f,
+    bool debugSlots = false,
+    bool debugBones = false) {
+  SpineSkeletonBuilder builder_(_fbb);
+  builder_.add_timeScale(timeScale);
+  builder_.add_defaultAnimation(defaultAnimation);
+  builder_.add_defaultSkin(defaultSkin);
+  builder_.add_atlasFile(atlasFile);
+  builder_.add_jsonFile(jsonFile);
+  builder_.add_node(node);
+  builder_.add_debugBones(debugBones);
+  builder_.add_debugSlots(debugSlots);
+  builder_.add_premultipliedAlpha(premultipliedAlpha);
+  builder_.add_loop(loop);
+  return builder_.Finish();
+}
+
+inline flatbuffers::Offset<SpineSkeleton> CreateSpineSkeletonDirect(flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<Node> node = 0,
+    const char *jsonFile = nullptr,
+    const char *atlasFile = nullptr,
+    const char *defaultSkin = nullptr,
+    const char *defaultAnimation = nullptr,
+    bool loop = false,
+    bool premultipliedAlpha = false,
+    float timeScale = 1.0f,
+    bool debugSlots = false,
+    bool debugBones = false) {
+  return CreateSpineSkeleton(_fbb, node, jsonFile ? _fbb.CreateString(jsonFile) : 0, atlasFile ? _fbb.CreateString(atlasFile) : 0, defaultSkin ? _fbb.CreateString(defaultSkin) : 0, defaultAnimation ? _fbb.CreateString(defaultAnimation) : 0, loop, premultipliedAlpha, timeScale, debugSlots, debugBones);
+}
+
 inline bool VerifyAnyNode(flatbuffers::Verifier &verifier, const void *union_obj, AnyNode type) {
   switch (type) {
     case AnyNode_NONE: return true;
@@ -1494,6 +1605,7 @@ inline bool VerifyAnyNode(flatbuffers::Verifier &verifier, const void *union_obj
     case AnyNode_CreatorScene: return verifier.VerifyTable(reinterpret_cast<const CreatorScene *>(union_obj));
     case AnyNode_EditBox: return verifier.VerifyTable(reinterpret_cast<const EditBox *>(union_obj));
     case AnyNode_RichText: return verifier.VerifyTable(reinterpret_cast<const RichText *>(union_obj));
+    case AnyNode_SpineSkeleton: return verifier.VerifyTable(reinterpret_cast<const SpineSkeleton *>(union_obj));
     default: return false;
   }
 }
