@@ -1,4 +1,13 @@
+//
+// Main FBS file
+//
+
+
+// includes
+include "AnimationClip.fbs";
+
 namespace creator.buffers;
+
 
 enum FontType:byte { System = 0, BMFont = 1, TTF = 2 }
 enum VerticalAlignment:byte { Top = 0, Center = 1, Bottom = 2 }
@@ -27,6 +36,9 @@ table SceneGraph
 
     // Frames needed for the Scene
     spriteFrames:[SpriteFrame];
+
+    // array animation clips
+    animationClips:[AnimationClip];
 }
 
 table NodeTree
