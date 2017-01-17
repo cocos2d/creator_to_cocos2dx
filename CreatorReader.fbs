@@ -5,6 +5,7 @@
 
 // includes
 include "AnimationClip.fbs";
+include "Structs.fbs"
 
 namespace creator.buffers;
 
@@ -206,6 +207,123 @@ table SpineSkeleton
     debugSlots:bool = false;
     debugBones:bool = false;
 }
+
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+// Animation Clip
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+enum AnimWrapMode:byte {Default, Normal, Loop, PingPong, Reverse, LoopReverse, PingPongReverse}
+
+table AnimationClip
+{
+    // clip name
+    name:string;
+
+    duration:float;
+    sample:float;
+    speed:float;
+    wrapMode:AnimWrapMode;
+    curveData:AnimCurveData;
+}
+
+table AnimCurveData
+{
+    props:[AnimProps];
+    events:[AnimEvents];
+}
+
+table AnimProps
+{
+}
+
+table AnimEvents
+{
+}
+
+table AnimPropRotation
+{
+    frame:float;
+    value:float;
+}
+
+table AnimPropPosition
+{
+    frame:float;
+    value:Vec2;
+    motionPath:[float];
+}
+
+table AnimPropPositionX
+{
+    frame:float;
+    value:float;
+}
+
+table AnimPropPositionY
+{
+    frame:float;
+    value:float;
+}
+
+table AnimPropScaleX
+{
+    frame:float;
+    value:float;
+}
+
+table AnimPropScaleY
+{
+    frame:float;
+    value:float;
+}
+
+table AnimPropWidth
+{
+    frame:float;
+    value:float;
+}
+
+table AnimPropHeight
+{
+    frame:float;
+    value:float;
+}
+
+table AnimPropColor
+{
+    frame:float;
+    value:RGBA;
+}
+
+table AnimPropOpacity
+{
+    frame:float;
+    value:float;
+}
+
+table AnimPropAnchorX
+{
+    frame:float;
+    value:float;
+}
+
+table AnimPropAnchorY
+{
+    frame:float;
+    value:float;
+}
+
+table AnimPropSkewX
+{
+    frame:float;
+    value:float;
+}
+
+table AnimPropSkewY
+{
+    frame:float;
+    value:float;
+}
+
 
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 // Structs

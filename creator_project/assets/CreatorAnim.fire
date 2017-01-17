@@ -46,7 +46,8 @@
     "_globalZOrder": 0,
     "_tag": -1,
     "_opacityModifyRGB": false,
-    "_id": "433d8yG7PtKb4/ofrGR/YCB"
+    "_id": "64d88244-2d85-4ff2-b423-34d56261ecb5",
+    "autoReleaseAssets": false
   },
   {
     "__type__": "cc.Node",
@@ -255,7 +256,7 @@
       "__uuid__": "4f39fc84-eaed-4f05-95ff-f636066e8de8"
     },
     "_type": 0,
-    "_sizeMode": 1,
+    "_sizeMode": 0,
     "_fillType": 0,
     "_fillCenter": {
       "__type__": "cc.Vec2",
