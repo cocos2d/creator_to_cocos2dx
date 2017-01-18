@@ -284,6 +284,17 @@ class Node(object):
     def parse_clip(self):
         component = Node.get_node_component_of_type(self._node_data, 'cc.Animation')
         if component is not None:
+            # _name: "",
+            # _objFlags: 0,
+            # _enabled: true,
+            # _defaultClip: {"__uuid__": }
+            # _clips: [ {"__uuid__": }
+            # playOnLoad: true
+
+            play_on_load = component['playOnLoad']
+            name = component['name']
+            objFlags = component['_objFlags']
+            default_clip_uuid = component['_spriteFrame']['__uuid__']
 
 
     def add_child(self, node):
@@ -875,6 +886,7 @@ class FireParser(object):
         for meta_filename in metas:
             with open(meta_filename) as fd:
                 basename = os.path.basename(meta_filename)
+                filename, fileextension = os.path.splitext(basename)
                 j_data = json.load(fd)
                 self._state._meta_data[basename] = j_data
 
@@ -907,6 +919,8 @@ class FireParser(object):
                         else:
                             raise Exception("Invalid type: %s" % j_data['type'])
 
+                # AnimationClip ??
+                elif 'type' not in j_data and fileextension == '.meta':
 
     def populate_uuid_file(self, path):
         with open(path + '/../library/uuid-to-mtime.json') as data:
