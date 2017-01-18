@@ -110,6 +110,10 @@ class State(object):
         # it is just a number that gets incremented with each new node
         self._unique_id = 0
 
+        # clips
+        # key is the uuid, value is the animation
+        self._clips = {}
+
 #=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 #
 # Node related
@@ -887,6 +891,7 @@ class FireParser(object):
             with open(meta_filename) as fd:
                 basename = os.path.basename(meta_filename)
                 filename, fileextension = os.path.splitext(basename)
+                subfileextension = os.path.splitext(filename)[1]
                 j_data = json.load(fd)
                 self._state._meta_data[basename] = j_data
 
@@ -919,8 +924,10 @@ class FireParser(object):
                         else:
                             raise Exception("Invalid type: %s" % j_data['type'])
 
-                # AnimationClip ??
-                elif 'type' not in j_data and fileextension == '.meta':
+                # AnimationClip
+                elif 'type' not in j_data and subfileextension == '.anim':
+                    self._state._clips[j_data['uuid']] = filename
+        print(self._state._clips)
 
     def populate_uuid_file(self, path):
         with open(path + '/../library/uuid-to-mtime.json') as data:
