@@ -1,7 +1,7 @@
 #!/usr/bin/python
-# ----------------------------------------------------------------------------
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 # Parses Cocos Creator projects
-# ----------------------------------------------------------------------------
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 '''
 Tool that converts Cocos Creator .fire files into .json files
 compatible with the Cocos2d-x flatbuffer schema
@@ -140,8 +140,15 @@ class Node(object):
     @classmethod
     def guess_type_from_components(cls, components):
         # ScrollView, Button & ProgressBar should be before Sprite
-        supported_components = ('cc.Button', 'cc.ProgressBar', 'cc.ScrollView', 'cc.EditBox', 'cc.Label', 'sp.Skeleton', 'cc.Sprite', 'cc.ParticleSystem', 'cc.TiledMap', 'cc.Canvas', 'cc.RichText')
+        supported_components = ('cc.Button', 'cc.ProgressBar', 'cc.ScrollView',
+                'cc.EditBox', 'cc.Label', 'sp.Skeleton', 'cc.Sprite',
+                'cc.ParticleSystem', 'cc.TiledMap', 'cc.Canvas', 'cc.RichText'
+                )
         node_components = [x['__type__'] for x in components]
+        # special case for object without components
+        if len(node_components) == 0:
+            return 'cc.Node'
+
         for supported in supported_components:
             if supported in node_components:
                 log("Choosen %s from %s" % (supported, node_components))
@@ -153,7 +160,9 @@ class Node(object):
     def create_node(cls, node_type, node_idx):
         state = State.Instance()
         n = None
-        if node_type == 'cc.Sprite':
+        if node_type == 'cc.Node':
+            n = Node(state._json_data[node_idx])
+        elif node_type == 'cc.Sprite':
             n = Sprite(state._json_data[node_idx])
         elif node_type == 'cc.Label':
             n = Label(state._json_data[node_idx])
@@ -270,6 +279,13 @@ class Node(object):
                 if n is not None:
                     self.add_child(n)
 
+                n.parse_clip()
+
+    def parse_clip(self):
+        component = Node.get_node_component_of_type(self._node_data, 'cc.Animation')
+        if component is not None:
+
+
     def add_child(self, node):
         self._children.append(node)
 
@@ -282,9 +298,7 @@ class Node(object):
         return "%s%s" % ('-' * tab, self.get_class_name())
 
     #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    #
-    # JSON
-    #
+    # JSON stuff
     #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     def to_json(self, depth, sibling_idx):
         self.to_json_begin(depth, sibling_idx)
@@ -316,7 +330,7 @@ class Node(object):
 #=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 #=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-# Scene
+# Node: Scene
 #=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 class Scene(Node):
     def __init__(self, data):
@@ -329,7 +343,7 @@ class Scene(Node):
 
 
 #=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-# Canvas
+# Node: Canvas
 #=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 class Canvas(Node):
     def __init__(self, data):
@@ -355,7 +369,7 @@ class Canvas(Node):
 #=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 #=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-# Sprite
+# Node: Sprite
 #=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 class Sprite(Node):
 
@@ -393,7 +407,7 @@ class Sprite(Node):
 
 
 #=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-# Label
+# Node: Label
 #=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 class Label(Node):
 
@@ -452,7 +466,7 @@ class Label(Node):
 
 
 #=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-# RichText
+# Node: RichText
 #=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 class RichText(Node):
 
@@ -498,7 +512,7 @@ class RichText(Node):
 
 
 #=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-# ParticleSystem
+# Node: ParticleSystem
 #=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 class ParticleSystem(Node):
     def __init__(self, data):
@@ -517,7 +531,7 @@ class ParticleSystem(Node):
 
 
 #=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-# TiledMap
+# Node: TiledMap
 #=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 class TiledMap(Node):
     def __init__(self, data):
@@ -551,7 +565,7 @@ class TiledMap(Node):
 #=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 #=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-# Button
+# Node: Button
 #=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 class Button(Node):
     #  Composition:
@@ -592,7 +606,7 @@ class Button(Node):
 
 
 #=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-# EditBox
+# Node: EditBox
 #=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 class EditBox(Node):
     # custom properties
@@ -639,7 +653,7 @@ class EditBox(Node):
 
 
 #=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-# ProgressBar
+# Node: ProgressBar
 #=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 class ProgressBar(Node):
     # custom properties
@@ -667,7 +681,7 @@ class ProgressBar(Node):
 
 
 #=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-# ScrollView
+# Node: ScrollView
 #=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 class ScrollView(Node):
     # custom properties
@@ -796,7 +810,7 @@ class ScrollView(Node):
 #=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 #=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-# SpineSkeleton
+# Node: SpineSkeleton
 #=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 class SpineSkeleton(Node):
 
@@ -832,6 +846,14 @@ class SpineSkeleton(Node):
 # AnimationClip related
 #
 #=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+class ClipParser(object):
+    def __init__(self, clip_file):
+        self._state = State.Instance()
+
+        with open(clip_file) as fd:
+            basename = os.path.basename(clip_file)
+            j_data = json.load(fd)
+            self._state._clip_data[basename] = j_data
 
 #=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 #
