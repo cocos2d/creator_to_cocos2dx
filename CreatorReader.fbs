@@ -3,10 +3,6 @@
 //
 
 
-// includes
-include "AnimationClip.fbs";
-include "Structs.fbs"
-
 namespace creator.buffers;
 
 
@@ -67,6 +63,11 @@ table CreatorScene
     filename:string;
 }
 
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+//
+// Nodes
+//
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 table Node
 {
     contentSize:Size;
@@ -208,11 +209,18 @@ table SpineSkeleton
     debugBones:bool = false;
 }
 
+
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+//
+// Animation
+//
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+enum AnimWrapMode:byte {Default, Normal, Loop, PingPong, Reverse, LoopReverse, PingPongReverse}
+
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 // Animation Clip
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-enum AnimWrapMode:byte {Default, Normal, Loop, PingPong, Reverse, LoopReverse, PingPongReverse}
-
 table AnimationClip
 {
     // clip name
