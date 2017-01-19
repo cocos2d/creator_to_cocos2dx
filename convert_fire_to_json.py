@@ -926,8 +926,11 @@ class FireParser(object):
 
                 # AnimationClip
                 elif 'type' not in j_data and subfileextension == '.anim':
-                    self._state._clips[j_data['uuid']] = filename
-        print(self._state._clips)
+                    dirname = os.path.dirname(meta_filename)
+                    anim_fullpath = dirname + os.path.sep + filename
+                    with open(anim_fullpath) as fdanim:
+                        j_dataanim = json.load(fdanim)
+                        self._state._clips[j_data['uuid']] = j_dataanim
 
     def populate_uuid_file(self, path):
         with open(path + '/../library/uuid-to-mtime.json') as data:
