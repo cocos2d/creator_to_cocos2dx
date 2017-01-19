@@ -500,38 +500,7 @@
                         "h": 400,
                         "w": 220
                     },
-                    "node": {
-                        "anchorPoint": {
-                            "x": 0.5,
-                            "y": 0.5
-                        },
-                        "cascadeOpacityEnabled": true,
-                        "color": {
-                            "b": 108,
-                            "g": 108,
-                            "r": 122
-                        },
-                        "contentSize": {
-                            "h": 250,
-                            "w": 240
-                        },
-                        "globalZOrder": 0,
-                        "localZOrder": 0,
-                        "name": "scrollViewMama",
-                        "opacity": 255,
-                        "opacityModifyRGB": false,
-                        "position": {
-                            "x": 668,
-                            "y": 280
-                        },
-                        "rotationSkewX": 0,
-                        "rotationSkewY": 0,
-                        "scaleX": 1,
-                        "scaleY": 1,
-                        "skewX": 0,
-                        "skewY": 0,
-                        "tag": -1
-                    }
+                    "node": {}
                 },
                 "object_type": "ScrollView"
             },
@@ -772,38 +741,7 @@
                         "h": 200,
                         "w": 400
                     },
-                    "node": {
-                        "anchorPoint": {
-                            "x": 0.5,
-                            "y": 0.5
-                        },
-                        "cascadeOpacityEnabled": true,
-                        "color": {
-                            "b": 100,
-                            "g": 100,
-                            "r": 235
-                        },
-                        "contentSize": {
-                            "h": 200,
-                            "w": 240
-                        },
-                        "globalZOrder": 0,
-                        "localZOrder": 0,
-                        "name": "scrollView",
-                        "opacity": 255,
-                        "opacityModifyRGB": false,
-                        "position": {
-                            "x": 107,
-                            "y": 132
-                        },
-                        "rotationSkewX": 45,
-                        "rotationSkewY": 45,
-                        "scaleX": 1,
-                        "scaleY": 1,
-                        "skewX": 0,
-                        "skewY": 0,
-                        "tag": -1
-                    }
+                    "node": {}
                 },
                 "object_type": "ScrollView"
             },
@@ -1390,38 +1328,7 @@
                         "h": 200,
                         "w": 400
                     },
-                    "node": {
-                        "anchorPoint": {
-                            "x": 0.5,
-                            "y": 0.5
-                        },
-                        "cascadeOpacityEnabled": true,
-                        "color": {
-                            "b": 61,
-                            "g": 255,
-                            "r": 0
-                        },
-                        "contentSize": {
-                            "h": 150,
-                            "w": 240
-                        },
-                        "globalZOrder": 0,
-                        "localZOrder": 0,
-                        "name": "scrollView",
-                        "opacity": 255,
-                        "opacityModifyRGB": false,
-                        "position": {
-                            "x": 667,
-                            "y": 77
-                        },
-                        "rotationSkewX": 0,
-                        "rotationSkewY": 0,
-                        "scaleX": 1,
-                        "scaleY": 1,
-                        "skewX": 0,
-                        "skewY": 0,
-                        "tag": -1
-                    }
+                    "node": {}
                 },
                 "object_type": "ScrollView"
             },
@@ -1682,27 +1589,26 @@
             }
         ],
         "object": {
-            "node": {
-                "anchorPoint": {
-                    "x": 0,
-                    "y": 0
-                },
-                "cascadeOpacityEnabled": true,
-                "color": {
-                    "b": 255,
-                    "g": 255,
-                    "r": 255
-                },
-                "contentSize": {
-                    "h": 0,
-                    "w": 0
-                },
-                "globalZOrder": 0,
-                "localZOrder": 0,
-                "opacity": 255,
-                "opacityModifyRGB": false,
-                "tag": -1
-            }
+            "anchorPoint": {
+                "x": 0,
+                "y": 0
+            },
+            "cascadeOpacityEnabled": true,
+            "color": {
+                "b": 255,
+                "g": 255,
+                "r": 255
+            },
+            "contentSize": {
+                "h": 0,
+                "w": 0
+            },
+            "globalZOrder": 0,
+            "localZOrder": 0,
+            "node": {},
+            "opacity": 255,
+            "opacityModifyRGB": false,
+            "tag": -1
         },
         "object_type": "Scene"
     },

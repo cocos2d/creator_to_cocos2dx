@@ -88,6 +88,7 @@ table Node
     skewX:float = 0;
     skewY:float = 0;
     tag:int = 0;
+    animation:AnimationRef;
 }
 
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -193,7 +194,7 @@ table EditBox
 }
 
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-// Misc Nodes
+// Misc Nodes and extensions
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 table SpineSkeleton
 {
@@ -207,6 +208,17 @@ table SpineSkeleton
     timeScale:float = 1;
     debugSlots:bool = false;
     debugBones:bool = false;
+}
+
+// this is part of the Node. It is a reference to
+// an existing animation
+table AnimationRef
+{
+    defaultClip:string;
+    clips:[string];
+    objFlags:int;
+    name:string;
+    playOnLoad:bool;
 }
 
 

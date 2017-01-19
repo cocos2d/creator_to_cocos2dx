@@ -303,27 +303,26 @@
             }
         ],
         "object": {
-            "node": {
-                "anchorPoint": {
-                    "x": 0,
-                    "y": 0
-                },
-                "cascadeOpacityEnabled": true,
-                "color": {
-                    "b": 255,
-                    "g": 255,
-                    "r": 255
-                },
-                "contentSize": {
-                    "h": 0,
-                    "w": 0
-                },
-                "globalZOrder": 0,
-                "localZOrder": 0,
-                "opacity": 255,
-                "opacityModifyRGB": false,
-                "tag": -1
-            }
+            "anchorPoint": {
+                "x": 0,
+                "y": 0
+            },
+            "cascadeOpacityEnabled": true,
+            "color": {
+                "b": 255,
+                "g": 255,
+                "r": 255
+            },
+            "contentSize": {
+                "h": 0,
+                "w": 0
+            },
+            "globalZOrder": 0,
+            "localZOrder": 0,
+            "node": {},
+            "opacity": 255,
+            "opacityModifyRGB": false,
+            "tag": -1
         },
         "object_type": "Scene"
     },

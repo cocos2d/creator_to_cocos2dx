@@ -126,19 +126,22 @@ class State(object):
 class Node(object):
     @classmethod
     def get_node_components(cls, node):
-        idxs = node['_components']
-        components = []
-        for idx in idxs:
-            idx_num = idx['__id__']
-            components.append(State.Instance()._json_data[idx_num])
-        return components
+        if '_components' in node:
+            idxs = node['_components']
+            components = []
+            for idx in idxs:
+                idx_num = idx['__id__']
+                components.append(State.Instance()._json_data[idx_num])
+            return components
+        return None
 
     @classmethod
     def get_node_component_of_type(cls, node, t):
         components = Node.get_node_components(node)
-        for c in components:
-            if c['__type__'] == t:
-                return c
+        if components is not None:
+            for c in components:
+                if c['__type__'] == t:
+                    return c
         return None
 
     @classmethod
@@ -188,6 +191,7 @@ class Node(object):
             n = ScrollView(state._json_data[node_idx])
         elif node_type == 'sp.Skeleton':
             n = SpineSkeleton(state._json_data[node_idx])
+
         if n is not None:
             n.parse_properties()
         return n
@@ -211,26 +215,6 @@ class Node(object):
                 'children': []
                 }
         self._properties = {}
-
-        data = self._node_data
-        self.add_property_size('contentSize', "_contentSize", data)
-        self.add_property_bool('enabled', "_enabled", data)
-        self.add_property_str('name', "_name", data)
-        self.add_property_vec2('anchorPoint', "_anchorPoint", data)
-        self.add_property_bool('cascadeOpacityEnabled', "_cascadeOpacityEnabled", data)
-        self.add_property_rgb('color', "_color", data)
-        self.add_property_int('globalZOrder', "_globalZOrder", data)
-        self.add_property_int('localZOrder', "_localZOrder", data)
-        self.add_property_int('opacity', "_opacity" , data)
-        self.add_property_bool('opacityModifyRGB', "_opacityModifyRGB", data)
-        self.add_property_vec2('position', "_position", data)
-        self.add_property_int('rotationSkewX', "_rotationX", data)
-        self.add_property_int('rotationSkewY', "_rotationY", data)
-        self.add_property_int('scaleX', "_scaleX", data)
-        self.add_property_int('scaleY', "_scaleY", data)
-        self.add_property_int('skewX', "_skewX", data)
-        self.add_property_int('skewY', "_skewY", data)
-        self.add_property_int('tag', "_tag", data)
 
     def add_property_str(self, newkey, value, data):
         if value in data:
@@ -269,6 +253,30 @@ class Node(object):
         return type(self).__name__
 
     def parse_properties(self):
+        # 1st: parse self
+        data = self._node_data
+        self.add_property_size('contentSize', "_contentSize", data)
+        self.add_property_bool('enabled', "_enabled", data)
+        self.add_property_str('name', "_name", data)
+        self.add_property_vec2('anchorPoint', "_anchorPoint", data)
+        self.add_property_bool('cascadeOpacityEnabled', "_cascadeOpacityEnabled", data)
+        self.add_property_rgb('color', "_color", data)
+        self.add_property_int('globalZOrder', "_globalZOrder", data)
+        self.add_property_int('localZOrder', "_localZOrder", data)
+        self.add_property_int('opacity', "_opacity" , data)
+        self.add_property_bool('opacityModifyRGB', "_opacityModifyRGB", data)
+        self.add_property_vec2('position', "_position", data)
+        self.add_property_int('rotationSkewX', "_rotationX", data)
+        self.add_property_int('rotationSkewY', "_rotationY", data)
+        self.add_property_int('scaleX', "_scaleX", data)
+        self.add_property_int('scaleY', "_scaleY", data)
+        self.add_property_int('skewX', "_skewX", data)
+        self.add_property_int('skewY', "_skewY", data)
+        self.add_property_int('tag', "_tag", data)
+
+        self.parse_clip()
+
+        # 2nd: parse children
         for child_idx in self._node_data["_children"]:
             self.parse_child(child_idx['__id__'])
 
@@ -283,8 +291,6 @@ class Node(object):
                 if n is not None:
                     self.add_child(n)
 
-                n.parse_clip()
-
     def parse_clip(self):
         component = Node.get_node_component_of_type(self._node_data, 'cc.Animation')
         if component is not None:
@@ -295,10 +301,16 @@ class Node(object):
             # _clips: [ {"__uuid__": }
             # playOnLoad: true
 
-            play_on_load = component['playOnLoad']
-            name = component['name']
-            objFlags = component['_objFlags']
-            default_clip_uuid = component['_spriteFrame']['__uuid__']
+            anim = {}
+            anim['playOnLoad'] = component['playOnLoad']
+            anim['name'] = component['_name']
+            anim['objFlags'] = component['_objFlags']
+            anim['defaultClip'] = component['_defaultClip']['__uuid__']
+            anim['clips'] = []
+            for clips in component['_clips']:
+                anim['clips'].append(clips['__uuid__'])
+
+            self._properties['anim'] =  anim
 
 
     def add_child(self, node):
@@ -395,13 +407,14 @@ class Sprite(Node):
         super(Sprite, self).__init__(data)
         self._jsonNode['object_type'] = 'Sprite'
 
-        # Move Node properties into 'node' and clean _properties
-        self._properties = {'node': self._properties}
 
     def parse_properties(self):
         super(Sprite, self).parse_properties()
 
         state = State.Instance()
+
+        # Move Node properties into 'node' and clean _properties
+        self._properties = {'node': self._properties}
 
         # search for sprite frame name
         component = Node.get_node_component_of_type(self._node_data, 'cc.Sprite')
@@ -435,15 +448,16 @@ class Label(Node):
         self._label_text = ""
         self._jsonNode['object_type'] = 'Label'
 
-        # Move Node properties into 'node' and clean _properties
-        self._properties = {'node': self._properties}
-
-        self._properties['fontType'] = 'System'
 
     def parse_properties(self):
         super(Label, self).parse_properties()
 
         state = State.Instance()
+
+        # Move Node properties into 'node' and clean _properties
+        self._properties = {'node': self._properties}
+
+        self._properties['fontType'] = 'System'
 
         # search for sprite frame name
         component = Node.get_node_component_of_type(self._node_data, 'cc.Label')
@@ -501,15 +515,15 @@ class RichText(Node):
         self._label_text = ""
         self._jsonNode['object_type'] = 'RichText'
 
-        # Move Node properties into 'node' and clean _properties
-        self._properties = {'node': self._properties}
-
         print("WARNING: RichText support is an experimental feature")
 
     def parse_properties(self):
         super(RichText, self).parse_properties()
 
         state = State.Instance()
+
+        # Move Node properties into 'node' and clean _properties
+        self._properties = {'node': self._properties}
 
         # search for sprite frame name
         component = Node.get_node_component_of_type(self._node_data, 'cc.RichText')
@@ -534,11 +548,11 @@ class ParticleSystem(Node):
         super(ParticleSystem, self).__init__(data)
         self._jsonNode['object_type'] = 'Particle'
 
-        # Move Node properties into 'node' and clean _properties
-        self._properties = {'node':self._properties}
-
     def parse_properties(self):
         super(ParticleSystem, self).parse_properties()
+
+        # Move Node properties into 'node' and clean _properties
+        self._properties = {'node':self._properties}
 
         state = State.Instance()
         component = Node.get_node_component_of_type(self._node_data, 'cc.ParticleSystem')
@@ -553,11 +567,12 @@ class TiledMap(Node):
         super(TiledMap, self).__init__(data)
         self._jsonNode['object_type'] = 'TileMap'
 
+    def parse_properties(self):
+        super(TiledMap, self).parse_properties()
+
         # Move Node properties into 'node' and clean _properties
         self._properties = {'node': self._properties}
 
-    def parse_properties(self):
-        super(TiledMap, self).parse_properties()
 
         # changing the contentSize doesn't change the size
         # but it will affect the anchorPoint, so, it should not be set
@@ -606,11 +621,11 @@ class Button(Node):
         super(Button, self).__init__(data)
         self._jsonNode['object_type'] = 'Button'
 
-        # Move Node properties into 'node' and clean _properties
-        self._properties = {'node': self._properties}
-
     def parse_properties(self):
         super(Button, self).parse_properties()
+
+        # Move Node properties into 'node' and clean _properties
+        self._properties = {'node': self._properties}
 
         # search for sprite frame name
         spr_component = Node.get_node_component_of_type(self._node_data, 'cc.Sprite')
@@ -645,11 +660,11 @@ class EditBox(Node):
         super(EditBox, self).__init__(data)
         self._jsonNode['object_type'] = 'EditBox'
 
-        # Move Node properties into 'node' and clean _properties
-        self._properties = {'node': self._properties}
-
     def parse_properties(self):
         super(EditBox, self).parse_properties()
+
+        # Move Node properties into 'node' and clean _properties
+        self._properties = {'node': self._properties}
 
         # search for sprite frame name
         component = Node.get_node_component_of_type(self._node_data, 'cc.EditBox')
@@ -682,13 +697,13 @@ class ProgressBar(Node):
         super(ProgressBar, self).__init__(data)
         self._jsonNode['object_type'] = 'ProgressBar'
 
-        # Move Node properties into 'node' and clean _properties
-        self._properties = {'node': self._properties}
-
         print("WARNING: ProgressBar support is an experimental feature")
 
     def parse_properties(self):
         super(ProgressBar, self).parse_properties()
+
+        # Move Node properties into 'node' and clean _properties
+        self._properties = {'node': self._properties}
 
         # search for sprite frame name
         component = Node.get_node_component_of_type(self._node_data, 'cc.ProgressBar')
@@ -717,9 +732,6 @@ class ScrollView(Node):
     def __init__(self, data):
         super(ScrollView, self).__init__(data)
         self._jsonNode['object_type'] = 'ScrollView'
-
-        # Move Node properties into 'node' and clean _properties
-        self._properties = {'node': self._properties}
 
     def get_content_node(self):
         state = State.Instance()
@@ -755,11 +767,14 @@ class ScrollView(Node):
             raise Exception("ContentNode not found")
 
     def parse_properties(self):
-        state = State.Instance()
-
         # Don't call super since it will parse all its children
         # We only care about the "content" child
         # super(ScrollView, self).parse_properties()
+
+        # Move Node properties into 'node' and clean _properties
+        self._properties = {'node': self._properties}
+
+        state = State.Instance()
 
         # data from 'node' component
         self.add_property_rgb('backgroundImageColor', '_color', self._node_data)
@@ -833,11 +848,11 @@ class SpineSkeleton(Node):
         super(SpineSkeleton, self).__init__(data)
         self._jsonNode['object_type'] = 'SpineSkeleton'
 
-        # Move Node properties into 'node' and clean _properties
-        self._properties = {'node': self._properties}
-
     def parse_properties(self):
         super(SpineSkeleton, self).parse_properties()
+
+        # Move Node properties into 'node' and clean _properties
+        self._properties = {'node': self._properties}
 
         state = State.Instance()
 
