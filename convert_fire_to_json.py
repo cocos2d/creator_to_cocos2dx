@@ -211,7 +211,7 @@ class Node(object):
         self._children = []
         self._jsonNode = {
                 'object':None,
-                'object_type':None,
+                'object_type': 'Node',
                 'children': []
                 }
         self._properties = {}
@@ -362,9 +362,10 @@ class Node(object):
 class Scene(Node):
     def __init__(self, data):
         super(Scene, self).__init__(data)
-
         self._jsonNode['object_type'] = 'Scene'
 
+    def parse_properties(self):
+        super(Scene, self).parse_properties()
         # Move Node properties into 'node' and clean _properties
         self._properties = {'node': self._properties}
 
