@@ -44,6 +44,9 @@ table NodeTree
     // so split the tree from node
     children:[NodeTree];
     object:AnyNode;
+
+    // no need to declare it, but required everytime that
+    // object_type:string;
 }
 
 table SpriteFrame
@@ -216,7 +219,7 @@ table AnimationRef
 {
     defaultClip:string;
     clips:[string];
-    objFlags:int;
+    objFlags:int;                           // FIXME: needed ???
     name:string;
     playOnLoad:bool;
 }
@@ -237,26 +240,42 @@ table AnimationClip
 {
     // clip name
     name:string;
-
+    uuid:string;
     duration:float;
     sample:float;
     speed:float;
     wrapMode:AnimWrapMode;
     curveData:AnimCurveData;
+    events:[AnimEvents];
+    objFlags:int;                           // FIXME: needed ???
 }
 
 table AnimCurveData
 {
-    props:[AnimProps];
-    events:[AnimEvents];
+    props:AnimProps;
 }
 
 table AnimProps
 {
+    rotation:[AnimPropRotation];
+    position:[AnimPropPosition];
+    positionX:[AnimPropPositionX];
+    positionY:[AnimPropPositionY];
+    anchorX:[AnimPropAnchorX];
+    anchorY:[AnimPropAnchorY];
+    color:[AnimPropColor];
+    opacity:[AnimPropOpacity];
+    width:[AnimPropWidth];
+    height:[AnimPropHeight];
+    scaleX:[AnimPropScaleX];
+    scaleY:[AnimPropScaleY];
+    skewX:[AnimPropSkewX];
+    skewY:[AnimPropSkewY];
 }
 
 table AnimEvents
 {
+    // FIXME: What goes here?
 }
 
 table AnimPropRotation

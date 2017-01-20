@@ -1,4 +1,169 @@
 {
+    "animationClips": [
+        {
+            "curveData": {
+                "props": {
+                    "anchorX": [
+                        {
+                            "frame": 0.11666666666666667,
+                            "value": 0.5
+                        }
+                    ],
+                    "anchorY": [
+                        {
+                            "frame": 0.15,
+                            "value": 0.5
+                        }
+                    ],
+                    "color": [
+                        {
+                            "frame": 0.25,
+                            "value": {
+                                "a": 255,
+                                "b": 255,
+                                "g": 255,
+                                "r": 255
+                            }
+                        }
+                    ],
+                    "height": [
+                        {
+                            "frame": 0.2,
+                            "value": 109
+                        }
+                    ],
+                    "opacity": [
+                        {
+                            "frame": 0.08333333333333333,
+                            "value": 255
+                        }
+                    ],
+                    "position": [
+                        {
+                            "frame": 2.9833333333333334,
+                            "motionPath": [],
+                            "value": {
+                                "x": 690,
+                                "y": 300
+                            }
+                        },
+                        {
+                            "frame": 4.616666666666666,
+                            "motionPath": [],
+                            "value": {
+                                "x": 630,
+                                "y": 446
+                            }
+                        }
+                    ],
+                    "positionX": [
+                        {
+                            "frame": 0.06666666666666667,
+                            "value": 690
+                        }
+                    ],
+                    "positionY": [
+                        {
+                            "frame": 0.11666666666666667,
+                            "value": 300
+                        }
+                    ],
+                    "rotation": [
+                        {
+                            "frame": 0,
+                            "value": 0
+                        },
+                        {
+                            "frame": 2.95,
+                            "value": 90
+                        },
+                        {
+                            "frame": 4.616666666666666,
+                            "value": 90
+                        },
+                        {
+                            "frame": 5.383333333333334,
+                            "value": 0
+                        }
+                    ],
+                    "scaleX": [
+                        {
+                            "frame": 0,
+                            "value": 1
+                        },
+                        {
+                            "frame": 5.4,
+                            "value": 3
+                        }
+                    ],
+                    "scaleY": [
+                        {
+                            "frame": 0.03333333333333333,
+                            "value": 1
+                        }
+                    ],
+                    "skewX": [
+                        {
+                            "frame": 0.2,
+                            "value": 0
+                        }
+                    ],
+                    "skewY": [
+                        {
+                            "frame": 0.21666666666666667,
+                            "value": 0
+                        }
+                    ],
+                    "width": [
+                        {
+                            "frame": 0.15,
+                            "value": 51
+                        }
+                    ]
+                }
+            },
+            "duration": 5.4,
+            "events": [],
+            "name": "Animation",
+            "objFlags": 0,
+            "sample": 60,
+            "speed": 1,
+            "uuid": "959ef130-f65b-4b6e-a9eb-8f0752c0e6a9",
+            "wrapMode": 1
+        },
+        {
+            "curveData": {
+                "props": {
+                    "position": [
+                        {
+                            "frame": 0,
+                            "motionPath": [],
+                            "value": {
+                                "x": 194,
+                                "y": 536
+                            }
+                        },
+                        {
+                            "frame": 1.8,
+                            "motionPath": [],
+                            "value": {
+                                "x": 724,
+                                "y": 502
+                            }
+                        }
+                    ]
+                }
+            },
+            "duration": 1.8,
+            "events": [],
+            "name": "Animation2",
+            "objFlags": 0,
+            "sample": 60,
+            "speed": 1,
+            "uuid": "a9f7ecca-8529-47dc-9f2d-8bc3e27edfcd",
+            "wrapMode": 1
+        }
+    ],
     "designResolution": {
         "h": 640,
         "w": 960

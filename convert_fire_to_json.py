@@ -210,7 +210,7 @@ class Node(object):
         self._node_data = data
         self._children = []
         self._jsonNode = {
-                'object':None,
+                'object': None,
                 'object_type': 'Node',
                 'children': []
                 }
@@ -956,6 +956,7 @@ class FireParser(object):
     def to_json_setup(self):
         self.to_json_setup_design_resolution()
         self.to_json_setup_sprite_frames()
+        self.to_json_setup_clips()
 
 
     def to_json_setup_design_resolution(self):
@@ -967,7 +968,6 @@ class FireParser(object):
 
     def to_json_setup_sprite_frames(self):
         sprite_frames = []
-
         state = State.Instance()
 
         for k in state._sprite_without_atlas:
@@ -1006,6 +1006,53 @@ class FireParser(object):
                 log("Ignoring '%s'... No rawTextureUuid" % sprite_frame['frameName'])
 
         self._json_output['spriteFrames'] = sprite_frames
+
+
+    def to_json_setup_clips(self):
+        """Converts Animation JSON data into FBS-friendly JSON"""
+        state = State.Instance()
+
+        if state._clips is not None:
+            clips = []
+            # convert dictionary to list
+            for key in state._clips:
+                value = state._clips[key]
+                value['uuid'] = key
+                del value['__type__']
+                del value['_rawFiles']
+
+                # FIXME: comps should be supported
+                if 'curveData' in value and 'comps' in value['curveData']:
+                    del value['curveData']['comps']
+
+                # sanitize
+                value['duration'] = value.pop('_duration')
+                value['objFlags'] = value.pop('_objFlags')
+                value['name'] = value.pop('_name')
+
+                # remove __type__ from color frames
+                if 'curveData' in value and 'props' in value['curveData'] and 'color' in value['curveData']['props']:
+                    color_frames = value['curveData']['props']['color']
+                    for frame in color_frames:
+                        del frame['value']['__type__']
+
+                # convert postion [] to x,y
+                if 'curveData' in value and 'props' in value['curveData'] and 'position' in value['curveData']['props']:
+                    pos_frames = value['curveData']['props']['position']
+                    for frame in pos_frames:
+                        pos_value = frame['value']
+                        frame['value'] = {'x': pos_value[0], 'y': pos_value[1]}
+
+                # convert 'x' to 'positionX'
+                if 'curveData' in value and 'props' in value['curveData'] and 'x' in value['curveData']['props']:
+                    value['curveData']['props']['positionX'] = value['curveData']['props'].pop('x')
+
+                # convert 'y' to 'positionY'
+                if 'curveData' in value and 'props' in value['curveData'] and 'y' in value['curveData']['props']:
+                    value['curveData']['props']['positionY'] = value['curveData']['props'].pop('y')
+
+                clips.append(value) 
+            self._json_output['animationClips'] = clips
 
 
     def create_file(self, filename):
