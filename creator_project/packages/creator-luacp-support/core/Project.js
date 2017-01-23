@@ -106,4 +106,3 @@ module.exports = class Project {
         return scenes;
     }
 };
-

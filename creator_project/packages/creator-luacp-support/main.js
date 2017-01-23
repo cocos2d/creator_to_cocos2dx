@@ -9,27 +9,17 @@ const Path = require('path');
 
 const Electron = require('electron');
 
-const PACKAGE_NAME = 'creator-lua-support';
 const TIMEOUT = -1;
 const DEBUG_WORKER = true;
 let PACKAGE_VERSION = '';
 
-const PROFILE_DEFAULTS = {
-    setup: false,
-    path: '',
-    startSceneUuid: '',
-    selectAllScenes: true,
-    autoBuild: false,
-    scenesUuid: []
-};
-
 const Project = require('./core/Project');
-
+const Constants = require('./core/Constants');
 
 let _buildState = 'sleep';
 
 function _fetchVersion() {
-    let info = Editor.Package.packageInfo(Editor.Package.packagePath(PACKAGE_NAME));
+    let info = Editor.Package.packageInfo(Editor.Package.packagePath(Constants.PACKAGE_NAME));
     PACKAGE_VERSION = info.version;
 }
 
@@ -54,7 +44,7 @@ function _runWorker(url, message, project) {
 
 function _checkProject(reason) {
     // workaround for creator 1.3
-    let state = Editor.Profile.load(PACKAGE_NAME, 'project', PROFILE_DEFAULTS);
+    let state = Editor.Profile.load(Constants.PACKAGE_NAME, 'project', Constants.PROFILE_DEFAULTS);
     let project = new Project(state);
 
     if (project.validate()) {
@@ -130,7 +120,7 @@ module.exports = {
 
     messages: {
         'setup-target-project'() {
-            Editor.Panel.open(PACKAGE_NAME, {version: PACKAGE_VERSION});
+            Editor.Panel.open(Constants.PACKAGE_NAME, {version: PACKAGE_VERSION});
         },
 
         'build'(event, reason) {
@@ -143,7 +133,7 @@ module.exports = {
 
         'scene:saved'(event) {
             // workaround for creator 1.3
-            let state = Editor.Profile.load(PACKAGE_NAME, 'project', PROFILE_DEFAULTS);
+            let state = Editor.Profile.load(Constants.PACKAGE_NAME, 'project', Constants.PROFILE_DEFAULTS);
             if (state.autoBuild) {
                 _build('scene:saved');
             }
