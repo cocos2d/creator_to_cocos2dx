@@ -257,6 +257,14 @@ class Node(object):
 
     def parse_properties(self):
         # 1st: parse self
+        self.parse_node_properties()
+        self.parse_clip()
+
+        # 2nd: parse children
+        for child_idx in self._node_data["_children"]:
+            self.parse_child(child_idx['__id__'])
+
+    def parse_node_properties(self):
         data = self._node_data
         self.add_property_size('contentSize', "_contentSize", data)
         self.add_property_bool('enabled', "_enabled", data)
@@ -276,12 +284,6 @@ class Node(object):
         self.add_property_int('skewX', "_skewX", data)
         self.add_property_int('skewY', "_skewY", data)
         self.add_property_int('tag', "_tag", data)
-
-        self.parse_clip()
-
-        # 2nd: parse children
-        for child_idx in self._node_data["_children"]:
-            self.parse_child(child_idx['__id__'])
 
     def parse_child(self, node_idx):
         node = State.Instance()._json_data[node_idx]
@@ -772,8 +774,10 @@ class ScrollView(Node):
 
     def parse_properties(self):
         # Don't call super since it will parse all its children
-        # We only care about the "content" child
+        # We only care about the "content" child and node properties
         # super(ScrollView, self).parse_properties()
+
+        self.parse_node_properties()
 
         # Move Node properties into 'node' and clean _properties
         self._properties = {'node': self._properties}
