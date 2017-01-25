@@ -74,6 +74,9 @@ class Singleton:
 class State(object):
     # filename of the .fire file to parse
     def __init__(self):
+        self.reset()
+
+    def reset(self):
         self._filename = ""
 
         # the .fire file being parsed
@@ -1132,6 +1135,7 @@ if __name__ == "__main__":
                     creatorassets += '/'
 
         for f in args:
+            State.Instance().reset()
             parser = FireParser()
             parser.run(f, assetpath, creatorassets)
     except getopt.GetoptError, e:

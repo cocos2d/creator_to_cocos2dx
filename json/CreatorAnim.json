@@ -396,6 +396,50 @@
                     "trimEnabled": true
                 },
                 "object_type": "Sprite"
+            },
+            {
+                "children": [],
+                "object": {
+                    "dstBlend": 771,
+                    "node": {
+                        "anchorPoint": {
+                            "x": 0.5,
+                            "y": 0.5
+                        },
+                        "cascadeOpacityEnabled": true,
+                        "color": {
+                            "b": 255,
+                            "g": 255,
+                            "r": 255
+                        },
+                        "contentSize": {
+                            "h": 109,
+                            "w": 51
+                        },
+                        "globalZOrder": 0,
+                        "localZOrder": 0,
+                        "name": "grossini_dance_08",
+                        "opacity": 255,
+                        "opacityModifyRGB": false,
+                        "position": {
+                            "x": 100,
+                            "y": 208
+                        },
+                        "rotationSkewX": 0,
+                        "rotationSkewY": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "skewX": 0,
+                        "skewY": 0,
+                        "tag": -1
+                    },
+                    "sizeMode": "Trimmed",
+                    "spriteFrameName": "grossini_dance_08",
+                    "spriteType": "Simple",
+                    "srcBlend": 770,
+                    "trimEnabled": true
+                },
+                "object_type": "Sprite"
             }
         ],
         "object": {
