@@ -1,4 +1,29 @@
+/****************************************************************************
+ Copyright (c) 2017 Chukong Technologies Inc.
+
+ http://www.cocos2d-x.org
+
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE.
+ ****************************************************************************/
+
 #include "CreatorReader.h"
+#include "AnimationClip.h"
 
 #include "CreatorReader_generated.h"
 
@@ -82,6 +107,77 @@ void CreatorReader::setup()
     }
 
     setupSpriteFrames();
+    setupAnimClips();
+}
+
+void CreatorReader::setupAnimClips()
+{
+    const void* buffer = _data.getBytes();
+    const auto& sceneGraph = GetSceneGraph(buffer);
+    const auto& animationClips = sceneGraph->animationClips();
+
+    for (const auto& fbAnimationClip: *animationClips) {
+        auto animClip = AnimationClip::create();
+
+        const auto& duration = fbAnimationClip->duration();
+        animClip->setDuration(duration);
+
+        const auto& speed = fbAnimationClip->speed();
+        animClip->setSpeed(speed);
+
+        const auto& sample = fbAnimationClip->sample();
+        animClip->setSample(sample);
+
+        const auto& name = fbAnimationClip->name();
+        animClip->setName(name->str());
+
+        const auto& uuid = fbAnimationClip->uuid();
+        animClip->setUUID(uuid->str());
+
+        const AnimCurveData* fbCurveData = fbAnimationClip->curveData();
+        if (fbCurveData) {
+            const AnimProps* fbAnimProps = fbCurveData->props();
+            if (fbAnimProps) {
+
+                AnimProperties properties;
+                // position
+                const auto fbPositions = fbAnimProps->position();
+                if (fbPositions) {
+                    for(const auto fbPos: *fbPositions) {
+                        const auto fbFrame = fbPos->frame();
+                        const auto fbValue = fbPos->value();
+                        creator::AnimPropPosition propPos = {fbFrame, cocos2d::Vec2(fbValue->x(), fbValue->y())};
+                        properties.animPosition.push_back(propPos);
+                    }
+                }
+
+                // position X
+                const auto fbPositionX = fbAnimProps->positionX();
+                if (fbPositionX) {
+                    for(const auto fbPosX: *fbPositionX) {
+                        const auto fbFrame = fbPosX->frame();
+                        const auto fbValue = fbPosX->value();
+                        creator::AnimPropPositionX propPosX = {fbFrame, fbValue};
+                        properties.animPositionX.push_back(propPosX);
+                    }
+                }
+
+                // position Y
+                const auto fbPositionY = fbAnimProps->positionY();
+                if (fbPositionY) {
+                    for(const auto fbPosY: *fbPositionY) {
+                        const auto fbFrame = fbPosY->frame();
+                        const auto fbValue = fbPosY->value();
+                        creator::AnimPropPositionY propPosY = {fbFrame, fbValue};
+                        properties.animPositionY.push_back(propPosY);
+                    }
+                }
+
+                animClip->setAnimProperties(properties);
+                _clips.insert(animClip->getName(), animClip);
+            }
+        }
+    }
 }
 
 void CreatorReader::setupSpriteFrames()
@@ -251,6 +347,7 @@ void CreatorReader::parseNode(cocos2d::Node* node, const buffers::Node* nodeBuff
     //rotationSkew:Vec2;
     //scale:Vec2;
     //tag:int = 0;
+    //anim:AnimationRef
 
 //    auto enabled = nodeBuffer->enabled();
     const auto& globalZOrder = nodeBuffer->globalZOrder();
@@ -269,7 +366,7 @@ void CreatorReader::parseNode(cocos2d::Node* node, const buffers::Node* nodeBuff
     node->setCascadeOpacityEnabled(cascadeOpacityEnabled);
     const auto& opacityModifyRGB = nodeBuffer->opacityModifyRGB();
     node->setOpacityModifyRGB(opacityModifyRGB);
-    const auto& position = nodeBuffer->position();
+    const auto position = nodeBuffer->position();
     if (position) node->setPosition(position->x(), position->y());
     node->setRotationSkewX(nodeBuffer->rotationSkewX());
     node->setRotationSkewY(nodeBuffer->rotationSkewY());
@@ -279,8 +376,14 @@ void CreatorReader::parseNode(cocos2d::Node* node, const buffers::Node* nodeBuff
     node->setSkewY(nodeBuffer->skewY());
     const auto& tag = nodeBuffer->tag();
     node->setTag(tag);
-    const auto& contentSize = nodeBuffer->contentSize();
+    const auto contentSize = nodeBuffer->contentSize();
     if (contentSize) node->setContentSize(cocos2d::Size(contentSize->w(), contentSize->h()));
+    const auto animRef = nodeBuffer->anim();
+    if (animRef) {
+        const auto def = animRef->defaultClip();
+        if (def) {
+        }
+    }
 }
 
 cocos2d::Sprite* CreatorReader::createSprite(const buffers::Sprite* spriteBuffer) const
