@@ -3,7 +3,7 @@
   "_name": "Animation2",
   "_objFlags": 0,
   "_rawFiles": null,
-  "_duration": 8.6,
+  "_duration": 8.366666666666667,
   "sample": 60,
   "speed": 1,
   "wrapMode": 1,
@@ -48,10 +48,10 @@
           ]
         },
         {
-          "frame": 8.6,
+          "frame": 8.366666666666667,
           "value": [
-            181,
-            531
+            176,
+            513
           ]
         }
       ],
@@ -79,6 +79,52 @@
         {
           "frame": 8.016666666666667,
           "value": 310
+        },
+        {
+          "frame": 8.233333333333333,
+          "value": 310
+        }
+      ],
+      "color": [
+        {
+          "frame": 2.9833333333333334,
+          "value": {
+            "__type__": "cc.Color",
+            "r": 255,
+            "g": 0,
+            "b": 0,
+            "a": 255
+          }
+        },
+        {
+          "frame": 4.55,
+          "value": {
+            "__type__": "cc.Color",
+            "r": 71,
+            "g": 0,
+            "b": 255,
+            "a": 255
+          }
+        },
+        {
+          "frame": 7.45,
+          "value": {
+            "__type__": "cc.Color",
+            "r": 0,
+            "g": 255,
+            "b": 41,
+            "a": 255
+          }
+        }
+      ],
+      "opacity": [
+        {
+          "frame": 1.4,
+          "value": 0
+        },
+        {
+          "frame": 2.3,
+          "value": 255
         }
       ]
     }

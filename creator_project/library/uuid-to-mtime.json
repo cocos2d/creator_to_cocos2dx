@@ -315,8 +315,8 @@
     "relativePath": "CreatorUI.fire"
   },
   "64d88244-2d85-4ff2-b423-34d56261ecb5": {
-    "asset": 1486080918000,
-    "meta": 1486080918000,
+    "asset": 1486085515000,
+    "meta": 1486085515000,
     "relativePath": "CreatorAnim.fire"
   },
   "52916d08-66e7-444c-be9f-8d317881ed27": {
@@ -345,8 +345,8 @@
     "relativePath": "Animation1.anim"
   },
   "a9f7ecca-8529-47dc-9f2d-8bc3e27edfcd": {
-    "asset": 1486081726000,
-    "meta": 1486081726000,
+    "asset": 1486085514000,
+    "meta": 1486085514000,
     "relativePath": "Animation2.anim"
   }
 }
