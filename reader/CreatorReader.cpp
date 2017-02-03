@@ -24,6 +24,7 @@
 
 #include "CreatorReader.h"
 #include "AnimationClip.h"
+#include "AnimateClip.h"
 
 #include "CreatorReader_generated.h"
 
@@ -140,42 +141,78 @@ void CreatorReader::setupAnimClips()
             if (fbAnimProps) {
 
                 AnimProperties properties;
+
                 // position
-                const auto fbPositions = fbAnimProps->position();
-                if (fbPositions) {
-                    for(const auto fbPos: *fbPositions) {
-                        const auto fbFrame = fbPos->frame();
-                        const auto fbValue = fbPos->value();
-                        creator::AnimPropPosition propPos = {fbFrame, cocos2d::Vec2(fbValue->x(), fbValue->y())};
-                        properties.animPosition.push_back(propPos);
-                    }
-                }
+                setupAnimClipsPropVec2(fbAnimProps->position(), properties.animPosition);
 
                 // position X
-                const auto fbPositionX = fbAnimProps->positionX();
-                if (fbPositionX) {
-                    for(const auto fbPosX: *fbPositionX) {
-                        const auto fbFrame = fbPosX->frame();
-                        const auto fbValue = fbPosX->value();
-                        creator::AnimPropPositionX propPosX = {fbFrame, fbValue};
-                        properties.animPositionX.push_back(propPosX);
-                    }
-                }
+                setupAnimClipsPropFloat(fbAnimProps->positionX(), properties.animPositionX);
 
                 // position Y
-                const auto fbPositionY = fbAnimProps->positionY();
-                if (fbPositionY) {
-                    for(const auto fbPosY: *fbPositionY) {
-                        const auto fbFrame = fbPosY->frame();
-                        const auto fbValue = fbPosY->value();
-                        creator::AnimPropPositionY propPosY = {fbFrame, fbValue};
-                        properties.animPositionY.push_back(propPosY);
-                    }
-                }
+                setupAnimClipsPropFloat(fbAnimProps->positionY(), properties.animPositionY);
+
+                // rotation
+                setupAnimClipsPropFloat(fbAnimProps->rotation(), properties.animRotation);
+
+                // skew X
+                setupAnimClipsPropFloat(fbAnimProps->skewX(), properties.animSkewX);
+
+                // skew Y
+                setupAnimClipsPropFloat(fbAnimProps->skewY(), properties.animSkewY);
+
+                // Color
+                setupAnimClipsPropColor(fbAnimProps->color(), properties.animColor);
+
 
                 animClip->setAnimProperties(properties);
-                _clips.insert(animClip->getName(), animClip);
+                // using UUID intead of Name for key
+                _clips.insert(animClip->getUUID(), animClip);
             }
+        }
+    }
+}
+
+template <typename T, typename U>
+void CreatorReader::setupAnimClipsPropFloat(T fbPropList, U& proplist)
+{
+    if (fbPropList) {
+        for(const auto fbProp: *fbPropList) {
+            const auto fbFrame = fbProp->frame();
+            const auto fbValue = fbProp->value();
+            proplist.push_back(
+                               {fbFrame,
+                                   fbValue
+                               });
+        }
+    }
+}
+
+template <typename T, typename U>
+void CreatorReader::setupAnimClipsPropVec2(T fbPropList, U& proplist)
+{
+    if (fbPropList) {
+        for(const auto fbProp: *fbPropList) {
+            const auto fbFrame = fbProp->frame();
+            const auto fbValue = fbProp->value();
+            proplist.push_back(
+                               {fbFrame,
+                                cocos2d::Vec2(fbValue->x(), fbValue->y())
+                               });
+        }
+    }
+}
+
+template <typename T, typename U>
+void CreatorReader::setupAnimClipsPropColor(T fbPropList, U& proplist)
+{
+    if (fbPropList) {
+        for(const auto fbProp: *fbPropList) {
+            const auto fbFrame = fbProp->frame();
+            const auto fbValue = fbProp->value();
+            proplist.push_back(
+                               {fbFrame,
+                                cocos2d::Color3B(fbValue->r(), fbValue->g(), fbValue->b())
+                               });
         }
     }
 }
@@ -378,10 +415,21 @@ void CreatorReader::parseNode(cocos2d::Node* node, const buffers::Node* nodeBuff
     node->setTag(tag);
     const auto contentSize = nodeBuffer->contentSize();
     if (contentSize) node->setContentSize(cocos2d::Size(contentSize->w(), contentSize->h()));
+
+    // animation?
     const auto animRef = nodeBuffer->anim();
     if (animRef) {
         const auto def = animRef->defaultClip();
-        if (def) {
+        const auto autoplay = animRef->playOnLoad();
+        if (def && autoplay) {
+            const auto& key = def->str();
+            AnimationClip* animationClip = _clips.at(key);
+            if (animationClip) {
+                AnimateClip* animateClip = AnimateClip::createWithAnimationClip(animationClip);
+                node->runAction(animateClip);
+            } else {
+                CCLOG("CreatorReader: AnimationClip key not found: %s", key.c_str());
+            }
         }
     }
 }
