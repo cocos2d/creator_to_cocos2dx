@@ -62,6 +62,9 @@ CC_CONSTRUCTOR_ACCESS:
 
     AnimationClip* _clip;
     cocos2d::Vector<cocos2d::ActionInterval*> _actions;
+
+    template <class A, typename P>
+    void createAction(P const& p, const float framesPerSecond);
 };
 
 NS_CCR_END

@@ -60,7 +60,9 @@ void AnimateClip::startWithTarget(cocos2d::Node *target)
 
 void AnimateClip::update(float time)
 {
-    // nothing
+    for (const auto& action: _actions) {
+        action->update(time);
+    }
 }
 
 bool AnimateClip::initWithAnimationClip(AnimationClip* clip)
@@ -69,7 +71,8 @@ bool AnimateClip::initWithAnimationClip(AnimationClip* clip)
     if (!ret)
         return ret;
 
-    float duration = clip->getDuration() * 60.0f / clip->getSample();
+    const float framesPerSecond = 60.0f / clip->getSample();
+    const float duration = clip->getDuration() * framesPerSecond;
     ret &= ActionInterval::initWithDuration(duration);
     if (ret) {
         if (_clip != clip) {
@@ -77,9 +80,52 @@ bool AnimateClip::initWithAnimationClip(AnimationClip* clip)
             _clip = clip;
             CC_SAFE_RETAIN(_clip);
         }
+
+        auto animProperties = _clip->getAnimProperties();
+
+        // position
+        createAction<cocos2d::MoveTo>(animProperties.animPosition, framesPerSecond);
+
+        // rotation
+        createAction<cocos2d::RotateTo>(animProperties.animRotation, framesPerSecond);
+
+        // scale
+        createAction<cocos2d::ScaleTo>(animProperties.animSkewX, framesPerSecond);
+
+        // color
+        createAction<cocos2d::TintTo>(animProperties.animColor, framesPerSecond);
+
+        // opacity
+        createAction<cocos2d::FadeTo>(animProperties.animOpacity, framesPerSecond);
     }
 
     return ret;
+}
+
+template <class A, typename P>
+void AnimateClip::createAction(const P &properties, const float framesPerSecond)
+{
+    cocos2d::Vector<cocos2d::FiniteTimeAction*> array;
+    float prevFrame = 0;        // because it uses absolute values
+    bool firstProcessed = false;
+    for (const auto& prop: properties) {
+        if (!firstProcessed) {
+            if (prop.frame != 0) {
+                // create pause until action start
+                auto delay = cocos2d::DelayTime::create(prop.frame * framesPerSecond);
+                array.pushBack(delay);
+            }
+            firstProcessed = true;
+        }
+        auto a = A::create((prop.frame - prevFrame) * framesPerSecond, prop.value);
+        array.pushBack(a);
+
+        prevFrame = prop.frame;
+    }
+    if (array.size() > 0) {
+        auto seq = cocos2d::Sequence::create(array);
+        _actions.pushBack(seq);
+    }
 }
 
 AnimateClip* AnimateClip::clone() const
@@ -91,6 +137,7 @@ AnimateClip* AnimateClip::clone() const
 AnimateClip* AnimateClip::reverse() const
 {
     // FIXME: not implemented correclty
-    // How to reverse it? use time reverse I guess
+    // How to reverse it? use time reverse I guess since the actions are based on "To" and not "By"
+    // otherwise a "reverse" of sequence could be done
     return AnimateClip::createWithAnimationClip(_clip);
 }

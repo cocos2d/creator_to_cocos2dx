@@ -91,13 +91,13 @@ struct AnimPropHeight
 struct AnimPropColor
 {
     float frame;
-    cocos2d::Color4B color;
+    cocos2d::Color3B value;
 };
 
 struct AnimPropOpacity
 {
     float frame;
-    cocos2d::Color4B opacity;
+    float value;
 };
 
 struct AnimPropAnchorX
