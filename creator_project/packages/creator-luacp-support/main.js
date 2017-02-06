@@ -81,34 +81,6 @@ function _build(reason) {
     _runWorker(workerUrl, 'creator-lua-support:run-build-worker', project);
 }
 
-function _copyLibrary(reason) {
-    let project = _checkProject(reason);
-    if (!project) return;
-
-    let message = [
-        'Files in target project will be overwrite:',
-        '',
-        'src/main.lua',
-        'src/JeffreyJSON.lua',
-        'src/creator/*',
-        'src/cocos/*'
-    ].join("\n");
-
-    let res = Editor.Dialog.messageBox({
-      type: 'warning',
-      buttons: ['Copy', Editor.T('MESSAGE.cancel')],
-      title: 'Warning - Lua Support',
-      message: message,
-      noLink: true,
-    });
-
-    if (res == 0) {
-        Editor.Ipc.sendToAll('creator-lua-support:state-changed', 'start', 0);
-        let workerUrl = 'packages://creator-lua-support/core/CopyLibraryWorker';
-        _runWorker(workerUrl, 'creator-lua-support:run-copy-library-worker', project);
-    }
-}
-
 module.exports = {
     load() {
         _fetchVersion();
@@ -125,10 +97,6 @@ module.exports = {
 
         'build'(event, reason) {
             _build(reason);
-        },
-
-        'copy-library'(event, reason) {
-            _copyLibrary(reason);
         },
 
         'scene:saved'(event) {

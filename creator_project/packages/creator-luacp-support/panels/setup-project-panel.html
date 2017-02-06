@@ -21,12 +21,6 @@
         </div>
     </ui-prop>
 
-    <ui-prop name="Setup Project">
-        <div class="flex-1 layout horizontal center">
-            <ui-button class="tiny" v-on:confirm="_onCopyLibraryClick">Copy Support Library for Creator to Target Project...</ui-button>
-        </div>
-    </ui-prop>
-
     <ui-prop name="Start Scene">
         <ui-select class="flex-1" v-value="project.startSceneUuid">
             <template v-for="item in project.scenes">

@@ -68,11 +68,6 @@ Editor.Panel.extend({
                     Electron.shell.beep();
                 },
 
-                _onCopyLibraryClick(event) {
-                    event.stopPropagation();
-                    Editor.Ipc.sendToMain('creator-lua-support:copy-library', 'ui');
-                },
-
                 _onSelectAllCheckedChanged(event) {
                     event.stopPropagation();
                     if (event.detail.value) {
