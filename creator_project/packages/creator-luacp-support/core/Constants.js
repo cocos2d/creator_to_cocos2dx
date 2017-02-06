@@ -28,6 +28,8 @@ Constants.CONVERT_FIRE_TO_JSON_PY = Path.join(Constants.PACKAGE_PATH, '../../../
 Constants.JSON_PATH = Path.join(Constants.CREATOR_TO_COCOS2D_ROOT, 'json');
 // path of reader folder
 Constants.READER_PATH = Path.join(Constants.CREATOR_TO_COCOS2D_ROOT, 'reader');
+// the folder that all resources are copied to
+Constants.RESOURCE_FOLDER_NAME = 'creator';
 
 Constants.PROFILE_DEFAULTS = {
     setup: false,
