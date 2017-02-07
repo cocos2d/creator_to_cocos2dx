@@ -1063,6 +1063,7 @@ class FireParser(object):
 
 
     def create_file(self, filename):
+        print('create_file %s ' % filename)
         if not os.path.exists(os.path.dirname(filename)):
             try:
                 os.makedirs(os.path.dirname(filename))
@@ -1080,7 +1081,7 @@ class FireParser(object):
 
         self._state._assetpath = assetpath
         self._state._filename = os.path.splitext(os.path.basename(filename))[0]
-        json_name = "json/%s.json" % self._state._filename
+        json_name = "/Users/minggo/SourceCode/creator_to_cocos2d/json/%s.json" % self._state._filename
 
         self._json_file = self.create_file(json_name)
 

@@ -1,0 +1,34 @@
+{
+    "name": "creator-lua-support",
+    "version": "1.1.5",
+    "description": "Creator Legact Support for cocos2d-x Lua",
+    "author": "Cocos Creator",
+    "main": "main.js",
+    "main-menu": {
+        "i18n:MAIN_MENU.project.title/Lua Support/Setup Target Project": {
+            "message": "creator-lua-support:setup-target-project"
+        },
+        "i18n:MAIN_MENU.project.title/Lua Support/Build Now": {
+            "message": "creator-lua-support:build"
+        }
+    },
+    "panel": {
+        "main": "panels/setup-project-panel.js",
+        "type": "dockable",
+        "title": "Setup Target Project",
+        "width": 640,
+        "min-width": 320,
+        "height": 480,
+        "min-height": 330,
+        "profiles": {
+            "project": {
+                "setup": false,
+                "path": "",
+                "startSceneUuid": "",
+                "selectAllScenes": true,
+                "autoBuild": false,
+                "scenesUuid": []
+            }
+        }
+    }
+}

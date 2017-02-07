@@ -1,0 +1,92 @@
+
+@import url('app://bower_components/fontawesome/css/font-awesome.min.css');
+
+:host {
+    display: flex;
+    flex-direction: column;
+}
+
+h2 {
+    margin: 20px 20px 0 20px;
+    font-size: 26px;
+    color: #DDD;
+}
+
+header {
+    height: 26px;
+    display: flex;
+    margin: 0 20px;
+    padding: 15px 0;
+    border-bottom: 1px solid #666;
+}
+
+.version {
+    font-weight: normal;
+    font-size: 10px;
+    color: white;
+    background-color: #53bde0;
+    border-radius: 4px;
+    padding: 2px 4px;
+    position: relative;
+    top: -12px;
+}
+
+.progress {
+    flex: 14;
+    margin: 3px 15px 3px 0;
+    position: relative;
+}
+.progress ui-progress {
+    width: 100%;
+}
+
+.state {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    line-height: 16px;
+    margin: 0 15px 0 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: center;
+    color: white;
+}
+
+.state[state=failed] {
+    color: red;
+}
+
+section {
+    margin: 10px 10px;
+    padding: 0 10px;
+    flex: 1;
+    overflow-y: auto;
+}
+.fix-width {
+    width: 1px;
+}
+
+.height-limited {
+    max-height: 240px;
+}
+
+.height-limited ui-box-container {
+    max-height: 228px;
+    min-height: 100px;
+}
+
+ui-box-container li {
+    margin: 4px 0;
+}
+
+ui-box-container li .fa.fa-star {
+    color: yellow;
+}
+
+footer {
+    padding: 10px 0;
+    justify-content: flex-end;
+}
+
