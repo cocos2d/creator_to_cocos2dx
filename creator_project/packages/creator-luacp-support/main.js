@@ -14,11 +14,11 @@ const DEBUG_WORKER = true;
 let PACKAGE_VERSION = '';
 
 const Project = require('./core/Project');
-const Constants = require('./core/Constants');
 
 let _buildState = 'sleep';
 
 function _fetchVersion() {
+    const Constants = require('./core/Constants');
     let info = Editor.Package.packageInfo(Editor.Package.packagePath(Constants.PACKAGE_NAME));
     PACKAGE_VERSION = info.version;
 }
@@ -44,6 +44,7 @@ function _runWorker(url, message, project) {
 
 function _checkProject(reason) {
     // workaround for creator 1.3
+    const Constants = require('./core/Constants');
     let state = Editor.Profile.load(Constants.PACKAGE_NAME, 'project', Constants.PROFILE_DEFAULTS);
     let project = new Project(state);
 
@@ -92,6 +93,7 @@ module.exports = {
 
     messages: {
         'setup-target-project'() {
+            const Constants = require('./core/Constants');
             Editor.Panel.open(Constants.PACKAGE_NAME, {version: PACKAGE_VERSION});
         },
 
@@ -101,6 +103,7 @@ module.exports = {
 
         'scene:saved'(event) {
             // workaround for creator 1.3
+            const Constants = require('./core/Constants');
             let state = Editor.Profile.load(Constants.PACKAGE_NAME, 'project', Constants.PROFILE_DEFAULTS);
             if (state.autoBuild) {
                 _build('scene:saved');

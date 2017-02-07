@@ -21,12 +21,18 @@ class BuildWorker extends WorkerBase {
         this._fireFiles = [];
         this._state = state;
 
+        // creator json folder if not exist
+        if (!Fs.existsSync(Constants.JSON_PATH))
+            Fs.mkdirSync(Constants.JSON_PATH);
+
+        // creator ccreator folder if not exist
+        if (!Fs.existsSync(Constants.CCREATOR_PATH))
+            Fs.mkdirSync(Constants.CCREATOR_PATH);
+
         // convert fire to json
         this._convertFireToJson()
         .then(() => {
             return this._compileJsonToBinary();
-        }).then((params) => {
-            return this._generateHeader(params);
         }).then(() => {
             return this._copyResources();
         }).catch((err) => {
@@ -34,12 +40,20 @@ class BuildWorker extends WorkerBase {
         }).then(() => {
             Editor.Ipc.sendToAll('creator-lua-support:state-changed', 'finish', 100);
             this._callback();
+
+            // remove generated .json/.ccreator files
+            Del.sync(Constants.JSON_PATH);
+            Del.sync(Constants.CCREATOR_PATH);
         });
     }
 
     // .fire -> .json
     _convertFireToJson() {
-        let params = [Constants.CONVERT_FIRE_TO_JSON_PY, '--cocospath', Constants.RESOURCE_FOLDER_NAME , '--creatorassets', Constants.TEMP_PATH];
+        let params = [Constants.CONVERT_FIRE_TO_JSON_PY, 
+        '--cocospath', Constants.RESOURCE_FOLDER_NAME , 
+        '--creatorassets', Constants.TEMP_PATH,
+        '--jsonpath', Constants.JSON_PATH];
+
         this._fireFiles = this._getFireList();  
         params = params.concat(this._fireFiles);
 
@@ -58,31 +72,17 @@ class BuildWorker extends WorkerBase {
     _compileJsonToBinary() {
         const jsonFiles = this._getJsonList();
 
-        var params = ['-b', '-o', Constants.CREATOR_TO_COCOS2D_ROOT, Constants.CREATOR_READER_FBS].concat(jsonFiles);
+        var params = ['-b', '-o', Constants.CCREATOR_PATH, Constants.CREATOR_READER_FBS].concat(jsonFiles);
         return new Promise((resolve, reject) => {
             Utils.runcommand(Constants.FLATC, params, (code) => {
                 if (code == 0) {
-                    let newParams = ['-c'].concat(params);
-                    resolve(newParams);
+                    resolve();
                 } 
                 else {
                     reject('[creator-luacpp-support] convert .json to .ccreator error');
                 }    
             });
         });
-        
-    }
-
-    // generate cpp header files
-    _generateHeader(params) {
-        return new Promise((resolve, reject) => {
-            Utils.runcommand(Constants.FLATC, params, (code) => {
-                if (code != 0) 
-                    reject('[creator-luacpp-support] generate CreatorReader_generated.h error');
-                else
-                   resolve();
-            });
-        })
     }
 
     _copyResources() {
@@ -116,7 +116,7 @@ class BuildWorker extends WorkerBase {
         Del.sync(classes);
 
         // copy .ccreator
-        this._copyTo(Constants.CREATOR_TO_COCOS2D_ROOT, resdst, ['.ccreator']);
+        this._copyTo(Constants.CCREATOR_PATH, resdst, ['.ccreator']);
         // copy reader
         Fs.copySync(Constants.READER_PATH, classes);
 
