@@ -1063,7 +1063,6 @@ class FireParser(object):
 
 
     def create_file(self, filename):
-        print('create_file %s ' % filename)
         if not os.path.exists(os.path.dirname(filename)):
             try:
                 os.makedirs(os.path.dirname(filename))
@@ -1073,7 +1072,7 @@ class FireParser(object):
         return open(filename, "w")
 
 
-    def run(self, filename, assetpath, creatorassets):
+    def run(self, filename, assetpath, creatorassets, path_to_json_files="json/"):
 
         self._creatorassets = creatorassets
         if not os.path.isdir(creatorassets):
@@ -1081,7 +1080,7 @@ class FireParser(object):
 
         self._state._assetpath = assetpath
         self._state._filename = os.path.splitext(os.path.basename(filename))[0]
-        json_name = "/Users/minggo/SourceCode/creator_to_cocos2d/json/%s.json" % self._state._filename
+        json_name = "%s%s.json" % (path_to_json_files, self._state._filename)
 
         self._json_file = self.create_file(json_name)
 
@@ -1116,7 +1115,7 @@ class FireParser(object):
 
 def help():
     print("%s v0.2 - converts .fire to cocos2d-x flatbuffer .json files\n" % os.path.basename(sys.argv[0]))
-    print("Example:\n%s --cocospath creator/assets --creatorassets creator_project/temp creator_project/assets/*.fire" % os.path.basename(sys.argv[0]))
+    print("Example:\n%s --cocospath creator/assets --creatorassets creator_project/temp --jsonpath json creator_project/assets/*.fire" % os.path.basename(sys.argv[0]))
     sys.exit(-1)
 
 
@@ -1126,9 +1125,10 @@ if __name__ == "__main__":
 
     assetpath = ""
     creatorassets = "creator_project/temp/"
+    jsonpath = "json/"
     argv = sys.argv[1:]
     try:
-        opts, args = getopt.getopt(argv, "p:a:", ["cocospath=","creatorassets="])
+        opts, args = getopt.getopt(argv, "p:a:j:", ["cocospath=","creatorassets=", "jsonpath="])
         for opt, arg in opts:
             if opt in ("-p", "--cocospath"):
                 assetpath = arg
@@ -1138,11 +1138,15 @@ if __name__ == "__main__":
                 creatorassets = arg
                 if creatorassets[-1] != '/':
                     creatorassets += '/'
+            if opt in ("-j", "--jsonpath"):
+                jsonpath = arg
+                if jsonpath[-1] != '/':
+                    jsonpath += '/'
 
         for f in args:
             State.Instance().reset()
             parser = FireParser()
-            parser.run(f, assetpath, creatorassets)
+            parser.run(f, assetpath, creatorassets, jsonpath)
     except getopt.GetoptError, e:
         print(e)
 
