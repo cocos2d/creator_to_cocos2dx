@@ -40,6 +40,44 @@ struct EditBox;
 
 struct SpineSkeleton;
 
+struct AnimationRef;
+
+struct AnimationClip;
+
+struct AnimCurveData;
+
+struct AnimProps;
+
+struct AnimEvents;
+
+struct AnimPropRotation;
+
+struct AnimPropPosition;
+
+struct AnimPropPositionX;
+
+struct AnimPropPositionY;
+
+struct AnimPropScaleX;
+
+struct AnimPropScaleY;
+
+struct AnimPropWidth;
+
+struct AnimPropHeight;
+
+struct AnimPropColor;
+
+struct AnimPropOpacity;
+
+struct AnimPropAnchorX;
+
+struct AnimPropAnchorY;
+
+struct AnimPropSkewX;
+
+struct AnimPropSkewY;
+
 struct Vec2;
 
 struct Vec3;
@@ -298,6 +336,25 @@ template<> struct AnyNodeTraits<SpineSkeleton> {
 
 inline bool VerifyAnyNode(flatbuffers::Verifier &verifier, const void *union_obj, AnyNode type);
 
+enum AnimWrapMode {
+  AnimWrapMode_Default = 0,
+  AnimWrapMode_Normal = 1,
+  AnimWrapMode_Loop = 2,
+  AnimWrapMode_PingPong = 3,
+  AnimWrapMode_Reverse = 4,
+  AnimWrapMode_LoopReverse = 5,
+  AnimWrapMode_PingPongReverse = 6,
+  AnimWrapMode_MIN = AnimWrapMode_Default,
+  AnimWrapMode_MAX = AnimWrapMode_PingPongReverse
+};
+
+inline const char **EnumNamesAnimWrapMode() {
+  static const char *names[] = { "Default", "Normal", "Loop", "PingPong", "Reverse", "LoopReverse", "PingPongReverse", nullptr };
+  return names;
+}
+
+inline const char *EnumNameAnimWrapMode(AnimWrapMode e) { return EnumNamesAnimWrapMode()[static_cast<int>(e)]; }
+
 MANUALLY_ALIGNED_STRUCT(4) Vec2 FLATBUFFERS_FINAL_CLASS {
  private:
   float x_;
@@ -413,7 +470,8 @@ struct SceneGraph FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     VT_DESIGNRESOLUTION = 8,
     VT_RESOLUTIONFITWIDTH = 10,
     VT_RESOLUTIONFITHEIGHT = 12,
-    VT_SPRITEFRAMES = 14
+    VT_SPRITEFRAMES = 14,
+    VT_ANIMATIONCLIPS = 16
   };
   const flatbuffers::String *version() const { return GetPointer<const flatbuffers::String *>(VT_VERSION); }
   const NodeTree *root() const { return GetPointer<const NodeTree *>(VT_ROOT); }
@@ -421,6 +479,7 @@ struct SceneGraph FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   bool resolutionFitWidth() const { return GetField<uint8_t>(VT_RESOLUTIONFITWIDTH, 0) != 0; }
   bool resolutionFitHeight() const { return GetField<uint8_t>(VT_RESOLUTIONFITHEIGHT, 0) != 0; }
   const flatbuffers::Vector<flatbuffers::Offset<SpriteFrame>> *spriteFrames() const { return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<SpriteFrame>> *>(VT_SPRITEFRAMES); }
+  const flatbuffers::Vector<flatbuffers::Offset<AnimationClip>> *animationClips() const { return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<AnimationClip>> *>(VT_ANIMATIONCLIPS); }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<flatbuffers::uoffset_t>(verifier, VT_VERSION) &&
@@ -433,6 +492,9 @@ struct SceneGraph FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
            VerifyField<flatbuffers::uoffset_t>(verifier, VT_SPRITEFRAMES) &&
            verifier.Verify(spriteFrames()) &&
            verifier.VerifyVectorOfTables(spriteFrames()) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_ANIMATIONCLIPS) &&
+           verifier.Verify(animationClips()) &&
+           verifier.VerifyVectorOfTables(animationClips()) &&
            verifier.EndTable();
   }
 };
@@ -446,10 +508,11 @@ struct SceneGraphBuilder {
   void add_resolutionFitWidth(bool resolutionFitWidth) { fbb_.AddElement<uint8_t>(SceneGraph::VT_RESOLUTIONFITWIDTH, static_cast<uint8_t>(resolutionFitWidth), 0); }
   void add_resolutionFitHeight(bool resolutionFitHeight) { fbb_.AddElement<uint8_t>(SceneGraph::VT_RESOLUTIONFITHEIGHT, static_cast<uint8_t>(resolutionFitHeight), 0); }
   void add_spriteFrames(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<SpriteFrame>>> spriteFrames) { fbb_.AddOffset(SceneGraph::VT_SPRITEFRAMES, spriteFrames); }
+  void add_animationClips(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<AnimationClip>>> animationClips) { fbb_.AddOffset(SceneGraph::VT_ANIMATIONCLIPS, animationClips); }
   SceneGraphBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
   SceneGraphBuilder &operator=(const SceneGraphBuilder &);
   flatbuffers::Offset<SceneGraph> Finish() {
-    auto o = flatbuffers::Offset<SceneGraph>(fbb_.EndTable(start_, 6));
+    auto o = flatbuffers::Offset<SceneGraph>(fbb_.EndTable(start_, 7));
     return o;
   }
 };
@@ -460,8 +523,10 @@ inline flatbuffers::Offset<SceneGraph> CreateSceneGraph(flatbuffers::FlatBufferB
     const Size *designResolution = 0,
     bool resolutionFitWidth = false,
     bool resolutionFitHeight = false,
-    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<SpriteFrame>>> spriteFrames = 0) {
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<SpriteFrame>>> spriteFrames = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<AnimationClip>>> animationClips = 0) {
   SceneGraphBuilder builder_(_fbb);
+  builder_.add_animationClips(animationClips);
   builder_.add_spriteFrames(spriteFrames);
   builder_.add_designResolution(designResolution);
   builder_.add_root(root);
@@ -477,8 +542,9 @@ inline flatbuffers::Offset<SceneGraph> CreateSceneGraphDirect(flatbuffers::FlatB
     const Size *designResolution = 0,
     bool resolutionFitWidth = false,
     bool resolutionFitHeight = false,
-    const std::vector<flatbuffers::Offset<SpriteFrame>> *spriteFrames = nullptr) {
-  return CreateSceneGraph(_fbb, version ? _fbb.CreateString(version) : 0, root, designResolution, resolutionFitWidth, resolutionFitHeight, spriteFrames ? _fbb.CreateVector<flatbuffers::Offset<SpriteFrame>>(*spriteFrames) : 0);
+    const std::vector<flatbuffers::Offset<SpriteFrame>> *spriteFrames = nullptr,
+    const std::vector<flatbuffers::Offset<AnimationClip>> *animationClips = nullptr) {
+  return CreateSceneGraph(_fbb, version ? _fbb.CreateString(version) : 0, root, designResolution, resolutionFitWidth, resolutionFitHeight, spriteFrames ? _fbb.CreateVector<flatbuffers::Offset<SpriteFrame>>(*spriteFrames) : 0, animationClips ? _fbb.CreateVector<flatbuffers::Offset<AnimationClip>>(*animationClips) : 0);
 }
 
 struct NodeTree FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
@@ -670,7 +736,8 @@ struct Node FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     VT_SCALEY = 32,
     VT_SKEWX = 34,
     VT_SKEWY = 36,
-    VT_TAG = 38
+    VT_TAG = 38,
+    VT_ANIM = 40
   };
   const Size *contentSize() const { return GetStruct<const Size *>(VT_CONTENTSIZE); }
   bool enabled() const { return GetField<uint8_t>(VT_ENABLED, 1) != 0; }
@@ -690,6 +757,7 @@ struct Node FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   float skewX() const { return GetField<float>(VT_SKEWX, 0.0f); }
   float skewY() const { return GetField<float>(VT_SKEWY, 0.0f); }
   int32_t tag() const { return GetField<int32_t>(VT_TAG, 0); }
+  const AnimationRef *anim() const { return GetPointer<const AnimationRef *>(VT_ANIM); }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<Size>(verifier, VT_CONTENTSIZE) &&
@@ -711,6 +779,8 @@ struct Node FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
            VerifyField<float>(verifier, VT_SKEWX) &&
            VerifyField<float>(verifier, VT_SKEWY) &&
            VerifyField<int32_t>(verifier, VT_TAG) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_ANIM) &&
+           verifier.VerifyTable(anim()) &&
            verifier.EndTable();
   }
 };
@@ -736,10 +806,11 @@ struct NodeBuilder {
   void add_skewX(float skewX) { fbb_.AddElement<float>(Node::VT_SKEWX, skewX, 0.0f); }
   void add_skewY(float skewY) { fbb_.AddElement<float>(Node::VT_SKEWY, skewY, 0.0f); }
   void add_tag(int32_t tag) { fbb_.AddElement<int32_t>(Node::VT_TAG, tag, 0); }
+  void add_anim(flatbuffers::Offset<AnimationRef> anim) { fbb_.AddOffset(Node::VT_ANIM, anim); }
   NodeBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
   NodeBuilder &operator=(const NodeBuilder &);
   flatbuffers::Offset<Node> Finish() {
-    auto o = flatbuffers::Offset<Node>(fbb_.EndTable(start_, 18));
+    auto o = flatbuffers::Offset<Node>(fbb_.EndTable(start_, 19));
     return o;
   }
 };
@@ -762,8 +833,10 @@ inline flatbuffers::Offset<Node> CreateNode(flatbuffers::FlatBufferBuilder &_fbb
     float scaleY = 1.0f,
     float skewX = 0.0f,
     float skewY = 0.0f,
-    int32_t tag = 0) {
+    int32_t tag = 0,
+    flatbuffers::Offset<AnimationRef> anim = 0) {
   NodeBuilder builder_(_fbb);
+  builder_.add_anim(anim);
   builder_.add_tag(tag);
   builder_.add_skewY(skewY);
   builder_.add_skewX(skewX);
@@ -803,8 +876,9 @@ inline flatbuffers::Offset<Node> CreateNodeDirect(flatbuffers::FlatBufferBuilder
     float scaleY = 1.0f,
     float skewX = 0.0f,
     float skewY = 0.0f,
-    int32_t tag = 0) {
-  return CreateNode(_fbb, contentSize, enabled, name ? _fbb.CreateString(name) : 0, anchorPoint, cascadeOpacityEnabled, color, globalZOrder, localZOrder, opacity, opacityModifyRGB, position, rotationSkewX, rotationSkewY, scaleX, scaleY, skewX, skewY, tag);
+    int32_t tag = 0,
+    flatbuffers::Offset<AnimationRef> anim = 0) {
+  return CreateNode(_fbb, contentSize, enabled, name ? _fbb.CreateString(name) : 0, anchorPoint, cascadeOpacityEnabled, color, globalZOrder, localZOrder, opacity, opacityModifyRGB, position, rotationSkewX, rotationSkewY, scaleX, scaleY, skewX, skewY, tag, anim);
 }
 
 struct Sprite FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
@@ -1588,6 +1662,913 @@ inline flatbuffers::Offset<SpineSkeleton> CreateSpineSkeletonDirect(flatbuffers:
     bool debugSlots = false,
     bool debugBones = false) {
   return CreateSpineSkeleton(_fbb, node, jsonFile ? _fbb.CreateString(jsonFile) : 0, atlasFile ? _fbb.CreateString(atlasFile) : 0, defaultSkin ? _fbb.CreateString(defaultSkin) : 0, defaultAnimation ? _fbb.CreateString(defaultAnimation) : 0, loop, premultipliedAlpha, timeScale, debugSlots, debugBones);
+}
+
+struct AnimationRef FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum {
+    VT_DEFAULTCLIP = 4,
+    VT_CLIPS = 6,
+    VT_OBJFLAGS = 8,
+    VT_NAME = 10,
+    VT_PLAYONLOAD = 12
+  };
+  const flatbuffers::String *defaultClip() const { return GetPointer<const flatbuffers::String *>(VT_DEFAULTCLIP); }
+  const flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>> *clips() const { return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>> *>(VT_CLIPS); }
+  int32_t objFlags() const { return GetField<int32_t>(VT_OBJFLAGS, 0); }
+  const flatbuffers::String *name() const { return GetPointer<const flatbuffers::String *>(VT_NAME); }
+  bool playOnLoad() const { return GetField<uint8_t>(VT_PLAYONLOAD, 0) != 0; }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_DEFAULTCLIP) &&
+           verifier.Verify(defaultClip()) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_CLIPS) &&
+           verifier.Verify(clips()) &&
+           verifier.VerifyVectorOfStrings(clips()) &&
+           VerifyField<int32_t>(verifier, VT_OBJFLAGS) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_NAME) &&
+           verifier.Verify(name()) &&
+           VerifyField<uint8_t>(verifier, VT_PLAYONLOAD) &&
+           verifier.EndTable();
+  }
+};
+
+struct AnimationRefBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_defaultClip(flatbuffers::Offset<flatbuffers::String> defaultClip) { fbb_.AddOffset(AnimationRef::VT_DEFAULTCLIP, defaultClip); }
+  void add_clips(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>>> clips) { fbb_.AddOffset(AnimationRef::VT_CLIPS, clips); }
+  void add_objFlags(int32_t objFlags) { fbb_.AddElement<int32_t>(AnimationRef::VT_OBJFLAGS, objFlags, 0); }
+  void add_name(flatbuffers::Offset<flatbuffers::String> name) { fbb_.AddOffset(AnimationRef::VT_NAME, name); }
+  void add_playOnLoad(bool playOnLoad) { fbb_.AddElement<uint8_t>(AnimationRef::VT_PLAYONLOAD, static_cast<uint8_t>(playOnLoad), 0); }
+  AnimationRefBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
+  AnimationRefBuilder &operator=(const AnimationRefBuilder &);
+  flatbuffers::Offset<AnimationRef> Finish() {
+    auto o = flatbuffers::Offset<AnimationRef>(fbb_.EndTable(start_, 5));
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<AnimationRef> CreateAnimationRef(flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> defaultClip = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>>> clips = 0,
+    int32_t objFlags = 0,
+    flatbuffers::Offset<flatbuffers::String> name = 0,
+    bool playOnLoad = false) {
+  AnimationRefBuilder builder_(_fbb);
+  builder_.add_name(name);
+  builder_.add_objFlags(objFlags);
+  builder_.add_clips(clips);
+  builder_.add_defaultClip(defaultClip);
+  builder_.add_playOnLoad(playOnLoad);
+  return builder_.Finish();
+}
+
+inline flatbuffers::Offset<AnimationRef> CreateAnimationRefDirect(flatbuffers::FlatBufferBuilder &_fbb,
+    const char *defaultClip = nullptr,
+    const std::vector<flatbuffers::Offset<flatbuffers::String>> *clips = nullptr,
+    int32_t objFlags = 0,
+    const char *name = nullptr,
+    bool playOnLoad = false) {
+  return CreateAnimationRef(_fbb, defaultClip ? _fbb.CreateString(defaultClip) : 0, clips ? _fbb.CreateVector<flatbuffers::Offset<flatbuffers::String>>(*clips) : 0, objFlags, name ? _fbb.CreateString(name) : 0, playOnLoad);
+}
+
+struct AnimationClip FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum {
+    VT_NAME = 4,
+    VT_UUID = 6,
+    VT_DURATION = 8,
+    VT_SAMPLE = 10,
+    VT_SPEED = 12,
+    VT_WRAPMODE = 14,
+    VT_CURVEDATA = 16,
+    VT_EVENTS = 18,
+    VT_OBJFLAGS = 20
+  };
+  const flatbuffers::String *name() const { return GetPointer<const flatbuffers::String *>(VT_NAME); }
+  const flatbuffers::String *uuid() const { return GetPointer<const flatbuffers::String *>(VT_UUID); }
+  float duration() const { return GetField<float>(VT_DURATION, 0.0f); }
+  float sample() const { return GetField<float>(VT_SAMPLE, 0.0f); }
+  float speed() const { return GetField<float>(VT_SPEED, 0.0f); }
+  AnimWrapMode wrapMode() const { return static_cast<AnimWrapMode>(GetField<int8_t>(VT_WRAPMODE, 0)); }
+  const AnimCurveData *curveData() const { return GetPointer<const AnimCurveData *>(VT_CURVEDATA); }
+  const flatbuffers::Vector<flatbuffers::Offset<AnimEvents>> *events() const { return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<AnimEvents>> *>(VT_EVENTS); }
+  int32_t objFlags() const { return GetField<int32_t>(VT_OBJFLAGS, 0); }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_NAME) &&
+           verifier.Verify(name()) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_UUID) &&
+           verifier.Verify(uuid()) &&
+           VerifyField<float>(verifier, VT_DURATION) &&
+           VerifyField<float>(verifier, VT_SAMPLE) &&
+           VerifyField<float>(verifier, VT_SPEED) &&
+           VerifyField<int8_t>(verifier, VT_WRAPMODE) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_CURVEDATA) &&
+           verifier.VerifyTable(curveData()) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_EVENTS) &&
+           verifier.Verify(events()) &&
+           verifier.VerifyVectorOfTables(events()) &&
+           VerifyField<int32_t>(verifier, VT_OBJFLAGS) &&
+           verifier.EndTable();
+  }
+};
+
+struct AnimationClipBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_name(flatbuffers::Offset<flatbuffers::String> name) { fbb_.AddOffset(AnimationClip::VT_NAME, name); }
+  void add_uuid(flatbuffers::Offset<flatbuffers::String> uuid) { fbb_.AddOffset(AnimationClip::VT_UUID, uuid); }
+  void add_duration(float duration) { fbb_.AddElement<float>(AnimationClip::VT_DURATION, duration, 0.0f); }
+  void add_sample(float sample) { fbb_.AddElement<float>(AnimationClip::VT_SAMPLE, sample, 0.0f); }
+  void add_speed(float speed) { fbb_.AddElement<float>(AnimationClip::VT_SPEED, speed, 0.0f); }
+  void add_wrapMode(AnimWrapMode wrapMode) { fbb_.AddElement<int8_t>(AnimationClip::VT_WRAPMODE, static_cast<int8_t>(wrapMode), 0); }
+  void add_curveData(flatbuffers::Offset<AnimCurveData> curveData) { fbb_.AddOffset(AnimationClip::VT_CURVEDATA, curveData); }
+  void add_events(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<AnimEvents>>> events) { fbb_.AddOffset(AnimationClip::VT_EVENTS, events); }
+  void add_objFlags(int32_t objFlags) { fbb_.AddElement<int32_t>(AnimationClip::VT_OBJFLAGS, objFlags, 0); }
+  AnimationClipBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
+  AnimationClipBuilder &operator=(const AnimationClipBuilder &);
+  flatbuffers::Offset<AnimationClip> Finish() {
+    auto o = flatbuffers::Offset<AnimationClip>(fbb_.EndTable(start_, 9));
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<AnimationClip> CreateAnimationClip(flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> name = 0,
+    flatbuffers::Offset<flatbuffers::String> uuid = 0,
+    float duration = 0.0f,
+    float sample = 0.0f,
+    float speed = 0.0f,
+    AnimWrapMode wrapMode = AnimWrapMode_Default,
+    flatbuffers::Offset<AnimCurveData> curveData = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<AnimEvents>>> events = 0,
+    int32_t objFlags = 0) {
+  AnimationClipBuilder builder_(_fbb);
+  builder_.add_objFlags(objFlags);
+  builder_.add_events(events);
+  builder_.add_curveData(curveData);
+  builder_.add_speed(speed);
+  builder_.add_sample(sample);
+  builder_.add_duration(duration);
+  builder_.add_uuid(uuid);
+  builder_.add_name(name);
+  builder_.add_wrapMode(wrapMode);
+  return builder_.Finish();
+}
+
+inline flatbuffers::Offset<AnimationClip> CreateAnimationClipDirect(flatbuffers::FlatBufferBuilder &_fbb,
+    const char *name = nullptr,
+    const char *uuid = nullptr,
+    float duration = 0.0f,
+    float sample = 0.0f,
+    float speed = 0.0f,
+    AnimWrapMode wrapMode = AnimWrapMode_Default,
+    flatbuffers::Offset<AnimCurveData> curveData = 0,
+    const std::vector<flatbuffers::Offset<AnimEvents>> *events = nullptr,
+    int32_t objFlags = 0) {
+  return CreateAnimationClip(_fbb, name ? _fbb.CreateString(name) : 0, uuid ? _fbb.CreateString(uuid) : 0, duration, sample, speed, wrapMode, curveData, events ? _fbb.CreateVector<flatbuffers::Offset<AnimEvents>>(*events) : 0, objFlags);
+}
+
+struct AnimCurveData FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum {
+    VT_PROPS = 4
+  };
+  const AnimProps *props() const { return GetPointer<const AnimProps *>(VT_PROPS); }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_PROPS) &&
+           verifier.VerifyTable(props()) &&
+           verifier.EndTable();
+  }
+};
+
+struct AnimCurveDataBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_props(flatbuffers::Offset<AnimProps> props) { fbb_.AddOffset(AnimCurveData::VT_PROPS, props); }
+  AnimCurveDataBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
+  AnimCurveDataBuilder &operator=(const AnimCurveDataBuilder &);
+  flatbuffers::Offset<AnimCurveData> Finish() {
+    auto o = flatbuffers::Offset<AnimCurveData>(fbb_.EndTable(start_, 1));
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<AnimCurveData> CreateAnimCurveData(flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<AnimProps> props = 0) {
+  AnimCurveDataBuilder builder_(_fbb);
+  builder_.add_props(props);
+  return builder_.Finish();
+}
+
+struct AnimProps FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum {
+    VT_ROTATION = 4,
+    VT_POSITION = 6,
+    VT_POSITIONX = 8,
+    VT_POSITIONY = 10,
+    VT_ANCHORX = 12,
+    VT_ANCHORY = 14,
+    VT_COLOR = 16,
+    VT_OPACITY = 18,
+    VT_WIDTH = 20,
+    VT_HEIGHT = 22,
+    VT_SCALEX = 24,
+    VT_SCALEY = 26,
+    VT_SKEWX = 28,
+    VT_SKEWY = 30
+  };
+  const flatbuffers::Vector<flatbuffers::Offset<AnimPropRotation>> *rotation() const { return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<AnimPropRotation>> *>(VT_ROTATION); }
+  const flatbuffers::Vector<flatbuffers::Offset<AnimPropPosition>> *position() const { return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<AnimPropPosition>> *>(VT_POSITION); }
+  const flatbuffers::Vector<flatbuffers::Offset<AnimPropPositionX>> *positionX() const { return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<AnimPropPositionX>> *>(VT_POSITIONX); }
+  const flatbuffers::Vector<flatbuffers::Offset<AnimPropPositionY>> *positionY() const { return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<AnimPropPositionY>> *>(VT_POSITIONY); }
+  const flatbuffers::Vector<flatbuffers::Offset<AnimPropAnchorX>> *anchorX() const { return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<AnimPropAnchorX>> *>(VT_ANCHORX); }
+  const flatbuffers::Vector<flatbuffers::Offset<AnimPropAnchorY>> *anchorY() const { return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<AnimPropAnchorY>> *>(VT_ANCHORY); }
+  const flatbuffers::Vector<flatbuffers::Offset<AnimPropColor>> *color() const { return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<AnimPropColor>> *>(VT_COLOR); }
+  const flatbuffers::Vector<flatbuffers::Offset<AnimPropOpacity>> *opacity() const { return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<AnimPropOpacity>> *>(VT_OPACITY); }
+  const flatbuffers::Vector<flatbuffers::Offset<AnimPropWidth>> *width() const { return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<AnimPropWidth>> *>(VT_WIDTH); }
+  const flatbuffers::Vector<flatbuffers::Offset<AnimPropHeight>> *height() const { return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<AnimPropHeight>> *>(VT_HEIGHT); }
+  const flatbuffers::Vector<flatbuffers::Offset<AnimPropScaleX>> *scaleX() const { return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<AnimPropScaleX>> *>(VT_SCALEX); }
+  const flatbuffers::Vector<flatbuffers::Offset<AnimPropScaleY>> *scaleY() const { return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<AnimPropScaleY>> *>(VT_SCALEY); }
+  const flatbuffers::Vector<flatbuffers::Offset<AnimPropSkewX>> *skewX() const { return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<AnimPropSkewX>> *>(VT_SKEWX); }
+  const flatbuffers::Vector<flatbuffers::Offset<AnimPropSkewY>> *skewY() const { return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<AnimPropSkewY>> *>(VT_SKEWY); }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_ROTATION) &&
+           verifier.Verify(rotation()) &&
+           verifier.VerifyVectorOfTables(rotation()) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_POSITION) &&
+           verifier.Verify(position()) &&
+           verifier.VerifyVectorOfTables(position()) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_POSITIONX) &&
+           verifier.Verify(positionX()) &&
+           verifier.VerifyVectorOfTables(positionX()) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_POSITIONY) &&
+           verifier.Verify(positionY()) &&
+           verifier.VerifyVectorOfTables(positionY()) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_ANCHORX) &&
+           verifier.Verify(anchorX()) &&
+           verifier.VerifyVectorOfTables(anchorX()) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_ANCHORY) &&
+           verifier.Verify(anchorY()) &&
+           verifier.VerifyVectorOfTables(anchorY()) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_COLOR) &&
+           verifier.Verify(color()) &&
+           verifier.VerifyVectorOfTables(color()) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_OPACITY) &&
+           verifier.Verify(opacity()) &&
+           verifier.VerifyVectorOfTables(opacity()) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_WIDTH) &&
+           verifier.Verify(width()) &&
+           verifier.VerifyVectorOfTables(width()) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_HEIGHT) &&
+           verifier.Verify(height()) &&
+           verifier.VerifyVectorOfTables(height()) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_SCALEX) &&
+           verifier.Verify(scaleX()) &&
+           verifier.VerifyVectorOfTables(scaleX()) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_SCALEY) &&
+           verifier.Verify(scaleY()) &&
+           verifier.VerifyVectorOfTables(scaleY()) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_SKEWX) &&
+           verifier.Verify(skewX()) &&
+           verifier.VerifyVectorOfTables(skewX()) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_SKEWY) &&
+           verifier.Verify(skewY()) &&
+           verifier.VerifyVectorOfTables(skewY()) &&
+           verifier.EndTable();
+  }
+};
+
+struct AnimPropsBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_rotation(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<AnimPropRotation>>> rotation) { fbb_.AddOffset(AnimProps::VT_ROTATION, rotation); }
+  void add_position(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<AnimPropPosition>>> position) { fbb_.AddOffset(AnimProps::VT_POSITION, position); }
+  void add_positionX(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<AnimPropPositionX>>> positionX) { fbb_.AddOffset(AnimProps::VT_POSITIONX, positionX); }
+  void add_positionY(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<AnimPropPositionY>>> positionY) { fbb_.AddOffset(AnimProps::VT_POSITIONY, positionY); }
+  void add_anchorX(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<AnimPropAnchorX>>> anchorX) { fbb_.AddOffset(AnimProps::VT_ANCHORX, anchorX); }
+  void add_anchorY(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<AnimPropAnchorY>>> anchorY) { fbb_.AddOffset(AnimProps::VT_ANCHORY, anchorY); }
+  void add_color(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<AnimPropColor>>> color) { fbb_.AddOffset(AnimProps::VT_COLOR, color); }
+  void add_opacity(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<AnimPropOpacity>>> opacity) { fbb_.AddOffset(AnimProps::VT_OPACITY, opacity); }
+  void add_width(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<AnimPropWidth>>> width) { fbb_.AddOffset(AnimProps::VT_WIDTH, width); }
+  void add_height(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<AnimPropHeight>>> height) { fbb_.AddOffset(AnimProps::VT_HEIGHT, height); }
+  void add_scaleX(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<AnimPropScaleX>>> scaleX) { fbb_.AddOffset(AnimProps::VT_SCALEX, scaleX); }
+  void add_scaleY(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<AnimPropScaleY>>> scaleY) { fbb_.AddOffset(AnimProps::VT_SCALEY, scaleY); }
+  void add_skewX(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<AnimPropSkewX>>> skewX) { fbb_.AddOffset(AnimProps::VT_SKEWX, skewX); }
+  void add_skewY(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<AnimPropSkewY>>> skewY) { fbb_.AddOffset(AnimProps::VT_SKEWY, skewY); }
+  AnimPropsBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
+  AnimPropsBuilder &operator=(const AnimPropsBuilder &);
+  flatbuffers::Offset<AnimProps> Finish() {
+    auto o = flatbuffers::Offset<AnimProps>(fbb_.EndTable(start_, 14));
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<AnimProps> CreateAnimProps(flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<AnimPropRotation>>> rotation = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<AnimPropPosition>>> position = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<AnimPropPositionX>>> positionX = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<AnimPropPositionY>>> positionY = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<AnimPropAnchorX>>> anchorX = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<AnimPropAnchorY>>> anchorY = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<AnimPropColor>>> color = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<AnimPropOpacity>>> opacity = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<AnimPropWidth>>> width = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<AnimPropHeight>>> height = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<AnimPropScaleX>>> scaleX = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<AnimPropScaleY>>> scaleY = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<AnimPropSkewX>>> skewX = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<AnimPropSkewY>>> skewY = 0) {
+  AnimPropsBuilder builder_(_fbb);
+  builder_.add_skewY(skewY);
+  builder_.add_skewX(skewX);
+  builder_.add_scaleY(scaleY);
+  builder_.add_scaleX(scaleX);
+  builder_.add_height(height);
+  builder_.add_width(width);
+  builder_.add_opacity(opacity);
+  builder_.add_color(color);
+  builder_.add_anchorY(anchorY);
+  builder_.add_anchorX(anchorX);
+  builder_.add_positionY(positionY);
+  builder_.add_positionX(positionX);
+  builder_.add_position(position);
+  builder_.add_rotation(rotation);
+  return builder_.Finish();
+}
+
+inline flatbuffers::Offset<AnimProps> CreateAnimPropsDirect(flatbuffers::FlatBufferBuilder &_fbb,
+    const std::vector<flatbuffers::Offset<AnimPropRotation>> *rotation = nullptr,
+    const std::vector<flatbuffers::Offset<AnimPropPosition>> *position = nullptr,
+    const std::vector<flatbuffers::Offset<AnimPropPositionX>> *positionX = nullptr,
+    const std::vector<flatbuffers::Offset<AnimPropPositionY>> *positionY = nullptr,
+    const std::vector<flatbuffers::Offset<AnimPropAnchorX>> *anchorX = nullptr,
+    const std::vector<flatbuffers::Offset<AnimPropAnchorY>> *anchorY = nullptr,
+    const std::vector<flatbuffers::Offset<AnimPropColor>> *color = nullptr,
+    const std::vector<flatbuffers::Offset<AnimPropOpacity>> *opacity = nullptr,
+    const std::vector<flatbuffers::Offset<AnimPropWidth>> *width = nullptr,
+    const std::vector<flatbuffers::Offset<AnimPropHeight>> *height = nullptr,
+    const std::vector<flatbuffers::Offset<AnimPropScaleX>> *scaleX = nullptr,
+    const std::vector<flatbuffers::Offset<AnimPropScaleY>> *scaleY = nullptr,
+    const std::vector<flatbuffers::Offset<AnimPropSkewX>> *skewX = nullptr,
+    const std::vector<flatbuffers::Offset<AnimPropSkewY>> *skewY = nullptr) {
+  return CreateAnimProps(_fbb, rotation ? _fbb.CreateVector<flatbuffers::Offset<AnimPropRotation>>(*rotation) : 0, position ? _fbb.CreateVector<flatbuffers::Offset<AnimPropPosition>>(*position) : 0, positionX ? _fbb.CreateVector<flatbuffers::Offset<AnimPropPositionX>>(*positionX) : 0, positionY ? _fbb.CreateVector<flatbuffers::Offset<AnimPropPositionY>>(*positionY) : 0, anchorX ? _fbb.CreateVector<flatbuffers::Offset<AnimPropAnchorX>>(*anchorX) : 0, anchorY ? _fbb.CreateVector<flatbuffers::Offset<AnimPropAnchorY>>(*anchorY) : 0, color ? _fbb.CreateVector<flatbuffers::Offset<AnimPropColor>>(*color) : 0, opacity ? _fbb.CreateVector<flatbuffers::Offset<AnimPropOpacity>>(*opacity) : 0, width ? _fbb.CreateVector<flatbuffers::Offset<AnimPropWidth>>(*width) : 0, height ? _fbb.CreateVector<flatbuffers::Offset<AnimPropHeight>>(*height) : 0, scaleX ? _fbb.CreateVector<flatbuffers::Offset<AnimPropScaleX>>(*scaleX) : 0, scaleY ? _fbb.CreateVector<flatbuffers::Offset<AnimPropScaleY>>(*scaleY) : 0, skewX ? _fbb.CreateVector<flatbuffers::Offset<AnimPropSkewX>>(*skewX) : 0, skewY ? _fbb.CreateVector<flatbuffers::Offset<AnimPropSkewY>>(*skewY) : 0);
+}
+
+struct AnimEvents FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           verifier.EndTable();
+  }
+};
+
+struct AnimEventsBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  AnimEventsBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
+  AnimEventsBuilder &operator=(const AnimEventsBuilder &);
+  flatbuffers::Offset<AnimEvents> Finish() {
+    auto o = flatbuffers::Offset<AnimEvents>(fbb_.EndTable(start_, 0));
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<AnimEvents> CreateAnimEvents(flatbuffers::FlatBufferBuilder &_fbb) {
+  AnimEventsBuilder builder_(_fbb);
+  return builder_.Finish();
+}
+
+struct AnimPropRotation FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum {
+    VT_FRAME = 4,
+    VT_VALUE = 6
+  };
+  float frame() const { return GetField<float>(VT_FRAME, 0.0f); }
+  float value() const { return GetField<float>(VT_VALUE, 0.0f); }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<float>(verifier, VT_FRAME) &&
+           VerifyField<float>(verifier, VT_VALUE) &&
+           verifier.EndTable();
+  }
+};
+
+struct AnimPropRotationBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_frame(float frame) { fbb_.AddElement<float>(AnimPropRotation::VT_FRAME, frame, 0.0f); }
+  void add_value(float value) { fbb_.AddElement<float>(AnimPropRotation::VT_VALUE, value, 0.0f); }
+  AnimPropRotationBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
+  AnimPropRotationBuilder &operator=(const AnimPropRotationBuilder &);
+  flatbuffers::Offset<AnimPropRotation> Finish() {
+    auto o = flatbuffers::Offset<AnimPropRotation>(fbb_.EndTable(start_, 2));
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<AnimPropRotation> CreateAnimPropRotation(flatbuffers::FlatBufferBuilder &_fbb,
+    float frame = 0.0f,
+    float value = 0.0f) {
+  AnimPropRotationBuilder builder_(_fbb);
+  builder_.add_value(value);
+  builder_.add_frame(frame);
+  return builder_.Finish();
+}
+
+struct AnimPropPosition FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum {
+    VT_FRAME = 4,
+    VT_VALUE = 6,
+    VT_MOTIONPATH = 8
+  };
+  float frame() const { return GetField<float>(VT_FRAME, 0.0f); }
+  const Vec2 *value() const { return GetStruct<const Vec2 *>(VT_VALUE); }
+  const flatbuffers::Vector<float> *motionPath() const { return GetPointer<const flatbuffers::Vector<float> *>(VT_MOTIONPATH); }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<float>(verifier, VT_FRAME) &&
+           VerifyField<Vec2>(verifier, VT_VALUE) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_MOTIONPATH) &&
+           verifier.Verify(motionPath()) &&
+           verifier.EndTable();
+  }
+};
+
+struct AnimPropPositionBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_frame(float frame) { fbb_.AddElement<float>(AnimPropPosition::VT_FRAME, frame, 0.0f); }
+  void add_value(const Vec2 *value) { fbb_.AddStruct(AnimPropPosition::VT_VALUE, value); }
+  void add_motionPath(flatbuffers::Offset<flatbuffers::Vector<float>> motionPath) { fbb_.AddOffset(AnimPropPosition::VT_MOTIONPATH, motionPath); }
+  AnimPropPositionBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
+  AnimPropPositionBuilder &operator=(const AnimPropPositionBuilder &);
+  flatbuffers::Offset<AnimPropPosition> Finish() {
+    auto o = flatbuffers::Offset<AnimPropPosition>(fbb_.EndTable(start_, 3));
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<AnimPropPosition> CreateAnimPropPosition(flatbuffers::FlatBufferBuilder &_fbb,
+    float frame = 0.0f,
+    const Vec2 *value = 0,
+    flatbuffers::Offset<flatbuffers::Vector<float>> motionPath = 0) {
+  AnimPropPositionBuilder builder_(_fbb);
+  builder_.add_motionPath(motionPath);
+  builder_.add_value(value);
+  builder_.add_frame(frame);
+  return builder_.Finish();
+}
+
+inline flatbuffers::Offset<AnimPropPosition> CreateAnimPropPositionDirect(flatbuffers::FlatBufferBuilder &_fbb,
+    float frame = 0.0f,
+    const Vec2 *value = 0,
+    const std::vector<float> *motionPath = nullptr) {
+  return CreateAnimPropPosition(_fbb, frame, value, motionPath ? _fbb.CreateVector<float>(*motionPath) : 0);
+}
+
+struct AnimPropPositionX FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum {
+    VT_FRAME = 4,
+    VT_VALUE = 6
+  };
+  float frame() const { return GetField<float>(VT_FRAME, 0.0f); }
+  float value() const { return GetField<float>(VT_VALUE, 0.0f); }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<float>(verifier, VT_FRAME) &&
+           VerifyField<float>(verifier, VT_VALUE) &&
+           verifier.EndTable();
+  }
+};
+
+struct AnimPropPositionXBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_frame(float frame) { fbb_.AddElement<float>(AnimPropPositionX::VT_FRAME, frame, 0.0f); }
+  void add_value(float value) { fbb_.AddElement<float>(AnimPropPositionX::VT_VALUE, value, 0.0f); }
+  AnimPropPositionXBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
+  AnimPropPositionXBuilder &operator=(const AnimPropPositionXBuilder &);
+  flatbuffers::Offset<AnimPropPositionX> Finish() {
+    auto o = flatbuffers::Offset<AnimPropPositionX>(fbb_.EndTable(start_, 2));
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<AnimPropPositionX> CreateAnimPropPositionX(flatbuffers::FlatBufferBuilder &_fbb,
+    float frame = 0.0f,
+    float value = 0.0f) {
+  AnimPropPositionXBuilder builder_(_fbb);
+  builder_.add_value(value);
+  builder_.add_frame(frame);
+  return builder_.Finish();
+}
+
+struct AnimPropPositionY FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum {
+    VT_FRAME = 4,
+    VT_VALUE = 6
+  };
+  float frame() const { return GetField<float>(VT_FRAME, 0.0f); }
+  float value() const { return GetField<float>(VT_VALUE, 0.0f); }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<float>(verifier, VT_FRAME) &&
+           VerifyField<float>(verifier, VT_VALUE) &&
+           verifier.EndTable();
+  }
+};
+
+struct AnimPropPositionYBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_frame(float frame) { fbb_.AddElement<float>(AnimPropPositionY::VT_FRAME, frame, 0.0f); }
+  void add_value(float value) { fbb_.AddElement<float>(AnimPropPositionY::VT_VALUE, value, 0.0f); }
+  AnimPropPositionYBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
+  AnimPropPositionYBuilder &operator=(const AnimPropPositionYBuilder &);
+  flatbuffers::Offset<AnimPropPositionY> Finish() {
+    auto o = flatbuffers::Offset<AnimPropPositionY>(fbb_.EndTable(start_, 2));
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<AnimPropPositionY> CreateAnimPropPositionY(flatbuffers::FlatBufferBuilder &_fbb,
+    float frame = 0.0f,
+    float value = 0.0f) {
+  AnimPropPositionYBuilder builder_(_fbb);
+  builder_.add_value(value);
+  builder_.add_frame(frame);
+  return builder_.Finish();
+}
+
+struct AnimPropScaleX FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum {
+    VT_FRAME = 4,
+    VT_VALUE = 6
+  };
+  float frame() const { return GetField<float>(VT_FRAME, 0.0f); }
+  float value() const { return GetField<float>(VT_VALUE, 0.0f); }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<float>(verifier, VT_FRAME) &&
+           VerifyField<float>(verifier, VT_VALUE) &&
+           verifier.EndTable();
+  }
+};
+
+struct AnimPropScaleXBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_frame(float frame) { fbb_.AddElement<float>(AnimPropScaleX::VT_FRAME, frame, 0.0f); }
+  void add_value(float value) { fbb_.AddElement<float>(AnimPropScaleX::VT_VALUE, value, 0.0f); }
+  AnimPropScaleXBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
+  AnimPropScaleXBuilder &operator=(const AnimPropScaleXBuilder &);
+  flatbuffers::Offset<AnimPropScaleX> Finish() {
+    auto o = flatbuffers::Offset<AnimPropScaleX>(fbb_.EndTable(start_, 2));
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<AnimPropScaleX> CreateAnimPropScaleX(flatbuffers::FlatBufferBuilder &_fbb,
+    float frame = 0.0f,
+    float value = 0.0f) {
+  AnimPropScaleXBuilder builder_(_fbb);
+  builder_.add_value(value);
+  builder_.add_frame(frame);
+  return builder_.Finish();
+}
+
+struct AnimPropScaleY FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum {
+    VT_FRAME = 4,
+    VT_VALUE = 6
+  };
+  float frame() const { return GetField<float>(VT_FRAME, 0.0f); }
+  float value() const { return GetField<float>(VT_VALUE, 0.0f); }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<float>(verifier, VT_FRAME) &&
+           VerifyField<float>(verifier, VT_VALUE) &&
+           verifier.EndTable();
+  }
+};
+
+struct AnimPropScaleYBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_frame(float frame) { fbb_.AddElement<float>(AnimPropScaleY::VT_FRAME, frame, 0.0f); }
+  void add_value(float value) { fbb_.AddElement<float>(AnimPropScaleY::VT_VALUE, value, 0.0f); }
+  AnimPropScaleYBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
+  AnimPropScaleYBuilder &operator=(const AnimPropScaleYBuilder &);
+  flatbuffers::Offset<AnimPropScaleY> Finish() {
+    auto o = flatbuffers::Offset<AnimPropScaleY>(fbb_.EndTable(start_, 2));
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<AnimPropScaleY> CreateAnimPropScaleY(flatbuffers::FlatBufferBuilder &_fbb,
+    float frame = 0.0f,
+    float value = 0.0f) {
+  AnimPropScaleYBuilder builder_(_fbb);
+  builder_.add_value(value);
+  builder_.add_frame(frame);
+  return builder_.Finish();
+}
+
+struct AnimPropWidth FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum {
+    VT_FRAME = 4,
+    VT_VALUE = 6
+  };
+  float frame() const { return GetField<float>(VT_FRAME, 0.0f); }
+  float value() const { return GetField<float>(VT_VALUE, 0.0f); }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<float>(verifier, VT_FRAME) &&
+           VerifyField<float>(verifier, VT_VALUE) &&
+           verifier.EndTable();
+  }
+};
+
+struct AnimPropWidthBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_frame(float frame) { fbb_.AddElement<float>(AnimPropWidth::VT_FRAME, frame, 0.0f); }
+  void add_value(float value) { fbb_.AddElement<float>(AnimPropWidth::VT_VALUE, value, 0.0f); }
+  AnimPropWidthBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
+  AnimPropWidthBuilder &operator=(const AnimPropWidthBuilder &);
+  flatbuffers::Offset<AnimPropWidth> Finish() {
+    auto o = flatbuffers::Offset<AnimPropWidth>(fbb_.EndTable(start_, 2));
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<AnimPropWidth> CreateAnimPropWidth(flatbuffers::FlatBufferBuilder &_fbb,
+    float frame = 0.0f,
+    float value = 0.0f) {
+  AnimPropWidthBuilder builder_(_fbb);
+  builder_.add_value(value);
+  builder_.add_frame(frame);
+  return builder_.Finish();
+}
+
+struct AnimPropHeight FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum {
+    VT_FRAME = 4,
+    VT_VALUE = 6
+  };
+  float frame() const { return GetField<float>(VT_FRAME, 0.0f); }
+  float value() const { return GetField<float>(VT_VALUE, 0.0f); }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<float>(verifier, VT_FRAME) &&
+           VerifyField<float>(verifier, VT_VALUE) &&
+           verifier.EndTable();
+  }
+};
+
+struct AnimPropHeightBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_frame(float frame) { fbb_.AddElement<float>(AnimPropHeight::VT_FRAME, frame, 0.0f); }
+  void add_value(float value) { fbb_.AddElement<float>(AnimPropHeight::VT_VALUE, value, 0.0f); }
+  AnimPropHeightBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
+  AnimPropHeightBuilder &operator=(const AnimPropHeightBuilder &);
+  flatbuffers::Offset<AnimPropHeight> Finish() {
+    auto o = flatbuffers::Offset<AnimPropHeight>(fbb_.EndTable(start_, 2));
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<AnimPropHeight> CreateAnimPropHeight(flatbuffers::FlatBufferBuilder &_fbb,
+    float frame = 0.0f,
+    float value = 0.0f) {
+  AnimPropHeightBuilder builder_(_fbb);
+  builder_.add_value(value);
+  builder_.add_frame(frame);
+  return builder_.Finish();
+}
+
+struct AnimPropColor FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum {
+    VT_FRAME = 4,
+    VT_VALUE = 6
+  };
+  float frame() const { return GetField<float>(VT_FRAME, 0.0f); }
+  const RGBA *value() const { return GetStruct<const RGBA *>(VT_VALUE); }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<float>(verifier, VT_FRAME) &&
+           VerifyField<RGBA>(verifier, VT_VALUE) &&
+           verifier.EndTable();
+  }
+};
+
+struct AnimPropColorBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_frame(float frame) { fbb_.AddElement<float>(AnimPropColor::VT_FRAME, frame, 0.0f); }
+  void add_value(const RGBA *value) { fbb_.AddStruct(AnimPropColor::VT_VALUE, value); }
+  AnimPropColorBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
+  AnimPropColorBuilder &operator=(const AnimPropColorBuilder &);
+  flatbuffers::Offset<AnimPropColor> Finish() {
+    auto o = flatbuffers::Offset<AnimPropColor>(fbb_.EndTable(start_, 2));
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<AnimPropColor> CreateAnimPropColor(flatbuffers::FlatBufferBuilder &_fbb,
+    float frame = 0.0f,
+    const RGBA *value = 0) {
+  AnimPropColorBuilder builder_(_fbb);
+  builder_.add_value(value);
+  builder_.add_frame(frame);
+  return builder_.Finish();
+}
+
+struct AnimPropOpacity FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum {
+    VT_FRAME = 4,
+    VT_VALUE = 6
+  };
+  float frame() const { return GetField<float>(VT_FRAME, 0.0f); }
+  float value() const { return GetField<float>(VT_VALUE, 0.0f); }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<float>(verifier, VT_FRAME) &&
+           VerifyField<float>(verifier, VT_VALUE) &&
+           verifier.EndTable();
+  }
+};
+
+struct AnimPropOpacityBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_frame(float frame) { fbb_.AddElement<float>(AnimPropOpacity::VT_FRAME, frame, 0.0f); }
+  void add_value(float value) { fbb_.AddElement<float>(AnimPropOpacity::VT_VALUE, value, 0.0f); }
+  AnimPropOpacityBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
+  AnimPropOpacityBuilder &operator=(const AnimPropOpacityBuilder &);
+  flatbuffers::Offset<AnimPropOpacity> Finish() {
+    auto o = flatbuffers::Offset<AnimPropOpacity>(fbb_.EndTable(start_, 2));
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<AnimPropOpacity> CreateAnimPropOpacity(flatbuffers::FlatBufferBuilder &_fbb,
+    float frame = 0.0f,
+    float value = 0.0f) {
+  AnimPropOpacityBuilder builder_(_fbb);
+  builder_.add_value(value);
+  builder_.add_frame(frame);
+  return builder_.Finish();
+}
+
+struct AnimPropAnchorX FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum {
+    VT_FRAME = 4,
+    VT_VALUE = 6
+  };
+  float frame() const { return GetField<float>(VT_FRAME, 0.0f); }
+  float value() const { return GetField<float>(VT_VALUE, 0.0f); }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<float>(verifier, VT_FRAME) &&
+           VerifyField<float>(verifier, VT_VALUE) &&
+           verifier.EndTable();
+  }
+};
+
+struct AnimPropAnchorXBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_frame(float frame) { fbb_.AddElement<float>(AnimPropAnchorX::VT_FRAME, frame, 0.0f); }
+  void add_value(float value) { fbb_.AddElement<float>(AnimPropAnchorX::VT_VALUE, value, 0.0f); }
+  AnimPropAnchorXBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
+  AnimPropAnchorXBuilder &operator=(const AnimPropAnchorXBuilder &);
+  flatbuffers::Offset<AnimPropAnchorX> Finish() {
+    auto o = flatbuffers::Offset<AnimPropAnchorX>(fbb_.EndTable(start_, 2));
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<AnimPropAnchorX> CreateAnimPropAnchorX(flatbuffers::FlatBufferBuilder &_fbb,
+    float frame = 0.0f,
+    float value = 0.0f) {
+  AnimPropAnchorXBuilder builder_(_fbb);
+  builder_.add_value(value);
+  builder_.add_frame(frame);
+  return builder_.Finish();
+}
+
+struct AnimPropAnchorY FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum {
+    VT_FRAME = 4,
+    VT_VALUE = 6
+  };
+  float frame() const { return GetField<float>(VT_FRAME, 0.0f); }
+  float value() const { return GetField<float>(VT_VALUE, 0.0f); }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<float>(verifier, VT_FRAME) &&
+           VerifyField<float>(verifier, VT_VALUE) &&
+           verifier.EndTable();
+  }
+};
+
+struct AnimPropAnchorYBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_frame(float frame) { fbb_.AddElement<float>(AnimPropAnchorY::VT_FRAME, frame, 0.0f); }
+  void add_value(float value) { fbb_.AddElement<float>(AnimPropAnchorY::VT_VALUE, value, 0.0f); }
+  AnimPropAnchorYBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
+  AnimPropAnchorYBuilder &operator=(const AnimPropAnchorYBuilder &);
+  flatbuffers::Offset<AnimPropAnchorY> Finish() {
+    auto o = flatbuffers::Offset<AnimPropAnchorY>(fbb_.EndTable(start_, 2));
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<AnimPropAnchorY> CreateAnimPropAnchorY(flatbuffers::FlatBufferBuilder &_fbb,
+    float frame = 0.0f,
+    float value = 0.0f) {
+  AnimPropAnchorYBuilder builder_(_fbb);
+  builder_.add_value(value);
+  builder_.add_frame(frame);
+  return builder_.Finish();
+}
+
+struct AnimPropSkewX FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum {
+    VT_FRAME = 4,
+    VT_VALUE = 6
+  };
+  float frame() const { return GetField<float>(VT_FRAME, 0.0f); }
+  float value() const { return GetField<float>(VT_VALUE, 0.0f); }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<float>(verifier, VT_FRAME) &&
+           VerifyField<float>(verifier, VT_VALUE) &&
+           verifier.EndTable();
+  }
+};
+
+struct AnimPropSkewXBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_frame(float frame) { fbb_.AddElement<float>(AnimPropSkewX::VT_FRAME, frame, 0.0f); }
+  void add_value(float value) { fbb_.AddElement<float>(AnimPropSkewX::VT_VALUE, value, 0.0f); }
+  AnimPropSkewXBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
+  AnimPropSkewXBuilder &operator=(const AnimPropSkewXBuilder &);
+  flatbuffers::Offset<AnimPropSkewX> Finish() {
+    auto o = flatbuffers::Offset<AnimPropSkewX>(fbb_.EndTable(start_, 2));
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<AnimPropSkewX> CreateAnimPropSkewX(flatbuffers::FlatBufferBuilder &_fbb,
+    float frame = 0.0f,
+    float value = 0.0f) {
+  AnimPropSkewXBuilder builder_(_fbb);
+  builder_.add_value(value);
+  builder_.add_frame(frame);
+  return builder_.Finish();
+}
+
+struct AnimPropSkewY FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum {
+    VT_FRAME = 4,
+    VT_VALUE = 6
+  };
+  float frame() const { return GetField<float>(VT_FRAME, 0.0f); }
+  float value() const { return GetField<float>(VT_VALUE, 0.0f); }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<float>(verifier, VT_FRAME) &&
+           VerifyField<float>(verifier, VT_VALUE) &&
+           verifier.EndTable();
+  }
+};
+
+struct AnimPropSkewYBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_frame(float frame) { fbb_.AddElement<float>(AnimPropSkewY::VT_FRAME, frame, 0.0f); }
+  void add_value(float value) { fbb_.AddElement<float>(AnimPropSkewY::VT_VALUE, value, 0.0f); }
+  AnimPropSkewYBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
+  AnimPropSkewYBuilder &operator=(const AnimPropSkewYBuilder &);
+  flatbuffers::Offset<AnimPropSkewY> Finish() {
+    auto o = flatbuffers::Offset<AnimPropSkewY>(fbb_.EndTable(start_, 2));
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<AnimPropSkewY> CreateAnimPropSkewY(flatbuffers::FlatBufferBuilder &_fbb,
+    float frame = 0.0f,
+    float value = 0.0f) {
+  AnimPropSkewYBuilder builder_(_fbb);
+  builder_.add_value(value);
+  builder_.add_frame(frame);
+  return builder_.Finish();
 }
 
 inline bool VerifyAnyNode(flatbuffers::Verifier &verifier, const void *union_obj, AnyNode type) {
