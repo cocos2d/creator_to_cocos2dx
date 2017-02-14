@@ -1,6 +1,7 @@
 {
   "ver": "1.2.4",
   "uuid": "5ad0d74a-bf8c-454a-863d-dd0cc29a4989",
+  "rawTextureUuid": "f2755924-c358-4c68-a8ab-77cf4eafb922",
   "size": {
     "width": 128,
     "height": 256
@@ -10,6 +11,7 @@
     "button_actived.png": {
       "ver": "1.0.3",
       "uuid": "56104385-ec6f-414f-9058-bb59031a1285",
+      "rawTextureUuid": "f2755924-c358-4c68-a8ab-77cf4eafb922",
       "trimType": "auto",
       "trimThreshold": 1,
       "rotated": true,
@@ -31,6 +33,7 @@
     "button_normal.png": {
       "ver": "1.0.3",
       "uuid": "05cab481-af2e-4b0a-b1ca-f5b2b2e6a276",
+      "rawTextureUuid": "f2755924-c358-4c68-a8ab-77cf4eafb922",
       "trimType": "auto",
       "trimThreshold": 1,
       "rotated": true,
@@ -52,6 +55,7 @@
     "coin.png": {
       "ver": "1.0.3",
       "uuid": "65569a90-a7e2-40ca-8975-668819a8b139",
+      "rawTextureUuid": "f2755924-c358-4c68-a8ab-77cf4eafb922",
       "trimType": "auto",
       "trimThreshold": 1,
       "rotated": false,
@@ -73,6 +77,7 @@
     "crystal.png": {
       "ver": "1.0.3",
       "uuid": "20ad0e47-3d4d-4767-87ae-bfd6f6c99751",
+      "rawTextureUuid": "f2755924-c358-4c68-a8ab-77cf4eafb922",
       "trimType": "auto",
       "trimThreshold": 1,
       "rotated": false,
@@ -94,6 +99,7 @@
     "dialog_bg.png": {
       "ver": "1.0.3",
       "uuid": "682b7bb4-3b6c-408a-ad5d-841d454b7b48",
+      "rawTextureUuid": "f2755924-c358-4c68-a8ab-77cf4eafb922",
       "trimType": "auto",
       "trimThreshold": 1,
       "rotated": false,
@@ -115,6 +121,7 @@
     "dialog_corner.png": {
       "ver": "1.0.3",
       "uuid": "dfda78a7-959a-4c3b-af95-2538763437f4",
+      "rawTextureUuid": "f2755924-c358-4c68-a8ab-77cf4eafb922",
       "trimType": "auto",
       "trimThreshold": 1,
       "rotated": true,
@@ -136,6 +143,7 @@
     "item_bg.png": {
       "ver": "1.0.3",
       "uuid": "216290f7-e91a-4586-864a-1745b5613e44",
+      "rawTextureUuid": "f2755924-c358-4c68-a8ab-77cf4eafb922",
       "trimType": "auto",
       "trimThreshold": 1,
       "rotated": false,
@@ -157,6 +165,7 @@
     "mini_map_bg.png": {
       "ver": "1.0.3",
       "uuid": "36f9d4f3-9755-4c9c-ab54-882591384a11",
+      "rawTextureUuid": "f2755924-c358-4c68-a8ab-77cf4eafb922",
       "trimType": "auto",
       "trimThreshold": 1,
       "rotated": false,
@@ -178,6 +187,7 @@
     "user_info_panel.png": {
       "ver": "1.0.3",
       "uuid": "0a20efea-cee6-4388-9716-0622f264f6ea",
+      "rawTextureUuid": "f2755924-c358-4c68-a8ab-77cf4eafb922",
       "trimType": "auto",
       "trimThreshold": 1,
       "rotated": true,

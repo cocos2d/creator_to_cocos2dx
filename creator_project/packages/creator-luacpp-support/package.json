@@ -1,15 +1,15 @@
 {
-    "name": "creator-lua-support",
-    "version": "1.1.5",
-    "description": "Creator Legact Support for cocos2d-x Lua",
+    "name": "creator-luacpp-support",
+    "version": "1.0",
+    "description": "Creator Legact Support for cocos2d-x cpp and Lua",
     "author": "Cocos Creator",
     "main": "main.js",
     "main-menu": {
-        "i18n:MAIN_MENU.project.title/Lua Support/Setup Target Project": {
-            "message": "creator-lua-support:setup-target-project"
+        "i18n:MAIN_MENU.project.title/LuaCpp Support/Setup Target Project": {
+            "message": "creator-luacpp-support:setup-target-project"
         },
-        "i18n:MAIN_MENU.project.title/Lua Support/Build Now": {
-            "message": "creator-lua-support:build"
+        "i18n:MAIN_MENU.project.title/LuaCpp Support/Build Now": {
+            "message": "creator-luacpp-support:build"
         }
     },
     "panel": {

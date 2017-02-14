@@ -24,18 +24,18 @@ module.exports = class Project {
 
     validate() {
         if (typeof this.path !== 'string' || this.path === '') {
-            Editor.warn('[Lua Support] not set Target Project Path');
+            Editor.warn('[LuaCpp Support] not set Target Project Path');
             return false;
         }
 
         try {
             let stat = Fs.statSync(this.path);
             if (!stat.isDirectory()) {
-                Editor.warn('[Lua Support] ' + this.path + ' is not directory');
+                Editor.warn('[LuaCpp Support] ' + this.path + ' is not directory');
                 return false;
             }
         } catch (e) {
-            Editor.warn('[Lua Support] invalid path: ' + this.path);
+            Editor.warn('[LuaCpp Support] invalid path: ' + this.path);
             return false;
         }
 

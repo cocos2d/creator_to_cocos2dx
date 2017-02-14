@@ -8,12 +8,12 @@ const Fs = require('fs');
 const Path = require('path');
 const Electron = require('electron');
 
-const Project = require(Editor.url('packages://creator-lua-support/core/Project.js'));
+const Project = require(Editor.url('packages://creator-luacpp-support/core/Project.js'));
 
-const styleUrl = Editor.url('packages://creator-lua-support/panels/style.css');
+const styleUrl = Editor.url('packages://creator-luacpp-support/panels/style.css');
 const style = Fs.readFileSync(styleUrl);
 
-const templateUrl = Editor.url('packages://creator-lua-support/panels/setup-project-panel.html');
+const templateUrl = Editor.url('packages://creator-luacpp-support/panels/setup-project-panel.html');
 const template = Fs.readFileSync(templateUrl);
 
 Editor.Panel.extend({
@@ -79,12 +79,12 @@ Editor.Panel.extend({
 
                 _onBuildClick(event) {
                     event.stopPropagation();
-                    Editor.Ipc.sendToMain('creator-lua-support:build', 'ui');
+                    Editor.Ipc.sendToMain('creator-luacpp-support:build', 'ui');
                 },
 
                 _onSetupClick(event) {
                     event.stopPropagation();
-                    Editor.Panel.close('creator-lua-support');
+                    Editor.Panel.close('creator-luacpp-support');
                 }
             }
         });
@@ -100,7 +100,7 @@ Editor.Panel.extend({
     },
 
     messages: {
-        'creator-lua-support:state-changed'(event, state, progress) {
+        'creator-luacpp-support:state-changed'(event, state, progress) {
             this._stateChanged(state, progress);
         }
     }
