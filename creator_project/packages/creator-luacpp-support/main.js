@@ -69,23 +69,23 @@ function _checkProject(reason) {
 
 function _build(reason) {
     if (_buildState !== 'sleep' && _buildState !== 'finish') {
-        Editor.warn('[Lua Support] Building in progress');
+        Editor.warn('[LuaCpp Support] Building in progress');
         return;
     }
 
     let project = _checkProject(reason);
     if (!project) return;
 
-    Editor.Ipc.sendToAll('creator-lua-support:state-changed', 'start', 0);
+    Editor.Ipc.sendToAll('creator-luacpp-support:state-changed', 'start', 0);
 
-    let workerUrl = 'packages://creator-lua-support/core/BuildWorker';
-    _runWorker(workerUrl, 'creator-lua-support:run-build-worker', project);
+    let workerUrl = 'packages://creator-luacpp-support/core/BuildWorker';
+    _runWorker(workerUrl, 'creator-luacpp-support:run-build-worker', project);
 }
 
 module.exports = {
     load() {
         _fetchVersion();
-        Editor.log('[Lua Support] version ' + PACKAGE_VERSION);
+        Editor.log('[LuaCPP Support] version ' + PACKAGE_VERSION);
     },
 
     unload() {
@@ -110,9 +110,9 @@ module.exports = {
             }
         },
 
-        'creator-lua-support:state-changed'(event, state, progress) {
+        'creator-luacpp-support:state-changed'(event, state, progress) {
             _buildState = state;
-            Editor.Ipc.sendToWins('creator-lua-support:state-changed', state, progress);
+            Editor.Ipc.sendToWins('creator-luacpp-support:state-changed', state, progress);
         }
     }
 };

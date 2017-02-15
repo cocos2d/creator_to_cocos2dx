@@ -14,7 +14,7 @@ const {WorkerBase, registerWorker} = require('./WorkerBase');
 
 class BuildWorker extends WorkerBase {
     run(state, callback) {
-        Editor.Ipc.sendToAll('creator-lua-support:state-changed', 'start', 0);
+        Editor.Ipc.sendToAll('creator-luacpp-support:state-changed', 'start', 0);
         Utils.log('[creator-luacpp-support] build start');
 
         this._callback = callback;
@@ -38,7 +38,7 @@ class BuildWorker extends WorkerBase {
         }).catch((err) => {
             Utils.log(err);
         }).then(() => {
-            Editor.Ipc.sendToAll('creator-lua-support:state-changed', 'finish', 100);
+            Editor.Ipc.sendToAll('creator-luacpp-support:state-changed', 'finish', 100);
             this._callback();
 
             // remove generated .json/.ccreator files
@@ -118,7 +118,13 @@ class BuildWorker extends WorkerBase {
         // copy .ccreator
         this._copyTo(Constants.CCREATOR_PATH, resdst, ['.ccreator']);
         // copy reader
+        // should exclude binding codes for c++ project
         Fs.copySync(Constants.READER_PATH, classes);
+        if (!isLuaProject)
+        {
+            Fs.unlink(Path.join(classes, 'CreatorReaderBinding.h'));
+            Fs.unlink(Path.join(classes, 'CreatorReaderBinding.cpp'));
+        }
 
         // copy resources
         let exts = ['.png', '.ttf', '.fnt', '.plist', '.atlas', '.tmx', '.json'];

@@ -7,7 +7,7 @@ const Path = require('path');
 
 class Constants{};
 
-Constants.PACKAGE_NAME = 'creator-lua-support';
+Constants.PACKAGE_NAME = 'creator-luacpp-support';
 // root of the this plugin 
 Constants.PACKAGE_PATH = Editor.url('packages://' + Constants.PACKAGE_NAME + '/');
 // root of creator project

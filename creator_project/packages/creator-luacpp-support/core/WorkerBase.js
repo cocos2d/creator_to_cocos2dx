@@ -16,7 +16,7 @@ class WorkerBase {
 
     _updateProgress(step) {
         this._progress += step;
-        Editor.Ipc.sendToAll('creator-lua-support:state-changed',
+        Editor.Ipc.sendToAll('creator-luacpp-support:state-changed',
             'progress ' + Math.floor(this._progress) + '%',
             this._progress);
     }
@@ -25,7 +25,7 @@ class WorkerBase {
         let current = new Date();
         if (this._debug) {
             let times = (current.getTime() - this._time.getTime()) / 1000;
-            Editor.log('[creator-lua-support] [' + tag + '] ' + times.toString() + 's');
+            Editor.log('[creator-luacpp-support] [' + tag + '] ' + times.toString() + 's');
         }
         this._time = current;
     }
@@ -33,7 +33,7 @@ class WorkerBase {
 
 
 function registerWorker(workerClass, runEvent) {
-    Electron.ipcRenderer.on('creator-lua-support:' + runEvent, (event, state, opts) => {
+    Electron.ipcRenderer.on('creator-luacpp-support:' + runEvent, (event, state, opts) => {
         let worker = new workerClass(opts);
         worker.run(state, () => {
             event.reply();
