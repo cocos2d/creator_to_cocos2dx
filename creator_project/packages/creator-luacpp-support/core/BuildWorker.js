@@ -118,7 +118,13 @@ class BuildWorker extends WorkerBase {
         // copy .ccreator
         this._copyTo(Constants.CCREATOR_PATH, resdst, ['.ccreator']);
         // copy reader
+        // should exclude binding codes for c++ project
         Fs.copySync(Constants.READER_PATH, classes);
+        if (!isLuaProject)
+        {
+            Fs.unlink(Path.join(classes, 'CreatorReaderBinding.h'));
+            Fs.unlink(Path.join(classes, 'CreatorReaderBinding.cpp'));
+        }
 
         // copy resources
         let exts = ['.png', '.ttf', '.fnt', '.plist', '.atlas', '.tmx', '.json'];
