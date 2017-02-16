@@ -78,7 +78,7 @@ table Node
     name:string;
     anchorPoint:Vec2;
     cascadeOpacityEnabled:bool = true;
-    color:RGB;
+    color:ColorRGB;
     globalZOrder:float = 0;
     localZOrder:int = 0;
     opacity:ubyte = 255;
@@ -174,7 +174,7 @@ table ScrollView
     node:Node;
     backgroundImage:string;                         // it is a spriteFrameName
     backgroundImageScale9Enabled:bool;
-    backgroundImageColor:RGB;
+    backgroundImageColor:ColorRGB;
     direction:ScrollViewDirection;
     bounceEnabled:bool;
     innerContainerSize:Size;
@@ -188,10 +188,10 @@ table EditBox
     inputFlag:EditBoxInputFlag;
     inputMode:EditBoxInputMode;
     fontSize:int;
-    fontColor:RGB;
+    fontColor:ColorRGB;
     placeholder:string;
     placeholderFontSize:int;
-    placeholderFontColor:RGB;
+    placeholderFontColor:ColorRGB;
     maxLength:int;
     text:string;
 }
@@ -394,14 +394,15 @@ struct Rect
     h:float;
 }
 
-struct RGB
+// ColorRGB instead of RGB to avoid conflicts in windows, wince RGB is defined as a macro
+struct ColorRGB
 {
     r:ubyte;
     g:ubyte;
     b:ubyte;
 }
 
-struct RGBA
+struct ColorRGBA
 {
     r:ubyte;
     g:ubyte;
