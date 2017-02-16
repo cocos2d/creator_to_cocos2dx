@@ -86,9 +86,9 @@ struct Size;
 
 struct Rect;
 
-struct RGB;
+struct ColorRGB;
 
-struct RGBA;
+struct ColorRGBA;
 
 enum FontType {
   FontType_System = 0,
@@ -425,25 +425,25 @@ MANUALLY_ALIGNED_STRUCT(4) Rect FLATBUFFERS_FINAL_CLASS {
 };
 STRUCT_END(Rect, 16);
 
-MANUALLY_ALIGNED_STRUCT(1) RGB FLATBUFFERS_FINAL_CLASS {
+MANUALLY_ALIGNED_STRUCT(1) ColorRGB FLATBUFFERS_FINAL_CLASS {
  private:
   uint8_t r_;
   uint8_t g_;
   uint8_t b_;
 
  public:
-  RGB() { memset(this, 0, sizeof(RGB)); }
-  RGB(const RGB &_o) { memcpy(this, &_o, sizeof(RGB)); }
-  RGB(uint8_t _r, uint8_t _g, uint8_t _b)
+  ColorRGB() { memset(this, 0, sizeof(ColorRGB)); }
+  ColorRGB(const ColorRGB &_o) { memcpy(this, &_o, sizeof(ColorRGB)); }
+  ColorRGB(uint8_t _r, uint8_t _g, uint8_t _b)
     : r_(flatbuffers::EndianScalar(_r)), g_(flatbuffers::EndianScalar(_g)), b_(flatbuffers::EndianScalar(_b)) { }
 
   uint8_t r() const { return flatbuffers::EndianScalar(r_); }
   uint8_t g() const { return flatbuffers::EndianScalar(g_); }
   uint8_t b() const { return flatbuffers::EndianScalar(b_); }
 };
-STRUCT_END(RGB, 3);
+STRUCT_END(ColorRGB, 3);
 
-MANUALLY_ALIGNED_STRUCT(1) RGBA FLATBUFFERS_FINAL_CLASS {
+MANUALLY_ALIGNED_STRUCT(1) ColorRGBA FLATBUFFERS_FINAL_CLASS {
  private:
   uint8_t r_;
   uint8_t g_;
@@ -451,9 +451,9 @@ MANUALLY_ALIGNED_STRUCT(1) RGBA FLATBUFFERS_FINAL_CLASS {
   uint8_t a_;
 
  public:
-  RGBA() { memset(this, 0, sizeof(RGBA)); }
-  RGBA(const RGBA &_o) { memcpy(this, &_o, sizeof(RGBA)); }
-  RGBA(uint8_t _r, uint8_t _g, uint8_t _b, uint8_t _a)
+  ColorRGBA() { memset(this, 0, sizeof(ColorRGBA)); }
+  ColorRGBA(const ColorRGBA &_o) { memcpy(this, &_o, sizeof(ColorRGBA)); }
+  ColorRGBA(uint8_t _r, uint8_t _g, uint8_t _b, uint8_t _a)
     : r_(flatbuffers::EndianScalar(_r)), g_(flatbuffers::EndianScalar(_g)), b_(flatbuffers::EndianScalar(_b)), a_(flatbuffers::EndianScalar(_a)) { }
 
   uint8_t r() const { return flatbuffers::EndianScalar(r_); }
@@ -461,7 +461,7 @@ MANUALLY_ALIGNED_STRUCT(1) RGBA FLATBUFFERS_FINAL_CLASS {
   uint8_t b() const { return flatbuffers::EndianScalar(b_); }
   uint8_t a() const { return flatbuffers::EndianScalar(a_); }
 };
-STRUCT_END(RGBA, 4);
+STRUCT_END(ColorRGBA, 4);
 
 struct SceneGraph FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   enum {
@@ -744,7 +744,7 @@ struct Node FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   const flatbuffers::String *name() const { return GetPointer<const flatbuffers::String *>(VT_NAME); }
   const Vec2 *anchorPoint() const { return GetStruct<const Vec2 *>(VT_ANCHORPOINT); }
   bool cascadeOpacityEnabled() const { return GetField<uint8_t>(VT_CASCADEOPACITYENABLED, 1) != 0; }
-  const RGB *color() const { return GetStruct<const RGB *>(VT_COLOR); }
+  const ColorRGB *color() const { return GetStruct<const ColorRGB *>(VT_COLOR); }
   float globalZOrder() const { return GetField<float>(VT_GLOBALZORDER, 0.0f); }
   int32_t localZOrder() const { return GetField<int32_t>(VT_LOCALZORDER, 0); }
   uint8_t opacity() const { return GetField<uint8_t>(VT_OPACITY, 255); }
@@ -766,7 +766,7 @@ struct Node FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
            verifier.Verify(name()) &&
            VerifyField<Vec2>(verifier, VT_ANCHORPOINT) &&
            VerifyField<uint8_t>(verifier, VT_CASCADEOPACITYENABLED) &&
-           VerifyField<RGB>(verifier, VT_COLOR) &&
+           VerifyField<ColorRGB>(verifier, VT_COLOR) &&
            VerifyField<float>(verifier, VT_GLOBALZORDER) &&
            VerifyField<int32_t>(verifier, VT_LOCALZORDER) &&
            VerifyField<uint8_t>(verifier, VT_OPACITY) &&
@@ -793,7 +793,7 @@ struct NodeBuilder {
   void add_name(flatbuffers::Offset<flatbuffers::String> name) { fbb_.AddOffset(Node::VT_NAME, name); }
   void add_anchorPoint(const Vec2 *anchorPoint) { fbb_.AddStruct(Node::VT_ANCHORPOINT, anchorPoint); }
   void add_cascadeOpacityEnabled(bool cascadeOpacityEnabled) { fbb_.AddElement<uint8_t>(Node::VT_CASCADEOPACITYENABLED, static_cast<uint8_t>(cascadeOpacityEnabled), 1); }
-  void add_color(const RGB *color) { fbb_.AddStruct(Node::VT_COLOR, color); }
+  void add_color(const ColorRGB *color) { fbb_.AddStruct(Node::VT_COLOR, color); }
   void add_globalZOrder(float globalZOrder) { fbb_.AddElement<float>(Node::VT_GLOBALZORDER, globalZOrder, 0.0f); }
   void add_localZOrder(int32_t localZOrder) { fbb_.AddElement<int32_t>(Node::VT_LOCALZORDER, localZOrder, 0); }
   void add_opacity(uint8_t opacity) { fbb_.AddElement<uint8_t>(Node::VT_OPACITY, opacity, 255); }
@@ -821,7 +821,7 @@ inline flatbuffers::Offset<Node> CreateNode(flatbuffers::FlatBufferBuilder &_fbb
     flatbuffers::Offset<flatbuffers::String> name = 0,
     const Vec2 *anchorPoint = 0,
     bool cascadeOpacityEnabled = true,
-    const RGB *color = 0,
+    const ColorRGB *color = 0,
     float globalZOrder = 0.0f,
     int32_t localZOrder = 0,
     uint8_t opacity = 255,
@@ -864,7 +864,7 @@ inline flatbuffers::Offset<Node> CreateNodeDirect(flatbuffers::FlatBufferBuilder
     const char *name = nullptr,
     const Vec2 *anchorPoint = 0,
     bool cascadeOpacityEnabled = true,
-    const RGB *color = 0,
+    const ColorRGB *color = 0,
     float globalZOrder = 0.0f,
     int32_t localZOrder = 0,
     uint8_t opacity = 255,
@@ -1376,7 +1376,7 @@ struct ScrollView FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   const Node *node() const { return GetPointer<const Node *>(VT_NODE); }
   const flatbuffers::String *backgroundImage() const { return GetPointer<const flatbuffers::String *>(VT_BACKGROUNDIMAGE); }
   bool backgroundImageScale9Enabled() const { return GetField<uint8_t>(VT_BACKGROUNDIMAGESCALE9ENABLED, 0) != 0; }
-  const RGB *backgroundImageColor() const { return GetStruct<const RGB *>(VT_BACKGROUNDIMAGECOLOR); }
+  const ColorRGB *backgroundImageColor() const { return GetStruct<const ColorRGB *>(VT_BACKGROUNDIMAGECOLOR); }
   ScrollViewDirection direction() const { return static_cast<ScrollViewDirection>(GetField<int8_t>(VT_DIRECTION, 0)); }
   bool bounceEnabled() const { return GetField<uint8_t>(VT_BOUNCEENABLED, 0) != 0; }
   const Size *innerContainerSize() const { return GetStruct<const Size *>(VT_INNERCONTAINERSIZE); }
@@ -1387,7 +1387,7 @@ struct ScrollView FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
            VerifyField<flatbuffers::uoffset_t>(verifier, VT_BACKGROUNDIMAGE) &&
            verifier.Verify(backgroundImage()) &&
            VerifyField<uint8_t>(verifier, VT_BACKGROUNDIMAGESCALE9ENABLED) &&
-           VerifyField<RGB>(verifier, VT_BACKGROUNDIMAGECOLOR) &&
+           VerifyField<ColorRGB>(verifier, VT_BACKGROUNDIMAGECOLOR) &&
            VerifyField<int8_t>(verifier, VT_DIRECTION) &&
            VerifyField<uint8_t>(verifier, VT_BOUNCEENABLED) &&
            VerifyField<Size>(verifier, VT_INNERCONTAINERSIZE) &&
@@ -1401,7 +1401,7 @@ struct ScrollViewBuilder {
   void add_node(flatbuffers::Offset<Node> node) { fbb_.AddOffset(ScrollView::VT_NODE, node); }
   void add_backgroundImage(flatbuffers::Offset<flatbuffers::String> backgroundImage) { fbb_.AddOffset(ScrollView::VT_BACKGROUNDIMAGE, backgroundImage); }
   void add_backgroundImageScale9Enabled(bool backgroundImageScale9Enabled) { fbb_.AddElement<uint8_t>(ScrollView::VT_BACKGROUNDIMAGESCALE9ENABLED, static_cast<uint8_t>(backgroundImageScale9Enabled), 0); }
-  void add_backgroundImageColor(const RGB *backgroundImageColor) { fbb_.AddStruct(ScrollView::VT_BACKGROUNDIMAGECOLOR, backgroundImageColor); }
+  void add_backgroundImageColor(const ColorRGB *backgroundImageColor) { fbb_.AddStruct(ScrollView::VT_BACKGROUNDIMAGECOLOR, backgroundImageColor); }
   void add_direction(ScrollViewDirection direction) { fbb_.AddElement<int8_t>(ScrollView::VT_DIRECTION, static_cast<int8_t>(direction), 0); }
   void add_bounceEnabled(bool bounceEnabled) { fbb_.AddElement<uint8_t>(ScrollView::VT_BOUNCEENABLED, static_cast<uint8_t>(bounceEnabled), 0); }
   void add_innerContainerSize(const Size *innerContainerSize) { fbb_.AddStruct(ScrollView::VT_INNERCONTAINERSIZE, innerContainerSize); }
@@ -1417,7 +1417,7 @@ inline flatbuffers::Offset<ScrollView> CreateScrollView(flatbuffers::FlatBufferB
     flatbuffers::Offset<Node> node = 0,
     flatbuffers::Offset<flatbuffers::String> backgroundImage = 0,
     bool backgroundImageScale9Enabled = false,
-    const RGB *backgroundImageColor = 0,
+    const ColorRGB *backgroundImageColor = 0,
     ScrollViewDirection direction = ScrollViewDirection_None,
     bool bounceEnabled = false,
     const Size *innerContainerSize = 0) {
@@ -1436,7 +1436,7 @@ inline flatbuffers::Offset<ScrollView> CreateScrollViewDirect(flatbuffers::FlatB
     flatbuffers::Offset<Node> node = 0,
     const char *backgroundImage = nullptr,
     bool backgroundImageScale9Enabled = false,
-    const RGB *backgroundImageColor = 0,
+    const ColorRGB *backgroundImageColor = 0,
     ScrollViewDirection direction = ScrollViewDirection_None,
     bool bounceEnabled = false,
     const Size *innerContainerSize = 0) {
@@ -1464,10 +1464,10 @@ struct EditBox FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   EditBoxInputFlag inputFlag() const { return static_cast<EditBoxInputFlag>(GetField<int8_t>(VT_INPUTFLAG, 0)); }
   EditBoxInputMode inputMode() const { return static_cast<EditBoxInputMode>(GetField<int8_t>(VT_INPUTMODE, 0)); }
   int32_t fontSize() const { return GetField<int32_t>(VT_FONTSIZE, 0); }
-  const RGB *fontColor() const { return GetStruct<const RGB *>(VT_FONTCOLOR); }
+  const ColorRGB *fontColor() const { return GetStruct<const ColorRGB *>(VT_FONTCOLOR); }
   const flatbuffers::String *placeholder() const { return GetPointer<const flatbuffers::String *>(VT_PLACEHOLDER); }
   int32_t placeholderFontSize() const { return GetField<int32_t>(VT_PLACEHOLDERFONTSIZE, 0); }
-  const RGB *placeholderFontColor() const { return GetStruct<const RGB *>(VT_PLACEHOLDERFONTCOLOR); }
+  const ColorRGB *placeholderFontColor() const { return GetStruct<const ColorRGB *>(VT_PLACEHOLDERFONTCOLOR); }
   int32_t maxLength() const { return GetField<int32_t>(VT_MAXLENGTH, 0); }
   const flatbuffers::String *text() const { return GetPointer<const flatbuffers::String *>(VT_TEXT); }
   bool Verify(flatbuffers::Verifier &verifier) const {
@@ -1480,11 +1480,11 @@ struct EditBox FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
            VerifyField<int8_t>(verifier, VT_INPUTFLAG) &&
            VerifyField<int8_t>(verifier, VT_INPUTMODE) &&
            VerifyField<int32_t>(verifier, VT_FONTSIZE) &&
-           VerifyField<RGB>(verifier, VT_FONTCOLOR) &&
+           VerifyField<ColorRGB>(verifier, VT_FONTCOLOR) &&
            VerifyField<flatbuffers::uoffset_t>(verifier, VT_PLACEHOLDER) &&
            verifier.Verify(placeholder()) &&
            VerifyField<int32_t>(verifier, VT_PLACEHOLDERFONTSIZE) &&
-           VerifyField<RGB>(verifier, VT_PLACEHOLDERFONTCOLOR) &&
+           VerifyField<ColorRGB>(verifier, VT_PLACEHOLDERFONTCOLOR) &&
            VerifyField<int32_t>(verifier, VT_MAXLENGTH) &&
            VerifyField<flatbuffers::uoffset_t>(verifier, VT_TEXT) &&
            verifier.Verify(text()) &&
@@ -1501,10 +1501,10 @@ struct EditBoxBuilder {
   void add_inputFlag(EditBoxInputFlag inputFlag) { fbb_.AddElement<int8_t>(EditBox::VT_INPUTFLAG, static_cast<int8_t>(inputFlag), 0); }
   void add_inputMode(EditBoxInputMode inputMode) { fbb_.AddElement<int8_t>(EditBox::VT_INPUTMODE, static_cast<int8_t>(inputMode), 0); }
   void add_fontSize(int32_t fontSize) { fbb_.AddElement<int32_t>(EditBox::VT_FONTSIZE, fontSize, 0); }
-  void add_fontColor(const RGB *fontColor) { fbb_.AddStruct(EditBox::VT_FONTCOLOR, fontColor); }
+  void add_fontColor(const ColorRGB *fontColor) { fbb_.AddStruct(EditBox::VT_FONTCOLOR, fontColor); }
   void add_placeholder(flatbuffers::Offset<flatbuffers::String> placeholder) { fbb_.AddOffset(EditBox::VT_PLACEHOLDER, placeholder); }
   void add_placeholderFontSize(int32_t placeholderFontSize) { fbb_.AddElement<int32_t>(EditBox::VT_PLACEHOLDERFONTSIZE, placeholderFontSize, 0); }
-  void add_placeholderFontColor(const RGB *placeholderFontColor) { fbb_.AddStruct(EditBox::VT_PLACEHOLDERFONTCOLOR, placeholderFontColor); }
+  void add_placeholderFontColor(const ColorRGB *placeholderFontColor) { fbb_.AddStruct(EditBox::VT_PLACEHOLDERFONTCOLOR, placeholderFontColor); }
   void add_maxLength(int32_t maxLength) { fbb_.AddElement<int32_t>(EditBox::VT_MAXLENGTH, maxLength, 0); }
   void add_text(flatbuffers::Offset<flatbuffers::String> text) { fbb_.AddOffset(EditBox::VT_TEXT, text); }
   EditBoxBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
@@ -1522,10 +1522,10 @@ inline flatbuffers::Offset<EditBox> CreateEditBox(flatbuffers::FlatBufferBuilder
     EditBoxInputFlag inputFlag = EditBoxInputFlag_Password,
     EditBoxInputMode inputMode = EditBoxInputMode_Any,
     int32_t fontSize = 0,
-    const RGB *fontColor = 0,
+    const ColorRGB *fontColor = 0,
     flatbuffers::Offset<flatbuffers::String> placeholder = 0,
     int32_t placeholderFontSize = 0,
-    const RGB *placeholderFontColor = 0,
+    const ColorRGB *placeholderFontColor = 0,
     int32_t maxLength = 0,
     flatbuffers::Offset<flatbuffers::String> text = 0) {
   EditBoxBuilder builder_(_fbb);
@@ -1551,10 +1551,10 @@ inline flatbuffers::Offset<EditBox> CreateEditBoxDirect(flatbuffers::FlatBufferB
     EditBoxInputFlag inputFlag = EditBoxInputFlag_Password,
     EditBoxInputMode inputMode = EditBoxInputMode_Any,
     int32_t fontSize = 0,
-    const RGB *fontColor = 0,
+    const ColorRGB *fontColor = 0,
     const char *placeholder = nullptr,
     int32_t placeholderFontSize = 0,
-    const RGB *placeholderFontColor = 0,
+    const ColorRGB *placeholderFontColor = 0,
     int32_t maxLength = 0,
     const char *text = nullptr) {
   return CreateEditBox(_fbb, node, backgroundImage ? _fbb.CreateString(backgroundImage) : 0, returnType, inputFlag, inputMode, fontSize, fontColor, placeholder ? _fbb.CreateString(placeholder) : 0, placeholderFontSize, placeholderFontColor, maxLength, text ? _fbb.CreateString(text) : 0);
@@ -2355,11 +2355,11 @@ struct AnimPropColor FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     VT_VALUE = 6
   };
   float frame() const { return GetField<float>(VT_FRAME, 0.0f); }
-  const RGBA *value() const { return GetStruct<const RGBA *>(VT_VALUE); }
+  const ColorRGBA *value() const { return GetStruct<const ColorRGBA *>(VT_VALUE); }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<float>(verifier, VT_FRAME) &&
-           VerifyField<RGBA>(verifier, VT_VALUE) &&
+           VerifyField<ColorRGBA>(verifier, VT_VALUE) &&
            verifier.EndTable();
   }
 };
@@ -2368,7 +2368,7 @@ struct AnimPropColorBuilder {
   flatbuffers::FlatBufferBuilder &fbb_;
   flatbuffers::uoffset_t start_;
   void add_frame(float frame) { fbb_.AddElement<float>(AnimPropColor::VT_FRAME, frame, 0.0f); }
-  void add_value(const RGBA *value) { fbb_.AddStruct(AnimPropColor::VT_VALUE, value); }
+  void add_value(const ColorRGBA *value) { fbb_.AddStruct(AnimPropColor::VT_VALUE, value); }
   AnimPropColorBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
   AnimPropColorBuilder &operator=(const AnimPropColorBuilder &);
   flatbuffers::Offset<AnimPropColor> Finish() {
@@ -2379,7 +2379,7 @@ struct AnimPropColorBuilder {
 
 inline flatbuffers::Offset<AnimPropColor> CreateAnimPropColor(flatbuffers::FlatBufferBuilder &_fbb,
     float frame = 0.0f,
-    const RGBA *value = 0) {
+    const ColorRGBA *value = 0) {
   AnimPropColorBuilder builder_(_fbb);
   builder_.add_value(value);
   builder_.add_frame(frame);
