@@ -112,8 +112,8 @@ class BuildWorker extends WorkerBase {
         classes = Path.join(classes, 'reader');
 
         // remove previous reader and resources first
-        Del.sync(resdst);
-        Del.sync(classes);
+        Del.sync(resdst, {force: true});
+        Del.sync(classes, {force: true});
 
         // copy .ccreator
         this._copyTo(Constants.CCREATOR_PATH, resdst, ['.ccreator']);
