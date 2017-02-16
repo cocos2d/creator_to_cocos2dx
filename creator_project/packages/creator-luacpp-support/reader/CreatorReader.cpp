@@ -375,7 +375,7 @@ void CreatorReader::parseNode(cocos2d::Node* node, const buffers::Node* nodeBuff
     //name:string;
     //anchorPoint:Vec2;
     //cascadeOpacityEnabled:bool = true;
-    //color:RGB;
+    //color:ColorRGB;
     //globalZorder:int = 0;
     //localZorder:int = 0;
     //opacity:ubyte = 255;
@@ -631,7 +631,7 @@ void CreatorReader::parseScrollView(cocos2d::ui::ScrollView* scrollView, const b
 
     // backgroundImage:string;
     // backgroundImageScale9Enabled:bool;
-    // backgroundImageColor:RGB;
+    // backgroundImageColor:ColorRGB;
     // direction:ScrollViewDirection;
     // bounceEnabled:bool;
     // innerContainerSize:Size;
@@ -690,10 +690,10 @@ void CreatorReader::parseEditBox(cocos2d::ui::EditBox* editBox, const buffers::E
     // inputFlag:EditBoxInputFlag;
     // inputMode:EditBoxInputMode;
     // fontSize:int;
-    // fontColor:RGB;
+    // fontColor:ColorRGB;
     // placeholder:string;
     // placeholderFontSize:int;
-    // placeholderFontColor:RGB;
+    // placeholderFontColor:ColorRGB;
     // maxLength:int;
     // text:string;
     const auto& returnType = editBoxBuffer->returnType();

@@ -330,7 +330,7 @@ table AnimPropHeight
 table AnimPropColor
 {
     frame:float;
-    value:RGBA;
+    value:ColorRGBA;
 }
 
 table AnimPropOpacity
