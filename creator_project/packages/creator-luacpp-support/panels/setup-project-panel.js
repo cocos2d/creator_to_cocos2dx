@@ -23,12 +23,12 @@ Editor.Panel.extend({
     ready() {
         let opts = Editor.argv.panelArgv;
         let profileProject = this.profiles.project;
-        let project = new Project(profileProject);
 
-        let vm = this._vm = new window.Vue({
+        let vm;
+        window.vm = vm = this._vm = new window.Vue({
             el: this.shadowRoot,
             data: {
-                project: project,
+                profileProject: profileProject,
                 task: '',
                 buildState: 'sleep',
                 buildProgress: 0,
@@ -39,7 +39,7 @@ Editor.Panel.extend({
                 project: {
                     handler(val) {
                         if (!profileProject.save) return;
-                        project.dumpState(profileProject);
+
                         profileProject.save();
                     },
                     deep: true
@@ -50,47 +50,44 @@ Editor.Panel.extend({
                 _onChooseDistPathClick(event) {
                     event.stopPropagation();
                     let res = Editor.Dialog.openFile({
-                        defaultPath: this.project.path,
+                        defaultPath: this.profileProject.data.path,
                         properties: ['openDirectory']
                     });
                     if (res && res[0]) {
-                        this.project.path = res[0];
+                        this.profileProject.data.path = res[0];
+                        this.profileProject.save();
                     }
                 },
 
                 _onShowInFinderClick(event) {
                     event.stopPropagation();
-                    if (!Fs.existsSync(this.project.path)) {
-                        Editor.warn('%s not exists!', this.project.path);
+                    if (!Fs.existsSync(this.profileProject.data.path)) {
+                        Editor.warn('%s not exists!', this.profileProject.data.path);
                         return;
                     }
-                    Electron.shell.showItemInFolder(this.project.path);
+                    Electron.shell.showItemInFolder(this.profileProject.data.path);
                     Electron.shell.beep();
-                },
-
-                _onSelectAllCheckedChanged(event) {
-                    event.stopPropagation();
-                    if (event.detail.value) {
-                        this.project.scenes.forEach((scene) => {
-                            scene.checked = true;
-                        });
-                    }
                 },
 
                 _onBuildClick(event) {
                     event.stopPropagation();
-                    Editor.Ipc.sendToMain('creator-luacpp-support:build', 'ui');
+                    Editor.Ipc.sendToMain('creator-luacpp-support:build', {
+                        reason: 'ui',
+                        profile: this.profileProject.data
+                    });
                 },
 
                 _onSetupClick(event) {
                     event.stopPropagation();
                     Editor.Panel.close('creator-luacpp-support');
+                },
+
+                _onChangeAutoBuild(event) {
+                    event.stopPropagation();
+                    this.profileProject.data.autoBuild = event.target.value;
+                    this.profileProject.save();
                 }
             }
-        });
-
-        Editor.assetdb.queryAssets('db://assets/**/*', 'scene', (err, scenes) => {
-            vm.project.setScenes(scenes);
         });
     },
 

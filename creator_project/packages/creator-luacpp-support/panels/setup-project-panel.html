@@ -15,45 +15,14 @@
 <section>
     <ui-prop name="Project Path">
         <div class="flex-1 layout horizontal center">
-            <ui-input class="flex-2" v-value="project.path"></ui-input>
+            <ui-input class="flex-2" v-value="profileProject.data.path"></ui-input>
             <ui-button class="tiny" v-on:confirm="_onChooseDistPathClick">...</ui-button>
             <ui-button class="tiny" v-on:confirm="_onShowInFinderClick">Open</ui-button>
         </div>
     </ui-prop>
 
-    <ui-prop name="Start Scene">
-        <ui-select class="flex-1" v-value="project.startSceneUuid">
-            <template v-for="item in project.scenes">
-                <option v-if="item.checked" v-value="item.uuid">{{item.url}}</option>
-            </template>
-        </ui-select>
-    </ui-prop>
-
-    <ui-prop name="Scenes" auto-height>
-        <div class="flex-1 layout center fix-width">
-            <ui-box-container class="shadow height-limited">
-
-                <li class="layout horizontal center" v-for="item in project.scenes">
-                    <ui-checkbox class="flex-1"
-                        v-disabled="project.selectAllScenes||project.startSceneUuid===item.uuid||item.url.startsWith('db://assets/resources/')"
-                        v-value="item.checked"
-                    >
-                        {{item.url}}
-                    </ui-checkbox>
-                    <i class="fa fa-star" v-if="project.startSceneUuid===item.uuid"></i>
-                </li>
-
-            </ui-box-container>
-            <ui-checkbox v-on:confirm="_onSelectAllCheckedChanged"
-                v-value="project.selectAllScenes"
-                style="margin-top: 4px;">
-                Select All
-            </ui-checkbox>
-        </div>
-    </ui-prop>
-
     <ui-prop name="Auto Build">
-        <ui-checkbox class="flex-1" v-value="project.autoBuild">
+        <ui-checkbox class="flex-1" v-value="profileProject.data.autoBuild" v-on:confirm="_onChangeAutoBuild">
             Auto Build After Scene Saved
         </ui-checkbox>
     </ui-prop>
