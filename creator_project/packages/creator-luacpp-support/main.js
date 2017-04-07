@@ -42,38 +42,37 @@ function _runWorker(url, message, project) {
     }, DEBUG_WORKER);
 }
 
-function _checkProject(reason) {
-    // workaround for creator 1.3
-    const Constants = require('./core/Constants');
-    let state = Editor.Profile.load(Constants.PACKAGE_NAME, 'project', Constants.PROFILE_DEFAULTS);
-    let project = new Project(state);
+function _checkProject(opt) {
+    let project = new Project(opt.profile);
 
     if (project.validate()) {
         return project;
     } else {
-        if (reason !== 'scene:saved') {
+        if (opt.reason !== 'scene:saved') {
             Editor.Dialog.messageBox({
               type: 'warning',
               buttons: [Editor.T('MESSAGE.ok')],
-              title: 'Warning - Lua Support',
+              title: 'Warning - LuaCpp Support',
               message: 'Please setup Target Project first',
               noLink: true,
             });
         } else {
-            Editor.warn('[Lua Support] Please setup Target Project first');
+            Editor.warn('[LuaCpp Support] Please setup Target Project first');
         }
     }
 
     return null;
 }
 
-function _build(reason) {
+// opt = { reason: xxx, profile: yyy}
+// 'profile' may be null
+function _build(opt) {
     if (_buildState !== 'sleep' && _buildState !== 'finish') {
         Editor.warn('[LuaCpp Support] Building in progress');
         return;
     }
 
-    let project = _checkProject(reason);
+    let project = _checkProject(opt);
     if (!project) return;
 
     Editor.Ipc.sendToAll('creator-luacpp-support:state-changed', 'start', 0);
@@ -97,16 +96,18 @@ module.exports = {
             Editor.Panel.open(Constants.PACKAGE_NAME, {version: PACKAGE_VERSION});
         },
 
-        'build'(event, reason) {
-            _build(reason);
+        'build'(event, opt) {
+            _build(opt);
         },
 
+        // can not recognize if the scene is modified
         'scene:saved'(event) {
-            // workaround for creator 1.3
             const Constants = require('./core/Constants');
-            let state = Editor.Profile.load(Constants.PACKAGE_NAME, 'project', Constants.PROFILE_DEFAULTS);
-            if (state.autoBuild) {
-                _build('scene:saved');
+            let state = Editor.Profile.load('profile://project/creator-luacpp-support.json', Constants.PROFILE_DEFAULTS);
+            if (state.data.autoBuild) {
+                _build({
+                    reason: 'scene:saved',
+                    profile: state.data});
             }
         },
 

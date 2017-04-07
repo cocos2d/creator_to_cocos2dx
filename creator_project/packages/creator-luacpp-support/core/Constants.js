@@ -39,10 +39,7 @@ Constants.RESOURCE_FOLDER_NAME = 'creator';
 Constants.PROFILE_DEFAULTS = {
     setup: false,
     path: '',
-    startSceneUuid: '',
-    selectAllScenes: true,
-    autoBuild: false,
-    scenesUuid: []
+    autoBuild: false
 };
 
 module.exports = Constants;

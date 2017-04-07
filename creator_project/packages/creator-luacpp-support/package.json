@@ -1,6 +1,6 @@
 {
     "name": "creator-luacpp-support",
-    "version": "1.0",
+    "version": "0.1alpha",
     "description": "Creator Legact Support for cocos2d-x cpp and Lua",
     "author": "Cocos Creator",
     "main": "main.js",
@@ -24,10 +24,7 @@
             "project": {
                 "setup": false,
                 "path": "",
-                "startSceneUuid": "",
-                "selectAllScenes": true,
-                "autoBuild": false,
-                "scenesUuid": []
+                "autoBuild": false
             }
         }
     }
