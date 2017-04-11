@@ -1,3 +1,17 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Creator support for Cocos2d-x](#creator-support-for-cocos2d-x)
+  - [Requirements](#requirements)
+  - [Limitations](#limitations)
+  - [How to generate the needed files](#how-to-generate-the-needed-files)
+  - [Using it from C++](#using-it-from-c)
+  - [Using it from lua](#using-it-from-lua)
+  - [Use the plugin in your Cocos Creator project](#use-the-plugin-in-your-cocos-creator-project)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Creator support for Cocos2d-x
 
 ## Requirements
