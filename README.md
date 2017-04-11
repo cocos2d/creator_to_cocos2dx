@@ -1,5 +1,10 @@
 # Creator support for Cocos2d-x
 
+## Requirements
+
+* cocos2d-x: v3.14+
+* Cocos Creator: v1.4+
+
 ## Limitations
 
 Given that Creator uses a component based model to create its objects, and
