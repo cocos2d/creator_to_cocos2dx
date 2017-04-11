@@ -30,113 +30,27 @@ support, just use Creator.
 
 ## How to generate the needed files
 
+* download and install [Cocos Creator](http://www.cocos2d-x.org/download)
+* use Cocos Creator to open __creator_project__
+* click __Project -> LuaCPP Support -> Setup Target Project__
+* fill in __Project Path__, it is a c++ or lua project created by cocos2d-x(3.14+) console
+* click __Build__
 
-1. Convert the .fire files into .json files
-2. Compile the newly generated .json files into flatbuffer files
-3. Copy the generated files to your project
-4. Copy the needed assets to your project
+You will find:
 
-
-### From .fire to .json
-
-The Python script to convert .fire to .json is called:
-
-* [convert_fire_to_json.py](https://github.com/ricardoquesada/creator_to_cocos2d/blob/master/convert_fire_to_json.py)
-
-And can be downloaded from this repository:
-
-* https://github.com/ricardoquesada/creator_to_cocos2d
-
-
-#### How to use it:
-
-`$ convert_fire_to_json.py \[--cocospath path\] \[--creatorassets\] fire_files_to_parse`
-
-* `--cocospath`: where the assets should be loaded in the cocos2d-x project. It will prepend this path to all the creator assets
-* `--creatorassets`: where the default Creator assets are located. Usually they are in the `temp` directory of the project's root folder
-* `fire_files_to_parse`: it could be one more multiple files. Glob patters are supported
-
-Example:
-
-```sh
-# should load assets from Resources folder in the game
-# Creator default assets are in temp
-# The .fire files are located in assets
-$ python convert_fire_to_json.py --cocospath Resources --creatorassets temp assets/*.fire
-```
-
-This Github respository also includes a Creator project that is used for testing. For example, this should work:
-
-```
-$ ./convert_fire_to_json.py --cocospath Resources --creatorassets creator_project/temp creator_project/assets/*.fire
-```
-
-The generated .json files will be placed in a folder named "json"
-
-
-### From .json to binary files
-
-The JSON files are only generated as a temporary file format. It will not be efficient to parse JSON files
-in a game.
-
-Instead a binary file based on [Flatbuffers](https://google.github.io/flatbuffers/) will be used instead
-
-In order to generate the binary files, the following are needed:
-
-* the schema ([CreatorReader.fbs]()) file
-* that `flatc` (flatbuffer) compiler
-
-And in order to generate the binary files just do:
-
-```sh
-$ flatc -b CreatorReader.fbs json/*.json
-```
-
-* `-b`: means generate "binary file"
-
-`flatc` can be found here:
-
-* macOS: precompiled binary [flatc](https://github.com/ricardoquesada/creator_to_cocos2d/raw/master/bin/flatc)
-* win32/linux: source code here: https://github.com/google/flatbuffers
-
-
-Afer running `flatc`, you will find one or more files with the extension `.ccreator`. The `.ccreator` files are the binary files that 
-should be copied to your cocos2d-x project.
-
-
-### Copy the generated files to your project
-
-You should copy and include the following files to your Cocos2d-x project
-
-* All the `.ccreator` files
-* The Creator Reader lib:
-   * You can find it here: [reader](https://github.com/ricardoquesada/creator_to_cocos2d/tree/master/reader)
-
-
-### Copy the assets to your project
-
-Finally you have to copy the asset uses by Creator in your project. You should copy:
-
-* *.png, *.plist, *.tmx, *.ttf, *.fnt
-
-Just copy them to the directory specified with `--cocospath` when `convert_fire_to_json.py` was run
-
-You must copy:
-
-* The user generated assets
-* The default Creator assets (usually located in path_to_creator_project/assets)
-
+* all needed source codes are generated into `NATIVE_PROJECT_ROOT/Classes/reader(it is NATIVE_PROJECT_ROOT/frameworks/runtime-src/Classes/reader for lua project)`
+* all needed resources are generated into `NATIVE_PROJECT_ROOT/Classes/Resources/creator(it is NATIVE_PROJECT_ROOT/frameworks/runtime-src/Resources/creator for lua project)`
 
 ## Using it from C++
 
 ```c++
 // mygame.cpp
 
-#include "CreatorReader.h"
+#include "reader/CreatorReader.h"
 
 void some_function()
 {
-    CreatorReader* reader = CreatorReader::createWithFilename("creator/CreatorSprites.ccreator");
+    creator::CreatorReader* reader = creator::CreatorReader::createWithFilename("creator/CreatorSprites.ccreator");
 
     // will create the needed spritesheets + design resolution
     reader->setup();
@@ -155,3 +69,28 @@ A working example can be found here:
 * https://github.com/ricardoquesada/cocos2d-x/tree/creator_reader
 
 Just run "cpp-tests" and select "CreatorTest"
+
+## Using it from lua
+
+Register creator binding codes in c++
+
+```c++
+#include "reader/CreatorReaderBinding.h"
+
+...
+
+register_all_creator_reader_manual(L);
+```
+
+Use in lua
+
+```lua
+local creatorReader = cc.CreatorReader:createWithFilename('creator/CreatorSprites.ccreator')
+creatorReader:setup()
+local scene = creatorReader:getSceneGraph()
+cc.Director:getInstance():replaceScene(scene)
+```
+
+## Use the plugin in your Cocos Creator project
+
+Currently, the plugin is not completed enough, so we don't put it into Cocos Creator plugin store. But you can copy `creator_project/packages/creator_luacpp_support` into `Cocos Creator project/packages`, then you will see the plugin in __Project -> LuaCPP Support__. 
