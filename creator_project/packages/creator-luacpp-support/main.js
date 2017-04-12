@@ -72,6 +72,15 @@ function _build(opt) {
         return;
     }
 
+    // called by `Build Now`
+    if (opt === undefined) {
+        const Constants = require('./core/Constants');
+        let state = Editor.Profile.load('profile://project/creator-luacpp-support.json', Constants.PROFILE_DEFAULTS);
+        opt = {
+            profile: state.data
+        }
+    }
+
     let project = _checkProject(opt);
     if (!project) return;
 
