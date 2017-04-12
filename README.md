@@ -58,7 +58,7 @@ support, just use Creator.
 You will find:
 
 * all needed source codes are generated into `NATIVE_PROJECT_ROOT/Classes/reader(it is NATIVE_PROJECT_ROOT/frameworks/runtime-src/Classes/reader for lua project)`
-* all needed resources are generated into `NATIVE_PROJECT_ROOT/Classes/Resources/creator(it is NATIVE_PROJECT_ROOT/frameworks/runtime-src/Resources/creator for lua project)`
+* all needed resources are generated into `NATIVE_PROJECT_ROOT/Resources/creator(it is NATIVE_PROJECT_ROOT/frameworks/runtime-src/Resources/creator for lua project)`
 
 ## Using it from C++
 
