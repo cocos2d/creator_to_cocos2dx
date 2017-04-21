@@ -9,6 +9,7 @@ const Utils = require('./Utils');
 const Constants = require('./Constants');
 const Fs = require('fire-fs');
 const Del = require('del')
+const parse_fire = require('./ConvertFileToJson');
 
 const {WorkerBase, registerWorker} = require('./WorkerBase');
 
@@ -18,7 +19,6 @@ class BuildWorker extends WorkerBase {
         Utils.log('[creator-luacpp-support] build start');
 
         this._callback = callback;
-        this._fireFiles = [];
         this._state = state;
 
         // creator json folder if not exist
@@ -28,64 +28,39 @@ class BuildWorker extends WorkerBase {
         // creator ccreator folder if not exist
         if (!Fs.existsSync(Constants.CCREATOR_PATH))
             Fs.mkdirSync(Constants.CCREATOR_PATH);
-
-        // convert fire to json
-        this._convertFireToJson()
-        .then(() => {
-            return this._compileJsonToBinary();
-        }).then(() => {
-            return this._copyResources();
-        }).catch((err) => {
-            Utils.log(err);
-        }).then(() => {
-            Editor.Ipc.sendToAll('creator-luacpp-support:state-changed', 'finish', 100);
-            this._callback();
-
-            // remove generated .json/.ccreator files
-            Del.sync(Constants.JSON_PATH);
-            Del.sync(Constants.CCREATOR_PATH);
-        });
+        
+        this._convertFireToJson(function(uuidmap) {
+            this._compileJsonToBinary(function() {
+                this._copyResources(uuidmap);
+                Editor.Ipc.sendToAll('creator-luacpp-support:state-changed', 'finish', 100);
+                this._callback();
+            }.bind(this));
+        }.bind(this));
     }
 
-    // .fire -> .json
-    _convertFireToJson() {
-        let params = [Constants.CONVERT_FIRE_TO_JSON_PY, 
-        '--cocospath', Constants.RESOURCE_FOLDER_NAME , 
-        '--creatorassets', Constants.TEMP_PATH,
-        '--jsonpath', Constants.JSON_PATH];
+    _convertFireToJson(cb) {
+        let fireFiles = this._getFireList();  
 
-        this._fireFiles = this._getFireList();  
-        params = params.concat(this._fireFiles);
-
-        return new Promise((resolve, reject) => {
-            Utils.runpython(params, (code) => {
-                if (code != 0)
-                    reject('[creator-luacpp-support] convert .fire to .json error');
-                else
-                    resolve();
-                }
-            );
-        });
+        fireFiles.forEach(firefile => {
+            if (firefile.endsWith('CreatorSprites.fire')) {
+                parse_fire([firefile], 'creator', Constants.JSON_PATH2, cb);
+            }
+        })
     }
 
     // .json -> .ccreator
-    _compileJsonToBinary() {
+    _compileJsonToBinary(cb) {
         const jsonFiles = this._getJsonList();
 
         var params = ['-b', '-o', Constants.CCREATOR_PATH, Constants.CREATOR_READER_FBS].concat(jsonFiles);
-        return new Promise((resolve, reject) => {
-            Utils.runcommand(Constants.FLATC, params, (code) => {
-                if (code == 0) {
-                    resolve();
-                } 
-                else {
-                    reject('[creator-luacpp-support] convert .json to .ccreator error');
-                }    
-            });
+        Utils.runcommand(Constants.FLATC, params, (code) => {
+            if (code != 0)
+                Utils.log('[creator-luacpp-support] convert .json to .ccreator error');
+            cb();
         });
     }
 
-    _copyResources() {
+    _copyResources(uuidmap) {
         // should copy these resources
         // - all .ccreator files
         // - resources in assets and folder
@@ -126,10 +101,13 @@ class BuildWorker extends WorkerBase {
             Fs.unlink(Path.join(classes, 'CreatorReaderBinding.cpp'));
         }
 
-        // copy resources
-        let exts = ['.png', '.ttf', '.fnt', '.plist', '.atlas', '.tmx', '.json'];
-        this._copyTo(Constants.ASSETS_PATH, resdst, exts, true);
-        this._copyTo(Constants.INTERNAL_PATH, resdst, exts, true);
+        Object.keys(uuidmap).forEach(function(uuid) {
+            let pathInfo = uuidmap[uuid];
+            let src = pathInfo.fullpath;
+            let dst = Path.join(resdst, pathInfo.relative_path);
+            Fs.ensureDirSync(Path.dirname(dst));
+            Fs.copySync(src, dst);
+        });
     }
 
    // copy all files with ext in src to dst
@@ -150,11 +128,11 @@ class BuildWorker extends WorkerBase {
 
     // get all .fire file in assets folder
     _getFireList() {
-        return this._getFilesWithExt(Constants.ASSETS_PATH, ['.fire']);
+        return this._getFilesWithExt(Constants.ASSETS_PATH, ['.fire'], true);
     }
 
     _getJsonList() {
-        return this._getFilesWithExt(Constants.JSON_PATH, ['.json']);
+        return this._getFilesWithExt(Constants.JSON_PATH2, ['.json']);
     }
 
    // return file list ends with `exts` in dir

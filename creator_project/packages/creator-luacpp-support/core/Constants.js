@@ -29,6 +29,7 @@ Constants.FLATC = Path.join(Constants.PACKAGE_PATH, 'bin/flatc');
 Constants.CONVERT_FIRE_TO_JSON_PY = Path.join(Constants.PACKAGE_PATH, 'convert_fire_to_json.py');
 // path of generated .json files
 Constants.JSON_PATH = Path.join(Constants.PROJECT_PATH, 'json');
+Constants.JSON_PATH2 = Path.join(Constants.PROJECT_PATH, 'json2');
 // path of generated .ccreator files
 Constants.CCREATOR_PATH = Path.join(Constants.PROJECT_PATH, 'ccreator');
 // path of reader folder
