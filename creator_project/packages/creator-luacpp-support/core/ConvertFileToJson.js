@@ -3,11 +3,11 @@ const fire_fs = require('fire-fs');
 const path = require('path');
 const Utils = require('./Utils');
 
-let DEBUG = false;
+let DEBUG = true;
 
 function log(s) {
     if (DEBUG)
-        console.log(s);
+        Utils.log(s);
 }
 
 /**
@@ -90,8 +90,8 @@ class Node {
         if (node_components.length == 0)
             return 'cc.Node';
 
-        for (let i = 0, len = node_components.length; i < len; ++i) {
-            let supported = node_components[i];
+        for (let i = 0, len = supported_components.length; i < len; ++i) {
+            let supported = supported_components[i];
             if (node_components.includes(supported)) {
                 log('Choose ' + supported + ' from ' + node_components);
                 return supported;
@@ -108,7 +108,13 @@ class Node {
         else if (node_type === 'cc.Sprite')
             n = new Sprite(state._json_data[node_idx]);
         else if (node_type === 'cc.Canvas')
-            n = new Canvas(state._json_data[node_idx])
+            n = new Canvas(state._json_data[node_idx]);
+        else if (node_type === 'cc.Label')
+            n = new Label(state._json_data[node_idx]);
+        else if (node_type === 'cc.RichText')
+            n = new RichText(state._json_data[node_idx]);
+        else if (node_type === 'cc.Button')
+            n = new Button(state._json_data[node_idx]);
         // TODO: other types
 
         if (n != null)
@@ -131,7 +137,7 @@ class Node {
 
     static get_sprite_frame_name_by_uuid(uuid, cb) {
         if (uuid in state._sprite_frames) {
-            cb(null, state._sprite_frames[uuid].name)
+            cb(state._sprite_frames[uuid].name)
         }
         else {
             Editor.Ipc.sendToMain('scene:query-asset-info-by-uuid', uuid, function (err, info) {
@@ -175,11 +181,63 @@ class Node {
                         if (sprite_frame_uuid == uuid)
                             found_sprite_frame_name = sprite_frame_name;
                     });
-                    cb(null, found_sprite_frame_name);
+                    cb(found_sprite_frame_name);
                 }
                 else {
                     log('can not get sprite frame name of uuid ' + uuid);
-                    cb();
+                    cb(null);
+                }
+            });
+        }
+    }
+
+    static get_font_path_by_uuid(uuid, cb) {
+        if (uuid in state._uuid)
+            cb(state._uuid[uuid].relative_path);
+        else {
+            Editor.Ipc.sendToMain('scene:query-asset-info-by-uuid', uuid, function (err, info) {
+                let information = info;
+                if (information) {
+                    let jsonfile = information.url;
+                    let current_dir = path.basename(jsonfile, '.json');
+                    let contents = fs.readFileSync(jsonfile);
+                    let contents_json = JSON.parse(contents);
+                    let type = contents_json.__type__;
+                    // resources are in the res_dir
+                    let res_dir = path.join(path.dirname(jsonfile), uuid);
+
+                    if (type === 'cc.BitmapFont') {
+                        let files = fs.readdirSync(res_dir);
+                        files.forEach(function(file) {
+                            let fullpath = path.join(res_dir, file);
+                            // dir name is the same as base name
+                            
+                            if (file.endsWith('.fnt')) {
+                                state._uuid[uuid] = {fullpath: fullpath, relative_path: current_dir + '/' + file};
+                            }
+                            else {
+                                state._uuid[uuid + '$'] = {fullpath: fullpath, relative_path: current_dir + '/' + file};
+                            }
+                                
+                        });
+
+                        cb(state._uuid[uuid].relative_path);
+                    }
+                    else if (type === 'cc.TTFFont') {
+                        state._uuid[uuid] = {
+                            fullpath: path.join(res_dir, contents_json._rawFiles[0]),
+                            relative_path: current_dir + '/' + contents_json._rawFiles[0]
+                        }
+
+                        cb(state._uuid[uuid].relative_path);
+                    }
+                    else {
+                        cb('xxx');
+                    }
+                }
+                else {
+                    log('can not get bmfont path of uuid ' + uuid);
+                    cb('xxx');
                 }
             });
         }
@@ -258,9 +316,6 @@ class Node {
                 cb();
             }
        );
-
-    //    for (child_idx in this._node_data._children)
-    //        this.parse_child(child_idx.__id__);
     }
 
     parse_node_properties() {
@@ -391,11 +446,6 @@ class Canvas extends Node {
 }
 
 /**
- * Canvase
- * TODO
- */
-
-/**
  * Built-in Renderer Node
  * Sprite, Label, TMX, Particle
  */
@@ -413,14 +463,15 @@ class Sprite extends Node {
             let component = Node.get_node_component_of_type(this._node_data, 'cc.Sprite');
             let sprite_frame_uuid = component._spriteFrame.__uuid__;
             
-            Node.get_sprite_frame_name_by_uuid(sprite_frame_uuid, function(err, name) {
-                this._properties['spriteFrameName'] = name
-                this._properties.spriteType = Sprite.SPRITE_TYPES[component._type];
-                this.add_property_int('srcBlend', '_srcBlendFactor', component);
-                this.add_property_int('dstBlend', '_dstBlendFactor', component);
-                this.add_property_bool('trimEnabled', '_isTrimmedMode', component);
-                this._properties.sizeMode = Sprite.SIZE_MODES[component._sizeMode];
-
+            Node.get_sprite_frame_name_by_uuid(sprite_frame_uuid, function(name) {
+                if (name) {
+                    this._properties['spriteFrameName'] = name
+                    this._properties.spriteType = Sprite.SPRITE_TYPES[component._type];
+                    this.add_property_int('srcBlend', '_srcBlendFactor', component);
+                    this.add_property_int('dstBlend', '_dstBlendFactor', component);
+                    this.add_property_bool('trimEnabled', '_isTrimmedMode', component);
+                    this._properties.sizeMode = Sprite.SIZE_MODES[component._sizeMode];
+                }
                 cb();
             }.bind(this));
         });
@@ -428,6 +479,124 @@ class Sprite extends Node {
 }
 Sprite.SPRITE_TYPES = ['Simple', 'Sliced', 'Tiled', 'Filled'];
 Sprite.SIZE_MODES = ['Custom', 'Trimmed', 'Raw'];
+
+class Label extends Node {
+    constructor(data) {
+        super(data);
+        this._label_text = '';
+        this._jsonNode.object_type = 'Label';
+    }
+
+    parse_properties(cb) {
+        super.parse_properties(function() {
+            // Move Node properties into 'node' and clean _properties
+            this._properties = {node: this._properties};
+
+            let component = Node.get_node_component_of_type(this._node_data, 'cc.Label');
+
+            let is_system_font = component._isSystemFontUsed;
+            this._properties.fontSize = component._fontSize;
+            this._properties.labelText = component._N$string;
+
+            // alignments
+            this._properties.horizontalAlignment = Label.H_ALIGNMENTS[component._N$horizontalAlign];
+            this._properties.verticalAlignment = Label.V_ALIGNMENTS[component._N$verticalAlign];
+
+            this._properties.overflowType = Label.OVERFLOW_TYPE[component._N$overflow];
+            this.add_property_bool('enableWrap', '_enableWrapText', component);
+
+            if (is_system_font) {
+                this._properties.fontType = 'System';
+                this._properties.fontName = 'arial';
+                cb();
+            }
+            else {
+                Node.get_font_path_by_uuid(component._N$file.__uuid__, function(fontName) {
+                    this._properties.fontName = state._assetpath + fontName;
+                    if (fontName.endsWith('.ttf'))
+                        this._properties.fontType = 'TTF';
+                    else if (fontName.endsWith('.fnt')) {
+                        this._properties.fontType = 'BMFont';
+                        this.add_property_int('fontSize', '_fontSize', component);
+                    }
+                    else
+                        throw 'can not find font file for uuid: ' + component._N$file.__uuid__;
+
+                    this.add_property_int('lineHeight' ,'_lineHeight', component);
+
+                    cb();
+                }.bind(this));
+            }
+        }.bind(this));
+    }
+}
+Label.H_ALIGNMENTS = ['Left', 'Center', 'Right'];
+Label.V_ALIGNMENTS = ['Top', 'Center', 'Bottom'];
+Label.OVERFLOW_TYPE = ['None', 'Clamp', 'Shrink', 'ResizeHeight'];
+
+class RichText extends Node {
+    constructor(data) {
+        super(data);
+        this._label_text = '';
+        this._jsonNode.object_type = 'RichText';
+    }
+
+    parse_properties(cb) {
+        super.parse_properties(function() {
+            this._properties = {node: this._properties};
+
+            let component = Node.get_node_component_of_type(this._node_data, 'cc.RichText');
+
+            this._properties.text = component._N$string;
+            this._properties.horizontalAlignment = Label.H_ALIGNMENTS[component._N$horizontalAlign];
+            this._properties.fontSize = component._N$fontSize;
+            this._properties.maxWidth = component._N$maxWidth;
+            this._properties.lineHeight = component._N$lineHeight;
+            let f = component._N$font;
+            if (f) {
+                Node.get_font_path_by_uuid(f.__uuid__, function(fontName) {
+                    this._properties.fontFilename = fontName;
+                    cb();
+                }.bind(this));
+            }
+            else
+                cb();
+        }.bind(this));
+    }
+}
+RichText.H_ALIGNMENTS = ['Left', 'Center', 'Right'];
+
+class Button extends Node {
+    constructor(data) {
+        super(data);
+        this._jsonNode.object_type = 'Button';
+    }
+
+    parse_properties(cb) {
+        super.parse_properties(function() {
+            this._properties = {node: this._properties};
+
+            let spr_component = Node.get_node_component_of_type(this._node_data, 'cc.Sprite');
+            let but_component = Node.get_node_component_of_type(this._node_data, 'cc.Button');
+
+            this._properties.ignoreContentAdaptWithSize = false;
+
+            // normal sprite
+            Node.get_sprite_frame_name_by_uuid(but_component._N$normalSprite.__uuid__, function(name) {
+                this._properties.spriteFrameName = name;
+                // pressed sprite
+                Node.get_sprite_frame_name_by_uuid(but_component.pressedSprite.__uuid__, function(name) {
+                    this._properties.pressedSpriteFrameName = name;
+                    // disabled sprite
+                    Node.get_sprite_frame_name_by_uuid(but_component._N$disabledSprite.__uuid__, function(name) {
+                        this._properties.disabledSpriteFrameName = name;
+                        cb();
+                    }.bind(this));
+                }.bind(this));
+            }.bind(this));
+        }.bind(this));
+    }
+}
 
 /**
  * bootstrap + helper functions
@@ -437,7 +606,6 @@ class FireParser {
         this._state = state;
         this._json_file = null;
         this._json_output = {version: '1.0', root: {}};
-        this._assetpath = '';
         this._creatorassets = null;
     }
 
@@ -465,7 +633,7 @@ class FireParser {
 
             let frame = {
                 name: sprite_frame.name,
-                texturePath: this._assetpath + sprite_frame.texture_path,
+                texturePath: state._assetpath + sprite_frame.texture_path,
                 rect: {x:sprite_frame.trimX, y:sprite_frame.trimY, w:sprite_frame.width, h:sprite_frame.height},
                 offset: {x:sprite_frame.offsetX, y:sprite_frame.offsetY},
                 rotated: sprite_frame.rotated,
@@ -502,7 +670,7 @@ class FireParser {
         state._filename = path.basename(filename, '.fire');
         let json_name = path.join(path_to_json_files, state._filename) + '.json';
         this._json_file = this.create_file(json_name);
-        this._assetpath = assetpath;
+        state._assetpath = assetpath;
 
         state._json_data = JSON.parse(fs.readFileSync(filename));
 

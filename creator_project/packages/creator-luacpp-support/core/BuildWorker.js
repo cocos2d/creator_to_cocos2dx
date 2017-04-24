@@ -42,7 +42,7 @@ class BuildWorker extends WorkerBase {
         let fireFiles = this._getFireList();  
 
         fireFiles.forEach(firefile => {
-            if (firefile.endsWith('CreatorSprites.fire')) {
+            if (firefile.endsWith('CreatorUI.fire')) {
                 parse_fire([firefile], 'creator', Constants.JSON_PATH2, cb);
             }
         })
