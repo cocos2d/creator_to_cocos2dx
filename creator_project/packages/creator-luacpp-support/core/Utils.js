@@ -52,9 +52,9 @@ class Utils {
         return Editor.assetdb.mountInfoByUuid(uuid);
     }
 
-    // should be invoked in main.js
+    // should be invoked in renderer process
     static getAssetsInfo(cb) {
-        Editor.assetdb.queryMetas('db://**/*', '', function(err, metaInfos) {
+        Editor.remote.assetdb.queryMetas('db://**/*', '', function(err, metaInfos) {
             let uuidmaps = {};
 
             for (let i = 0, len = metaInfos.length; i < len; ++i) {
@@ -63,47 +63,24 @@ class Utils {
                 if (type === 'folder' || type === 'javascript')
                     continue;
 
-                let path = null;
                 let uuid = meta.uuid;
+                let path = null;
                 if (meta && !meta.useRawfile()) {
-                    path = Editor.assetdb._uuidToImportPathNoExt(uuid);
+                    path = Editor.remote.assetdb._uuidToImportPathNoExt(uuid);
                     path += '.json';
                 }
 
-                uuidmaps[uuid] = {
-                    fullpath: path,
-                    rawpath: Editor.assetdb.uuidToFspath(uuid),
-                    relativePath: Utils.getRelativePath(path, uuid)
-                }
-            }
+                if (!path)
+                    path = Editor.remote.assetdb.uuidToFspath(uuid);
 
-            Utils.log(uuidmaps);
+                let url = path.replace(/\\/g, '/');
+
+                uuidmaps[uuid] = url;
+            }
 
             cb(uuidmaps);
         })
     }
-
-    static eachSeries(array, iteratee, cb) {
-           let i = 0;
-           let len = array.length;
-           let element = array[i];
-           if (len == 0) {
-               cb();
-               return;
-           }
-
-           let callnext = function() {
-               ++i;
-               if (i == len)
-                   cb();
-               else {
-                   element = array[i];
-                   iteratee(element, callnext);
-               }
-           }
-
-           iteratee(element, callnext);
-       }
 }
 
 module.exports = Utils;

@@ -21,31 +21,35 @@ class BuildWorker extends WorkerBase {
         this._callback = callback;
         this._state = state;
 
-        // creator json folder if not exist
+         // creator json folder if not exist
         if (!Fs.existsSync(Constants.JSON_PATH))
             Fs.mkdirSync(Constants.JSON_PATH);
 
         // creator ccreator folder if not exist
         if (!Fs.existsSync(Constants.CCREATOR_PATH))
             Fs.mkdirSync(Constants.CCREATOR_PATH);
-        
-        this._convertFireToJson(function(uuidmap) {
+
+        Utils.getAssetsInfo(function(uuidmap) {
+            let copyReourceInfos = this._convertFireToJson(uuidmap);
             this._compileJsonToBinary(function() {
-                this._copyResources(uuidmap);
+                this._copyResources(copyReourceInfos);
                 Editor.Ipc.sendToAll('creator-luacpp-support:state-changed', 'finish', 100);
                 this._callback();
             }.bind(this));
         }.bind(this));
     }
 
-    _convertFireToJson(cb) {
+    _convertFireToJson(uuidmap) {
         let fireFiles = this._getFireList();  
 
+        let copyReourceInfos = {};
         fireFiles.forEach(firefile => {
-            if (firefile.endsWith('CreatorUI.fire')) {
-                parse_fire([firefile], 'creator', Constants.JSON_PATH2, cb);
+            if (firefile.endsWith('CreatorTilemap.fire')) {
+                copyReourceInfos = parse_fire([firefile], 'creator', Constants.JSON_PATH2, uuidmap);
             }
         })
+
+        return copyReourceInfos;
     }
 
     // .json -> .ccreator
@@ -60,7 +64,7 @@ class BuildWorker extends WorkerBase {
         });
     }
 
-    _copyResources(uuidmap) {
+    _copyResources(copyReourceInfos) {
         // should copy these resources
         // - all .ccreator files
         // - resources in assets and folder
@@ -101,8 +105,8 @@ class BuildWorker extends WorkerBase {
             Fs.unlink(Path.join(classes, 'CreatorReaderBinding.cpp'));
         }
 
-        Object.keys(uuidmap).forEach(function(uuid) {
-            let pathInfo = uuidmap[uuid];
+        Object.keys(copyReourceInfos).forEach(function(uuid) {
+            let pathInfo = copyReourceInfos[uuid];
             let src = pathInfo.fullpath;
             let dst = Path.join(resdst, pathInfo.relative_path);
             Fs.ensureDirSync(Path.dirname(dst));

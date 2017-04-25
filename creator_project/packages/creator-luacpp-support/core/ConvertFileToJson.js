@@ -4,6 +4,7 @@ const path = require('path');
 const Utils = require('./Utils');
 
 let DEBUG = true;
+let uuidInfos = null;
 
 function log(s) {
     if (DEBUG)
@@ -84,7 +85,7 @@ class Node {
         // ScrollView, Button & ProgressBar should be before Sprite
         let supported_components = ['cc.Button', 'cc.ProgressBar', 'cc.ScrollView',
             'cc.EditBox', 'cc.Label', 'sp.Skeleton', 'cc.Sprite',
-            'cc.ParticleSystem', 'cc.TileMap', 'cc.Canvas', 'cc.RichText'];
+            'cc.ParticleSystem', 'cc.TiledMap', 'cc.Canvas', 'cc.RichText'];
         let node_components = components.map(x => x.__type__);
         // special case for object without components
         if (node_components.length == 0)
@@ -101,7 +102,7 @@ class Node {
         return 'unknown';
     }
 
-    static create_node(node_type, node_idx, cb) {
+    static create_node(node_type, node_idx) {
         let n = null;
         if (node_type === 'cc.Node')
             n = new Node(state._json_data[node_idx]);
@@ -115,132 +116,172 @@ class Node {
             n = new RichText(state._json_data[node_idx]);
         else if (node_type === 'cc.Button')
             n = new Button(state._json_data[node_idx]);
+        else if (node_type === 'cc.ProgressBar')
+            n = new ProgressBar(state._json_data[node_idx]);
+        else if (node_type === 'cc.ScrollView')
+            n = new ScrollView(state._json_data[node_idx]);
+        else if (node_type === 'cc.EditBox')
+            n = new EditBox(state._json_data[node_idx]);
+        else if (node_type === 'cc.TiledMap')
+            n = new TiledMap(state._json_data[node_idx]);
+        else if (node_type === 'cc.ParticleSystem')
+            n = new ParticleSystem(state._json_data[node_idx]);
         // TODO: other types
 
-        if (n != null)
-            n.parse_properties(() => {
-                cb(n);
-            });
+        if (n != null) {
+            n.parse_properties();
+            return n;
+        }
         else
-            cb(null);
+            return null;
     }
 
-    static get_filepath_from_uuid(uuid, cb) {
-        let filepath = null;
-        if (uuid in state._uuid)
-            filepath = state._uuid[uuid].relative_path;
-
-        if (filepath == null)
-            console.log('can not find filepath of uuid ' + uuid);
-        return filepath;
-    }
-
-    static get_sprite_frame_name_by_uuid(uuid, cb) {
+    static get_sprite_frame_name_by_uuid(uuid) {
         if (uuid in state._sprite_frames) {
-            cb(state._sprite_frames[uuid].name)
+            return state._sprite_frames[uuid].name;
         }
         else {
-            Editor.Ipc.sendToMain('scene:query-asset-info-by-uuid', uuid, function (err, info) {
-                let information = info;
-                if (information) {
-                    let jsonfile = information.url;
-                    let contents = fs.readFileSync(jsonfile);
-                    let contents_json = JSON.parse(contents);
+            let jsonfile = uuidinfos[uuid];
+            if (jsonfile) {
+                let contents = fs.readFileSync(jsonfile);
+                let contents_json = JSON.parse(contents);
 
-                    let metauuid;
-                    let texture_uuid = contents_json.content.texture;
-                    if (contents_json.content.atlas !== '') {
-                        // texture packer
-                        metauuid = contents_json.content.atlas;
-                    }
-                    else {
-                        // a single picture
-                        metauuid = texture_uuid;
-                    }
+                let metauuid;
+                let texture_uuid = contents_json.content.texture;
+                if (contents_json.content.atlas !== '')
+                    // texture packer
+                    metauuid = contents_json.content.atlas;
+                else
+                    // a single picture
+                    metauuid = texture_uuid;
 
-                    // handle texture path
+                // handle texture path
 
-                    let fullpath = Editor.remote.assetdb.uuidToFspath(texture_uuid);
-                    let mountInfo = Editor.remote.assetdb.mountInfoByUuid(texture_uuid);
-                    // get texture path information, which is used to copy resources
-                    let root = mountInfo.path;
-                    let relative_path = fullpath.substring(root.length + 1);
-                    state._uuid[texture_uuid] = {fullpath:fullpath, relative_path:relative_path};
+                let path_info = Node.get_relative_full_path_by_uuid(texture_uuid);
+                state._uuid[texture_uuid] = path_info;
 
-                    // get texture frames information
-                    let meta = Editor.remote.assetdb._uuid2meta[metauuid].__subMetas__;
-                    let found_sprite_frame_name = null;
-                    Object.keys(meta).forEach(sprite_frame_name => {
-                        let sprite_frame_info = meta[sprite_frame_name];
-                        sprite_frame_info.name = sprite_frame_name;
-                        sprite_frame_info.texture_path = relative_path;
+                // get texture frames information
+                let meta = Editor.remote.assetdb._uuid2meta[metauuid].__subMetas__;
+                let found_sprite_frame_name = null;
+                Object.keys(meta).forEach(sprite_frame_name => {
+                    let sprite_frame_info = meta[sprite_frame_name];
+                    sprite_frame_info.name = sprite_frame_name;
+                    sprite_frame_info.texture_path = path_info.relative_path;
 
-                        let sprite_frame_uuid = sprite_frame_info.uuid; 
-                        state._sprite_frames[sprite_frame_uuid] = sprite_frame_info;
+                    let sprite_frame_uuid = sprite_frame_info.uuid; 
+                    state._sprite_frames[sprite_frame_uuid] = sprite_frame_info;
 
-                        if (sprite_frame_uuid == uuid)
-                            found_sprite_frame_name = sprite_frame_name;
-                    });
-                    cb(found_sprite_frame_name);
-                }
-                else {
-                    log('can not get sprite frame name of uuid ' + uuid);
-                    cb(null);
-                }
-            });
+                    if (sprite_frame_uuid == uuid)
+                        found_sprite_frame_name = sprite_frame_name;
+                });
+                return found_sprite_frame_name;
+            }
+            else {
+                log('can not get sprite frame name of uuid ' + uuid);
+                return null;
+            }
         }
     }
 
-    static get_font_path_by_uuid(uuid, cb) {
+    static get_relative_full_path_by_uuid(uuid) {
+        let fullpath = Editor.remote.assetdb.uuidToFspath(uuid);
+        let mountInfo = Editor.remote.assetdb.mountInfoByUuid(uuid);
+        // get texture path information, which is used to copy resources
+        let root = mountInfo.path;
+        let relative_path = fullpath.substring(root.length + 1);
+
+        return {
+            fullpath: fullpath,
+            relative_path: relative_path
+        };
+    }
+
+    static get_font_path_by_uuid(uuid) {
         if (uuid in state._uuid)
-            cb(state._uuid[uuid].relative_path);
+            return state._uuid[uuid].relative_path;
         else {
-            Editor.Ipc.sendToMain('scene:query-asset-info-by-uuid', uuid, function (err, info) {
-                let information = info;
-                if (information) {
-                    let jsonfile = information.url;
-                    let current_dir = path.basename(jsonfile, '.json');
-                    let contents = fs.readFileSync(jsonfile);
-                    let contents_json = JSON.parse(contents);
-                    let type = contents_json.__type__;
-                    // resources are in the res_dir
-                    let res_dir = path.join(path.dirname(jsonfile), uuid);
+            let jsonfile = uuidinfos[uuid];
+            if (jsonfile) {
+                let current_dir = path.basename(jsonfile, '.json');
+                let contents = fs.readFileSync(jsonfile);
+                let contents_json = JSON.parse(contents);
+                let type = contents_json.__type__;
+                // resources are in the res_dir
+                let res_dir = path.join(path.dirname(jsonfile), uuid);
 
-                    if (type === 'cc.BitmapFont') {
-                        let files = fs.readdirSync(res_dir);
-                        files.forEach(function(file) {
-                            let fullpath = path.join(res_dir, file);
-                            // dir name is the same as base name
-                            
-                            if (file.endsWith('.fnt')) {
-                                state._uuid[uuid] = {fullpath: fullpath, relative_path: current_dir + '/' + file};
-                            }
-                            else {
-                                state._uuid[uuid + '$'] = {fullpath: fullpath, relative_path: current_dir + '/' + file};
-                            }
-                                
-                        });
-
-                        cb(state._uuid[uuid].relative_path);
-                    }
-                    else if (type === 'cc.TTFFont') {
-                        state._uuid[uuid] = {
-                            fullpath: path.join(res_dir, contents_json._rawFiles[0]),
-                            relative_path: current_dir + '/' + contents_json._rawFiles[0]
+                if (type === 'cc.BitmapFont') {
+                    let files = fs.readdirSync(res_dir);
+                    files.forEach(function(file) {
+                        let fullpath = path.join(res_dir, file);
+                        // dir name is the same as base name
+                        
+                        if (file.endsWith('.fnt')) {
+                            state._uuid[uuid] = {fullpath: fullpath, relative_path: current_dir + '/' + file};
                         }
+                        else {
+                            state._uuid[uuid + '$'] = {fullpath: fullpath, relative_path: current_dir + '/' + file};
+                        }
+                            
+                    });
 
-                        cb(state._uuid[uuid].relative_path);
+                    return state._uuid[uuid].relative_path;
+                }
+                else if (type === 'cc.TTFFont') {
+                    state._uuid[uuid] = {
+                        fullpath: path.join(res_dir, contents_json._rawFiles[0]),
+                        relative_path: current_dir + '/' + contents_json._rawFiles[0]
                     }
-                    else {
-                        cb('xxx');
-                    }
+
+                    return state._uuid[uuid].relative_path;
                 }
                 else {
-                    log('can not get bmfont path of uuid ' + uuid);
-                    cb('xxx');
+                    return 'xxx';
                 }
-            });
+            }
+            else {
+                log('can not get bmfont path of uuid ' + uuid);
+                return 'xxx';
+            }
         }
+    }
+
+    static get_tiledmap_path_by_uuid(uuid) {
+        if (uuid in state._uuid)
+            return state._uuid.relative_path;
+
+        // from the json file, we can only get texture path
+        // so should use the texture path to get tmx path
+        let jsonfile = uuidinfos[uuid];
+        if (jsonfile) {
+            let contents = fs.readFileSync(jsonfile);
+            let contents_json = JSON.parse(contents);
+
+            // record texture path
+            let tmx_texture_info = {};
+            contents_json.textures.forEach(function(texture_info) {
+                state._uuid[texture_info.__uuid__] = Node.get_relative_full_path_by_uuid(texture_info.__uuid__);
+                tmx_texture_info = state._uuid[texture_info.__uuid__];
+            });
+
+            // get tmx path
+            let tmx_relative_path = tmx_texture_info.relative_path.substr(0, tmx_texture_info.relative_path.lastIndexOf(".")) + ".tmx";
+            let tmx_fullpath = tmx_texture_info.fullpath.substr(0, tmx_texture_info.fullpath.lastIndexOf(".")) + ".tmx";
+            state._uuid[uuid] = {
+                relative_path: tmx_relative_path,
+                fullpath: tmx_fullpath
+            };
+
+            return tmx_relative_path;
+        }
+    }
+
+    static get_particle_system_path_by_uuid(uuid) {
+        if (uuid in state._uuid)
+            return state._uuid[uuid].relative_path;
+
+        let path_info = Node.get_relative_full_path_by_uuid(uuid);
+        state._uuid[uuid] = path_info;
+        return path_info.relative_path;
     }
 
     constructor(data) {
@@ -302,20 +343,15 @@ class Node {
         return this.constructor.name;
     }
 
-    parse_properties(cb) {
+    parse_properties() {
         // 1st: parse self
         this.parse_node_properties();
         this.parse_clip();
         
         // 2nd: parse children
-        Utils.eachSeries(this._node_data._children, 
-            (item, cb) => {
-                this.parse_child(item.__id__, cb);
-            },
-            () => {
-                cb();
-            }
-       );
+        this._node_data._children.forEach(function(item) {
+            this.parse_child(item.__id__);
+        }.bind(this));
     }
 
     parse_node_properties() {
@@ -340,24 +376,18 @@ class Node {
         this.add_property_int('tag', '_tag', data);
     }
 
-    parse_child(node_idx, cb) {
+    parse_child(node_idx) {
         let node = state._json_data[node_idx];
         if (node.__type__ === 'cc.Node') {
             let components = Node.get_node_components(node);
             let node_type = Node.guess_type_from_components(components);
             if (node_type != null) {
-                Node.create_node(node_type, node_idx, function(n){
-                    this.adjust_child_parameters(n);
-                    if (n != null)
-                        this.add_child(n);
-                    cb();
-                }.bind(this));
+                let n = Node.create_node(node_type, node_idx);
+                this.adjust_child_parameters(n);
+                if (n != null)
+                    this.add_child(n);
             }
-            else
-                cb();
         }
-        else
-            cb();
     }
 
     parse_clip() {
@@ -420,12 +450,9 @@ class Scene extends Node {
         this._jsonNode.object_type = 'Scene';
     }
 
-    parse_properties(cb) {
-        super.parse_properties(function() {
-            // Move Node properties into 'node' and clean _properties
-            this._properties = {node: this._properties};
-            cb();
-        }.bind(this));
+    parse_properties() {
+        super.parse_properties();
+        this._properties = {node: this._properties};
     }
 }
 
@@ -449,37 +476,42 @@ class Canvas extends Node {
  * Built-in Renderer Node
  * Sprite, Label, TMX, Particle
  */
+
+/**
+ * Node: Sprite
+ */
 class Sprite extends Node {
     constructor(data) {
         super(data);
         this._jsonNode.object_type = 'Sprite';
     }
 
-    parse_properties(cb) {
-        super.parse_properties(() => {
-            // Move Node properties into 'node' and clean _properties
-            this._properties = {node: this._properties};
+    parse_properties() {
+        super.parse_properties();
 
-            let component = Node.get_node_component_of_type(this._node_data, 'cc.Sprite');
-            let sprite_frame_uuid = component._spriteFrame.__uuid__;
-            
-            Node.get_sprite_frame_name_by_uuid(sprite_frame_uuid, function(name) {
-                if (name) {
-                    this._properties['spriteFrameName'] = name
-                    this._properties.spriteType = Sprite.SPRITE_TYPES[component._type];
-                    this.add_property_int('srcBlend', '_srcBlendFactor', component);
-                    this.add_property_int('dstBlend', '_dstBlendFactor', component);
-                    this.add_property_bool('trimEnabled', '_isTrimmedMode', component);
-                    this._properties.sizeMode = Sprite.SIZE_MODES[component._sizeMode];
-                }
-                cb();
-            }.bind(this));
-        });
+        // Move Node properties into 'node' and clean _properties
+        this._properties = {node: this._properties};
+
+        let component = Node.get_node_component_of_type(this._node_data, 'cc.Sprite');
+        let sprite_frame_uuid = component._spriteFrame.__uuid__;
+        
+        name = Node.get_sprite_frame_name_by_uuid(sprite_frame_uuid);
+        if (name) {
+            this._properties['spriteFrameName'] = name
+            this._properties.spriteType = Sprite.SPRITE_TYPES[component._type];
+            this.add_property_int('srcBlend', '_srcBlendFactor', component);
+            this.add_property_int('dstBlend', '_dstBlendFactor', component);
+            this.add_property_bool('trimEnabled', '_isTrimmedMode', component);
+            this._properties.sizeMode = Sprite.SIZE_MODES[component._sizeMode];
+        }
     }
 }
 Sprite.SPRITE_TYPES = ['Simple', 'Sliced', 'Tiled', 'Filled'];
 Sprite.SIZE_MODES = ['Custom', 'Trimmed', 'Raw'];
 
+/**
+ * Node: Label
+ */
 class Label extends Node {
     constructor(data) {
         super(data);
@@ -487,53 +519,52 @@ class Label extends Node {
         this._jsonNode.object_type = 'Label';
     }
 
-    parse_properties(cb) {
-        super.parse_properties(function() {
-            // Move Node properties into 'node' and clean _properties
-            this._properties = {node: this._properties};
+    parse_properties() {
+        super.parse_properties();
 
-            let component = Node.get_node_component_of_type(this._node_data, 'cc.Label');
+        // Move Node properties into 'node' and clean _properties
+        this._properties = {node: this._properties};
 
-            let is_system_font = component._isSystemFontUsed;
-            this._properties.fontSize = component._fontSize;
-            this._properties.labelText = component._N$string;
+        let component = Node.get_node_component_of_type(this._node_data, 'cc.Label');
 
-            // alignments
-            this._properties.horizontalAlignment = Label.H_ALIGNMENTS[component._N$horizontalAlign];
-            this._properties.verticalAlignment = Label.V_ALIGNMENTS[component._N$verticalAlign];
+        let is_system_font = component._isSystemFontUsed;
+        this._properties.fontSize = component._fontSize;
+        this._properties.labelText = component._N$string;
 
-            this._properties.overflowType = Label.OVERFLOW_TYPE[component._N$overflow];
-            this.add_property_bool('enableWrap', '_enableWrapText', component);
+        // alignments
+        this._properties.horizontalAlignment = Label.H_ALIGNMENTS[component._N$horizontalAlign];
+        this._properties.verticalAlignment = Label.V_ALIGNMENTS[component._N$verticalAlign];
 
-            if (is_system_font) {
-                this._properties.fontType = 'System';
-                this._properties.fontName = 'arial';
-                cb();
+        this._properties.overflowType = Label.OVERFLOW_TYPE[component._N$overflow];
+        this.add_property_bool('enableWrap', '_enableWrapText', component);
+
+        if (is_system_font) {
+            this._properties.fontType = 'System';
+            this._properties.fontName = 'arial';
+        }
+        else {
+            let fontName = Node.get_font_path_by_uuid(component._N$file.__uuid__);
+            this._properties.fontName = state._assetpath + fontName;
+            if (fontName.endsWith('.ttf'))
+                this._properties.fontType = 'TTF';
+            else if (fontName.endsWith('.fnt')) {
+                this._properties.fontType = 'BMFont';
+                this.add_property_int('fontSize', '_fontSize', component);
             }
-            else {
-                Node.get_font_path_by_uuid(component._N$file.__uuid__, function(fontName) {
-                    this._properties.fontName = state._assetpath + fontName;
-                    if (fontName.endsWith('.ttf'))
-                        this._properties.fontType = 'TTF';
-                    else if (fontName.endsWith('.fnt')) {
-                        this._properties.fontType = 'BMFont';
-                        this.add_property_int('fontSize', '_fontSize', component);
-                    }
-                    else
-                        throw 'can not find font file for uuid: ' + component._N$file.__uuid__;
+            else
+                throw 'can not find font file for uuid: ' + component._N$file.__uuid__;
 
-                    this.add_property_int('lineHeight' ,'_lineHeight', component);
-
-                    cb();
-                }.bind(this));
-            }
-        }.bind(this));
+            this.add_property_int('lineHeight' ,'_lineHeight', component);
+        }
     }
 }
 Label.H_ALIGNMENTS = ['Left', 'Center', 'Right'];
 Label.V_ALIGNMENTS = ['Top', 'Center', 'Bottom'];
 Label.OVERFLOW_TYPE = ['None', 'Clamp', 'Shrink', 'ResizeHeight'];
 
+/**
+ * Node: RichText
+ */
 class RichText extends Node {
     constructor(data) {
         super(data);
@@ -541,62 +572,269 @@ class RichText extends Node {
         this._jsonNode.object_type = 'RichText';
     }
 
-    parse_properties(cb) {
-        super.parse_properties(function() {
-            this._properties = {node: this._properties};
+    parse_properties() {
+        super.parse_properties();
 
-            let component = Node.get_node_component_of_type(this._node_data, 'cc.RichText');
+        this._properties = {node: this._properties};
 
-            this._properties.text = component._N$string;
-            this._properties.horizontalAlignment = Label.H_ALIGNMENTS[component._N$horizontalAlign];
-            this._properties.fontSize = component._N$fontSize;
-            this._properties.maxWidth = component._N$maxWidth;
-            this._properties.lineHeight = component._N$lineHeight;
-            let f = component._N$font;
-            if (f) {
-                Node.get_font_path_by_uuid(f.__uuid__, function(fontName) {
-                    this._properties.fontFilename = fontName;
-                    cb();
-                }.bind(this));
-            }
-            else
-                cb();
-        }.bind(this));
+        let component = Node.get_node_component_of_type(this._node_data, 'cc.RichText');
+
+        this._properties.text = component._N$string;
+        this._properties.horizontalAlignment = Label.H_ALIGNMENTS[component._N$horizontalAlign];
+        this._properties.fontSize = component._N$fontSize;
+        this._properties.maxWidth = component._N$maxWidth;
+        this._properties.lineHeight = component._N$lineHeight;
+        let f = component._N$font;
+        if (f)
+            this._properties.fontFilename = Node.get_font_path_by_uuid(f.__uuid__);
     }
 }
 RichText.H_ALIGNMENTS = ['Left', 'Center', 'Right'];
 
+/**
+ * Node: Tilemap
+ */
+class TiledMap extends Node {
+    constructor(data) {
+        super(data);
+        this._jsonNode.object_type = 'TileMap';
+    }
+
+    parse_properties() {
+        super.parse_properties();
+
+        this._properties = {node: this._properties};
+
+        // changing the contentSize doesn't change the size
+        // but it will affect the anchorPoint, so, it should not be set
+        // instead, create a new property `desiredContentSize` and manually 
+        // scale the tmx from there
+        let cs = this._properties.node.contentSize;
+        delete this._properties.node.contentSize;
+
+        let component = Node.get_node_component_of_type(this._node_data, 'cc.TiledMap');
+        this._properties.tmxFilename = state._assetpath + Node.get_tiledmap_path_by_uuid(component._tmxFile.__uuid__);
+        this._properties.desiredContentSize = cs;
+    }
+}
+
+/**
+ * Node: ParticleSystem
+ */
+class ParticleSystem extends Node {
+    constructor(data) {
+        super(data);
+        this._jsonNode.object_type = 'Particle';
+    }
+
+    parse_properties() {
+        super.parse_properties();
+
+        this._properties = {node: this._properties};
+
+        let component = Node.get_node_component_of_type(this._node_data, 'cc.ParticleSystem');
+        this._properties.particleFilename = state._assetpath + Node.get_particle_system_path_by_uuid(component._file.__uuid__);
+    }
+}
+
+/**
+ * Built-in UI Nodes
+ * Button, EditBox, ProgressBar, ScrollView
+ */
+
+/**
+ * Node: Button
+ */
 class Button extends Node {
     constructor(data) {
         super(data);
         this._jsonNode.object_type = 'Button';
     }
 
-    parse_properties(cb) {
-        super.parse_properties(function() {
-            this._properties = {node: this._properties};
+    parse_properties() {
+        super.parse_properties();
 
-            let spr_component = Node.get_node_component_of_type(this._node_data, 'cc.Sprite');
-            let but_component = Node.get_node_component_of_type(this._node_data, 'cc.Button');
+        this._properties = {node: this._properties};
 
-            this._properties.ignoreContentAdaptWithSize = false;
+        let spr_component = Node.get_node_component_of_type(this._node_data, 'cc.Sprite');
+        let but_component = Node.get_node_component_of_type(this._node_data, 'cc.Button');
 
-            // normal sprite
-            Node.get_sprite_frame_name_by_uuid(but_component._N$normalSprite.__uuid__, function(name) {
-                this._properties.spriteFrameName = name;
-                // pressed sprite
-                Node.get_sprite_frame_name_by_uuid(but_component.pressedSprite.__uuid__, function(name) {
-                    this._properties.pressedSpriteFrameName = name;
-                    // disabled sprite
-                    Node.get_sprite_frame_name_by_uuid(but_component._N$disabledSprite.__uuid__, function(name) {
-                        this._properties.disabledSpriteFrameName = name;
-                        cb();
-                    }.bind(this));
-                }.bind(this));
-            }.bind(this));
-        }.bind(this));
+        this._properties.ignoreContentAdaptWithSize = false;
+
+        // normal sprite
+        this._properties.spriteFrameName = Node.get_sprite_frame_name_by_uuid(but_component._N$normalSprite.__uuid__);
+        // pressed sprite
+        this._properties.pressedSpriteFrameName = Node.get_sprite_frame_name_by_uuid(but_component.pressedSprite.__uuid__);
+        // disabled sprite
+        this._properties.disabledSpriteFrameName = Node.get_sprite_frame_name_by_uuid(but_component._N$disabledSprite.__uuid__);
     }
 }
+
+/**
+ * Node: ProgressBar
+ */
+class ProgressBar extends Node {
+    constructor(data) {
+        super(data);
+        this._jsonNode.object_type = 'ProgressBar';
+
+        Utils.log('WARNING: ProgressBar support is an experimental feature');
+    }
+
+    parse_properties() {
+        super.parse_properties();
+        this._properties = {node: this._properties};
+
+        let component = Node.get_node_component_of_type(this._node_data, 'cc.ProgressBar');
+        this._properties.percent = component._N$progress * 100;
+    }
+}
+
+/**
+ * Node: ScrollView
+ */
+class ScrollView extends Node {
+    constructor(data) {
+        super(data);
+        this._jsonNode.object_type = 'ScrollView';
+    }
+
+    get_content_node() {
+        /**
+         * Node
+         * +--> ScrollBar
+         *     +--> Bar
+         * +--> View
+         *     +--> Content    <-- this is what we want
+         */
+        let view_node = null;
+        let content_node = null;
+
+        // find the "view" node
+        this._node_data._children.forEach(function(child_idx) {
+            let node_idx = child_idx.__id__;
+            let node = state._json_data[node_idx];
+
+            if (node._name === 'view')
+                view_node = node;
+        });
+
+        // then find the "content" node
+        if (view_node) {
+            view_node._children.forEach(function(child_idx) {
+                let node_idx = child_idx.__id__;
+                let node = state._json_data[node_idx];
+
+                if (node._name === 'content')
+                    content_node = node;
+            });
+        }
+
+        if (content_node)
+            return content_node;
+        else
+            throw 'ContentNode not found';
+    }
+
+    parse_properties() {
+        super.parse_node_properties();
+
+        this._properties = {node: this._properties};
+        
+        // data from 'node' component
+        this.add_property_rgb('backgroundImageColor', '_color', this._node_data);
+
+        // data from sprite component
+        let compent_spr = Node.get_node_component_of_type(this._node_data, 'cc.Sprite');
+        let sprite_frame_uuid = compent_spr._spriteFrame.__uuid__;
+        this._properties.backgroundImage = Node.get_sprite_frame_name_by_uuid(sprite_frame_uuid);
+
+        // Sliced?
+        if (compent_spr._type === ScrollView.SLICED)
+            this._properties.backgroundImageScale9Enabled = true;
+        else
+            this._properties.backgroundImageScale9Enabled = false;
+        
+        // data from scroll view component
+        let component_sv = Node.get_node_component_of_type(this._node_data, 'cc.ScrollView');
+        if (component_sv.horizontal && component_sv.vertical)
+            this._properties.direction = 'Both';
+        else if (component_sv.horizontal)
+            this._properties.direction = 'Horizontal';
+        else if (component_sv.vertical)
+            this._properties.direction = 'Vertical';
+        else
+            this._properties.direction = 'None';
+        this.add_property_bool('bounceEnabled', 'elastic', component_sv);
+
+        // content node
+        let content_node = this.get_content_node();
+
+        // get size from content (which must be >= view.size)
+        let data = content_node;
+        this.add_property_size('innerContainerSize', "_contentSize", data);
+        this._content_size = data._contentSize;
+
+        // FIXME: Container Node should honor these values, but it seems that ScrollView doesn't
+        // take them into account... or perhaps CocosCreator uses a different anchorPoint
+        // position is being adjusted in `adjust_child_parameters`
+        this._content_ap = content_node._anchorPoint;
+
+        this._content_pos = content_node._position;
+
+        content_node._children.forEach(function(child_idx) {
+            this.parse_child(child_idx.__id__);
+        }.bind(this));
+    }
+
+    adjust_child_parameters(child) {
+        // FIXME: adjust child position since innerContainer doesn't honor
+        // position and anchorPoit.
+        let pos = child._properties.node.position;
+        let x = pos.x;
+        let y = pos.y;
+        child._properties.node.position = {
+            x: x + this._content_size.width * this._content_ap.x,
+            y: y + this._content_size.height * this._content_ap.y
+        };
+    }
+}
+ScrollView.SIMPLE = 0;
+ScrollView.SLICED = 1;
+ScrollView.TILED = 2;
+ScrollView.FILLED = 3;
+
+/**
+ * Node: EditBox
+ */
+class EditBox extends Node {
+    constructor(data) {
+        super(data);
+        this._jsonNode.object_type = 'EditBox';
+    }
+
+    parse_properties() {
+        super.parse_properties();
+
+        this._properties = {node: this._properties};
+
+        let component = Node.get_node_component_of_type(this._node_data, 'cc.EditBox');
+        this._properties.backgroundImage = Node.get_sprite_frame_name_by_uuid(component._N$backgroundImage.__uuid__);
+        this._properties.returnType = EditBox.RETURN_TYPE[component._N$returnType];
+        this._properties.inputFlag = EditBox.INPUT_FLAG[component._N$inputFlag];
+        this._properties.inputMode = EditBox.INPUT_MODE[component._N$inputMode];
+        this.add_property_int('fontSize', '_N$fontSize', component);
+        this.add_property_rgb('fontColor', '_N$fontColor', component);
+        this.add_property_str('placeholder', '_N$placeholder', component);
+        this.add_property_int('placeholderFontSize', '_N$placeholderFontSize', component);
+        this.add_property_rgb('placeholderFontColor', '_N$placeholderFontColor', component);
+        this.add_property_int('maxLength', '_N$maxLength', component);
+        this.add_property_str('text', '_string', component);
+    }
+}
+EditBox.INPUT_MODE = ['Any', 'EmailAddress', 'Numeric', 'PhoneNumber', 'URL', 'Decime', 'SingleLine'];
+EditBox.INPUT_FLAG = ['Password', 'Sensitive', 'InitialCapsWord', 'InitialCapsSentence', 'InitialCapsAllCharacters', 'LowercaseAllCharacters'];
+EditBox.RETURN_TYPE = ['Default', 'Done', 'Send', 'Search', 'Go'];
 
 /**
  * bootstrap + helper functions
@@ -666,7 +904,7 @@ class FireParser {
         return fs.openSync(filename, 'w');
     }
 
-    run(filename, assetpath, path_to_json_files, cb) {
+    run(filename, assetpath, path_to_json_files) {
         state._filename = path.basename(filename, '.fire');
         let json_name = path.join(path_to_json_files, state._filename) + '.json';
         this._json_file = this.create_file(json_name);
@@ -680,39 +918,36 @@ class FireParser {
                 let scene_idx = scene.__id__;
                 let scene_obj = new Scene(state._json_data[scene_idx]);
 
-                scene_obj.parse_properties(function() {
-                    this.to_json_setup();
-                    let jsonNode = scene_obj.to_json(0, 0);
-                    this._json_output.root = jsonNode;
-                    let dump = JSON.stringify(this._json_output, null, '\t');
-                    fs.writeSync(this._json_file, dump);
-                    fs.close(this._json_file);
-                    cb();
-                }.bind(this));
+                scene_obj.parse_properties();
+
+                this.to_json_setup();
+                let jsonNode = scene_obj.to_json(0, 0);
+                this._json_output.root = jsonNode;
+                let dump = JSON.stringify(this._json_output, null, '\t');
+                fs.writeSync(this._json_file, dump);
+                fs.close(this._json_file);
             }
         });
     }
 }
 
-function parse_fire(filenames, assetpath, path_to_json_files, cb) {
+function parse_fire(filenames, assetpath, path_to_json_files, uuidmaps) {
     if (assetpath[-1] != '/')
         assetpath += '/';
 
+    uuidinfos = uuidmaps;
+
     let uuid = {};
-    Utils.eachSeries(filenames, function(filename, cb) {
+    filenames.forEach(function(filename) {
         state.reset();
-        let parse = new FireParser();
-        parse.run(filename, assetpath, path_to_json_files, function() {
-            for(let key in state._uuid) {
-                if (state._uuid.hasOwnProperty(key))
-                    uuid[key] = state._uuid[key];
-            }
-            cb();
-        });
-    },
-    function() {
-        cb(uuid);
+        let parser = new FireParser();
+        parser.run(filename, assetpath, path_to_json_files)
+        for(let key in state._uuid) {
+            if (state._uuid.hasOwnProperty(key))
+                uuid[key] = state._uuid[key];
+        }
     });
+    return uuid;
 }
 
 module.exports = parse_fire;
