@@ -211,19 +211,17 @@ class Node {
                 let res_dir = path.join(path.dirname(jsonfile), uuid);
 
                 if (type === 'cc.BitmapFont') {
-                    let files = fs.readdirSync(res_dir);
-                    files.forEach(function(file) {
-                        let fullpath = path.join(res_dir, file);
-                        // dir name is the same as base name
-                        
-                        if (file.endsWith('.fnt')) {
-                            state._uuid[uuid] = {fullpath: fullpath, relative_path: current_dir + '/' + file};
-                        }
-                        else {
-                            state._uuid[uuid + '$'] = {fullpath: fullpath, relative_path: current_dir + '/' + file};
-                        }
-                            
-                    });
+                    // png path
+                    let png_uuid = contents_json.spriteFrame.__uuid__;
+                    let json_png = JSON.parse(fs.readFileSync(uuidinfos[png_uuid]));
+                    let png_path_info = Node.get_relative_full_path_by_uuid(json_png.content.texture);
+                    state._uuid[png_uuid] = png_path_info;
+
+                    // fnt path
+                    state._uuid[uuid] = {
+                        fullpath: Utils.replaceExt(png_path_info.fullpath, '.fnt'),
+                        relative_path: Utils.replaceExt(png_path_info.relative_path, '.fnt')
+                    }
 
                     return state._uuid[uuid].relative_path;
                 }
@@ -304,8 +302,8 @@ class Node {
             });
 
             // get tmx path
-            let tmx_relative_path = tmx_texture_info.relative_path.substr(0, tmx_texture_info.relative_path.lastIndexOf(".")) + ".tmx";
-            let tmx_fullpath = tmx_texture_info.fullpath.substr(0, tmx_texture_info.fullpath.lastIndexOf(".")) + ".tmx";
+            let tmx_relative_path = Utils.replaceExt(tmx_texture_info.relative_path, '.tmx');
+            let tmx_fullpath = Utils.replaceExt(tmx_texture_info.fullpath, '.tmx');
             state._uuid[uuid] = {
                 relative_path: tmx_relative_path,
                 fullpath: tmx_fullpath
