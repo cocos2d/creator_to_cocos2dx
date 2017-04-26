@@ -160,6 +160,8 @@ table Button
 {
     node:Node;
     spriteFrameName:string;
+    pressedSpriteFrameName:string;
+    disabledSpriteFrameName:string;
     ignoreContentAdaptWithSize:bool = false;
 }
 

@@ -722,7 +722,9 @@ void CreatorReader::parseEditBox(cocos2d::ui::EditBox* editBox, const buffers::E
 cocos2d::ui::Button* CreatorReader::createButton(const buffers::Button* buttonBuffer) const
 {
     const auto& spriteFrameName = buttonBuffer->spriteFrameName();
-    auto button = ui::Button::create(spriteFrameName->str(), "", "", cocos2d::ui::Widget::TextureResType::PLIST);
+    const auto& pressedSpriteFrameName = buttonBuffer->pressedSpriteFrameName();
+    const auto& disabledSpriteFrameName = buttonBuffer->disabledSpriteFrameName();
+    auto button = ui::Button::create(spriteFrameName->str(), pressedSpriteFrameName->str(), disabledSpriteFrameName->str(), cocos2d::ui::Widget::TextureResType::PLIST);
     parseButton(button, buttonBuffer);
     return button;
 }
