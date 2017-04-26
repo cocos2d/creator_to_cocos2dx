@@ -41,13 +41,7 @@ class BuildWorker extends WorkerBase {
 
     _convertFireToJson(uuidmap) {
         let fireFiles = this._getFireList();  
-
-        let copyReourceInfos = {};
-        fireFiles.forEach(firefile => {
-            if (firefile.endsWith('CreatorTilemap.fire')) {
-                copyReourceInfos = parse_fire([firefile], 'creator', Constants.JSON_PATH2, uuidmap);
-            }
-        })
+        let copyReourceInfos = parse_fire(fireFiles, 'creator', Constants.JSON_PATH2, uuidmap);
 
         return copyReourceInfos;
     }

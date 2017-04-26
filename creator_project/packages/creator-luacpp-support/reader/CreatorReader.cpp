@@ -108,7 +108,7 @@ void CreatorReader::setup()
     }
 
     setupSpriteFrames();
-    // setupAnimClips();
+    setupAnimClips();
 }
 
 void CreatorReader::setupAnimClips()

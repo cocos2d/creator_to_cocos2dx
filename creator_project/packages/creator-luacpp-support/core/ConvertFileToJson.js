@@ -994,7 +994,7 @@ class FireParser {
             delete obj[prop];
             return ret;
         }
-debugger
+
         // convert dictionary to list
         for (let key in state._clips) {
             let value = state._clips[key];
