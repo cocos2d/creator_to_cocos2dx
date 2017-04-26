@@ -41,7 +41,7 @@ class BuildWorker extends WorkerBase {
 
     _convertFireToJson(uuidmap) {
         let fireFiles = this._getFireList();  
-        let copyReourceInfos = parse_fire(fireFiles, 'creator', Constants.JSON_PATH2, uuidmap);
+        let copyReourceInfos = parse_fire(fireFiles, 'creator', Constants.JSON_PATH, uuidmap);
 
         return copyReourceInfos;
     }
@@ -130,7 +130,7 @@ class BuildWorker extends WorkerBase {
     }
 
     _getJsonList() {
-        return this._getFilesWithExt(Constants.JSON_PATH2, ['.json']);
+        return this._getFilesWithExt(Constants.JSON_PATH, ['.json']);
     }
 
    // return file list ends with `exts` in dir

@@ -3,7 +3,7 @@ const fire_fs = require('fire-fs');
 const path = require('path');
 const Utils = require('./Utils');
 
-let DEBUG = true;
+let DEBUG = false;
 let uuidInfos = null;
 
 function log(s) {
