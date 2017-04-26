@@ -126,7 +126,8 @@ class Node {
             n = new TiledMap(state._json_data[node_idx]);
         else if (node_type === 'cc.ParticleSystem')
             n = new ParticleSystem(state._json_data[node_idx]);
-        // TODO: other types
+        else if (node_type === 'sp.Skeleton')
+            n = new SpineSkeleton(state._json_data[node_idx]);
 
         if (n != null) {
             n.parse_properties();
@@ -206,7 +207,7 @@ class Node {
                 let contents = fs.readFileSync(jsonfile);
                 let contents_json = JSON.parse(contents);
                 let type = contents_json.__type__;
-                // resources are in the res_dir
+                // creator copy resources into the uuid folder
                 let res_dir = path.join(path.dirname(jsonfile), uuid);
 
                 if (type === 'cc.BitmapFont') {
@@ -242,6 +243,45 @@ class Node {
                 log('can not get bmfont path of uuid ' + uuid);
                 return 'xxx';
             }
+        }
+    }
+
+    /**
+     * return json file path and atlas path
+     */
+    static get_spine_info_by_uuid(uuid) {
+        if (uuid in state._uuid)
+            return state._uuid[uuid];
+
+        let jsonfile = uuidinfos[uuid];
+        if (jsonfile) {
+            let contents = fs.readFileSync(jsonfile);
+            let contents_json = JSON.parse(contents);
+            let current_dir = path.basename(jsonfile, '.json');
+            
+            let res_dir = path.join(path.dirname(jsonfile), uuid);
+            
+            let files = fs.readdirSync(res_dir);
+            files.forEach(function(file) {
+                let fullpath = path.join(res_dir, file);
+                //FIXME: have more than one json file?
+                state._uuid[uuid] = {fullpath: fullpath, relative_path: current_dir + '/' + file};
+            });
+            
+            // get atlas path
+            state._uuid[uuid].atlas_url = Node.get_relative_full_path_by_uuid(contents_json.atlasUrl.__uuid__);
+            // add to _uuid to copy resources
+            state._uuid[uuid + '-atlas'] = state._uuid[uuid].atlas_url;
+
+            // get textures path
+            for (let i = 0, len = contents_json.textures.length; i < len; ++i) {
+                let texture = contents_json.textures[i];
+                // just create a unique key
+                let new_key = uuid + '-texture-' + i;
+                state._uuid[new_key] = Node.get_relative_full_path_by_uuid(texture.__uuid__);
+            }
+
+            return state._uuid[uuid];
         }
     }
 
@@ -391,7 +431,24 @@ class Node {
     }
 
     parse_clip() {
-        // TODO
+        let component = Node.get_node_component_of_type(this._node_data, 'cc.Animation');
+        if (component) {
+            let anim = {
+                playOnLoad: component.playOnLoad,
+                name: component._name,
+                objFlags: component._objFlags,
+                defaultClip: component._defaultClip.__uuid__,
+                clips: []
+            };
+            component._clips.forEach(function(clips) {
+                let clip_uuid = clips.__uuid__;
+                anim.clips.push(clip_uuid);
+
+                let clip_content = fs.readFileSync(uuidinfos[clip_uuid]);
+                state._clips[clips.__uuid__] = JSON.parse(clip_content);
+            });
+            this._properties.anim = anim;
+        }
     }
 
     add_child(node) {
@@ -837,6 +894,40 @@ EditBox.INPUT_FLAG = ['Password', 'Sensitive', 'InitialCapsWord', 'InitialCapsSe
 EditBox.RETURN_TYPE = ['Default', 'Done', 'Send', 'Search', 'Go'];
 
 /**
+ * Misc Nodes
+ */
+
+/**
+ * Node: SpineSkeleton
+ */
+class SpineSkeleton extends Node {
+    constructor(data) {
+        super(data);
+        this._jsonNode.object_type = 'SpineSkeleton';
+    }
+
+    parse_properties() {
+        super.parse_properties();
+
+        this._properties = {node: this._properties};
+
+        // search for spine file
+        let component = Node.get_node_component_of_type(this._node_data, 'sp.Skeleton');
+
+        let path_info = Node.get_spine_info_by_uuid(component._N$skeletonData.__uuid__);
+        this._properties.jsonFile = state._assetpath + path_info.relative_path;
+        this._properties.atlasFile = state._assetpath + path_info.atlas_url.relative_path;
+        this.add_property_str('defaultSkin', 'defaultSkin', component);
+        this.add_property_str('defaultAnimation', 'defaultAnimation', component);
+        this.add_property_bool('loop', 'loop', component);
+        this.add_property_bool('premultipliedAlpha', '_premultipliedAlpha', component);
+        this.add_property_int('timeScale', '_N$timeScale', component);
+        this.add_property_bool('debugSlots', '_N$debugSlots', component);
+        this.add_property_bool('debugBones', '_N$debugBones', component);
+    }
+}
+
+/**
  * bootstrap + helper functions
  */
 class FireParser {
@@ -896,7 +987,58 @@ class FireParser {
     }
 
     to_json_setup_clips() {
-        // TODO
+        let clips = [];
+        
+        let pop = function(obj, prop) {
+            let ret = obj[prop];
+            delete obj[prop];
+            return ret;
+        }
+debugger
+        // convert dictionary to list
+        for (let key in state._clips) {
+            let value = state._clips[key];
+            value.uuid = key;
+            delete value.__type__;
+            delete value._rawFiles;
+
+            // FIXME: comps should be supported
+            if ('curveData' in value && 'comps' in value.curveData)
+                delete value.curveData.comps;
+
+            // sanitize
+            value.duration = pop(value, '_duration');
+            value.objFlags = pop(value, '_objFlags');
+            value.name = pop(value, '_name');
+
+            // remove __type__ from color frames
+            if ('curveData' in value && 'props' in value.curveData && 'color' in value.curveData.props) {
+                let color_frames = value.curveData.props.color;
+                color_frames.forEach(function(frame) {
+                    delete frame.value.__type__;
+                });
+            }
+
+            // convert position [] to x, y
+            if ('curveData' in value && 'props' in value.curveData && 'position' in value.curveData.props) {
+                let pos_frames = value.curveData.props.position;
+                pos_frames.forEach(function(frame){
+                    let pos_value = frame.value;
+                    frame.value = {x: pos_value[0], y: pos_value[1]};
+                });
+            }
+
+            // convert 'x' to 'positionX'
+            if ('curveData' in value && 'props' in value.curveData && 'x' in value.curveData.props)
+                value.curveData.props.positionX = pop(value.curveData.props, 'x');
+
+            // convert 'y' to 'positionY'
+            if ('curveData' in value && 'props' in value.curveData && 'y' in value.curveData.props)
+                value.curveData.props.positionY = pop(value.curveData.props, 'y');
+
+            clips.push(value);
+        }
+        this._json_output.animationClips = clips;
     }
 
     create_file(filename) {
