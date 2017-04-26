@@ -81,6 +81,10 @@ class Utils {
             cb(uuidmaps);
         })
     }
+
+    static replaceExt(path, ext) {
+        return (path.substr(0, path.lastIndexOf(".")) + ext);
+    }
 }
 
 module.exports = Utils;
