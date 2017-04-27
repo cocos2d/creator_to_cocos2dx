@@ -160,6 +160,12 @@ void CreatorReader::setupAnimClips()
                 // skew Y
                 setupAnimClipsPropFloat(fbAnimProps->skewY(), properties.animSkewY);
 
+                // scaleX
+                setupAnimClipsPropFloat(fbAnimProps->scaleX(), properties.animScaleX);
+                
+                // scaleY
+                setupAnimClipsPropFloat(fbAnimProps->scaleY(), properties.animScaleY);
+
                 // Color
                 setupAnimClipsPropColor(fbAnimProps->color(), properties.animColor);
 

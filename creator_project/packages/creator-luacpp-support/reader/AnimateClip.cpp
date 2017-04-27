@@ -25,21 +25,128 @@
 
 #include "AnimateClip.h"
 #include "AnimationClip.h"
+#include "AnimationClipProperties.h"
+
+namespace  {
+    
+    // -1: invalid index
+    template<typename P>
+    int getValidIndex(const P &properties, float elapsed)
+    {
+        if (properties.empty())
+            return -1;
+        
+        if (properties.front().frame > elapsed)
+            return -1;
+
+        if (properties.back().frame <= elapsed)
+            return properties.size() - 1;
+        
+        for (int i = 0, len = properties.size(); i < len; ++i)
+        {
+            const auto& prop = properties[i];
+            if (prop.frame > elapsed)
+                return i - 1;
+        }
+        
+        return -1;
+    }
+    
+    template<typename P>
+    float getPercent(const P& p1, const P& p2, float elapsed) {
+        return (elapsed - p1.frame) / (p2.frame - p1.frame);
+    }
+    
+    bool getNextPos(const std::vector<creator::AnimPropPosition> &properties, float elapsed, cocos2d::Vec2 &out)
+    {
+        int index = getValidIndex(properties, elapsed);
+        if (index == -1)
+            return false;
+        
+        if (index == properties.size() -1) {
+            out.x = properties.back().value.x;
+            out.y = properties.back().value.y;
+            return true;
+        }
+        
+        const auto& prop = properties[index];
+        const auto& nextProp = properties[index+1];
+        float percent = getPercent(prop, nextProp, elapsed);
+        out.x = prop.value.x + percent * (nextProp.value.x - prop.value.x);
+        out.y = prop.value.y + percent * (nextProp.value.y - prop.value.y);
+        
+        return true;
+    }
+    
+    void assignColor(const cocos2d::Color3B& src, cocos2d::Color3B& dst)
+    {
+        dst.r = src.r;
+        dst.g = src.g;
+        dst.b = src.b;
+    }
+    
+    bool getNextColor(const std::vector<creator::AnimPropColor> &properties, float elapsed, cocos2d::Color3B &out)
+    {
+        int index = getValidIndex(properties, elapsed);
+        if (index == -1)
+            return false;
+        
+        if (index == properties.size() -1) {
+            assignColor(properties.back().value, out);
+            return true;
+        }
+        
+        const auto& prop = properties[index];
+        const auto& nextProp = properties[index+1];
+        float percent = getPercent(prop, nextProp, elapsed);
+        out.r = prop.value.r + percent * (nextProp.value.r - prop.value.r);
+        out.g = prop.value.g + percent * (nextProp.value.g - prop.value.g);
+        out.b = prop.value.b + percent * (nextProp.value.b - prop.value.b);
+        
+        return true;
+    }
+    
+    template<typename P>
+    bool getNextValue(const P & properties, float elapsed, float &out)
+    {
+        int index = getValidIndex(properties, elapsed);
+        if (index == -1)
+            return false;
+        
+        if (index == properties.size() -1)
+        {
+            out = properties.back().value;
+            return true;
+        }
+        
+        const auto& prop = properties[index];
+        const auto& nextProp = properties[index+1];
+        float percent = getPercent(prop, nextProp, elapsed);
+        out = prop.value + percent * (nextProp.value - prop.value);
+        
+        return true;
+    }
+}
 
 USING_NS_CCR;
 
 AnimateClip* AnimateClip::createWithAnimationClip(AnimationClip* clip)
 {
     AnimateClip* animate = new (std::nothrow) AnimateClip;
-    if (animate && animate->initWithAnimationClip(clip)) {
+    if (animate && animate->initWithAnimationClip(clip))
         animate->autorelease();
-        return animate;
+    else {
+        delete animate;
+        animate = nullptr;
     }
-    return nullptr;
+
+    return animate;
 }
 
 AnimateClip::AnimateClip()
 : _clip(nullptr)
+, _elapsed(0)
+, _done(false)
 {
 }
 
@@ -48,85 +155,83 @@ AnimateClip::~AnimateClip()
     CC_SAFE_RELEASE(_clip);
 }
 
-void AnimateClip::startWithTarget(cocos2d::Node *target)
-{
-    // probably nothing
-    ActionInterval::startWithTarget(target);
-
-    for (const auto& action: _actions) {
-        action->startWithTarget(target);
-    }
-}
-
-void AnimateClip::update(float time)
-{
-    for (const auto& action: _actions) {
-        action->update(time);
-    }
-}
-
 bool AnimateClip::initWithAnimationClip(AnimationClip* clip)
 {
-    bool ret = (clip != nullptr);
-    if (!ret)
-        return ret;
-
-    const float framesPerSecond = 60.0f / clip->getSample();
-    const float duration = clip->getDuration() * framesPerSecond;
-    ret &= ActionInterval::initWithDuration(duration);
-    if (ret) {
-        if (_clip != clip) {
-            CC_SAFE_RELEASE(_clip);
-            _clip = clip;
-            CC_SAFE_RETAIN(_clip);
-        }
-
-        auto animProperties = _clip->getAnimProperties();
-
-        // position
-        createAction<cocos2d::MoveTo>(animProperties.animPosition, framesPerSecond);
-
-        // rotation
-        createAction<cocos2d::RotateTo>(animProperties.animRotation, framesPerSecond);
-
-        // scale
-        createAction<cocos2d::ScaleTo>(animProperties.animSkewX, framesPerSecond);
-
-        // color
-        createAction<cocos2d::TintTo>(animProperties.animColor, framesPerSecond);
-
-        // opacity
-        createAction<cocos2d::FadeTo>(animProperties.animOpacity, framesPerSecond);
+    _clip = clip;
+    
+    if (_clip)
+    {
+        _clip->retain();
+        _duration = _clip->getDuration();
     }
+    
 
-    return ret;
+    return clip != nullptr;
 }
 
-template <class A, typename P>
-void AnimateClip::createAction(const P &properties, const float framesPerSecond)
-{
-    cocos2d::Vector<cocos2d::FiniteTimeAction*> array;
-    float prevFrame = 0;        // because it uses absolute values
-    bool firstProcessed = false;
-    for (const auto& prop: properties) {
-        if (!firstProcessed) {
-            if (prop.frame != 0) {
-                // create pause until action start
-                auto delay = cocos2d::DelayTime::create(prop.frame * framesPerSecond);
-                array.pushBack(delay);
-            }
-            firstProcessed = true;
-        }
-        auto a = A::create((prop.frame - prevFrame) * framesPerSecond, prop.value);
-        array.pushBack(a);
-
-        prevFrame = prop.frame;
-    }
-    if (array.size() > 0) {
-        auto seq = cocos2d::Sequence::create(array);
-        _actions.pushBack(seq);
-    }
+bool AnimateClip::isDone() const {
+    return _done >= _duration;
 }
+
+void AnimateClip::step(float dt) {
+    _elapsed += dt;
+    
+    auto animProperties = _clip->getAnimProperties();
+    
+    // update position
+    cocos2d::Vec2 nextPos;
+    if (getNextPos(animProperties.animPosition, _elapsed, nextPos))
+        _target->setPosition(nextPos);
+    
+    // update color
+    cocos2d::Color3B nextColor;
+    if (getNextColor(animProperties.animColor, _elapsed, nextColor))
+        _target->setColor(nextColor);
+    
+    // update scaleX
+    float nextValue;
+    if (getNextValue(animProperties.animScaleX, _elapsed, nextValue))
+        _target->setScaleX(nextValue);
+    
+    // update scaleY
+    if (getNextValue(animProperties.animScaleY, _elapsed, nextValue))
+        _target->setScaleY(nextValue);
+    
+    // rotation
+    if (getNextValue(animProperties.animRotation, _elapsed, nextValue))
+        _target->setRotation(nextValue);
+    
+    // SkewX
+    if (getNextValue(animProperties.animSkewX, _elapsed, nextValue))
+        _target->setSkewX(nextValue);
+    
+    // SkewY
+    if (getNextValue(animProperties.animSkewY, _elapsed, nextValue))
+        _target->setSkewY(nextValue);
+    
+    // Opacity
+    if (getNextValue(animProperties.animOpacity, _elapsed, nextValue))
+        _target->setOpacity(nextValue);
+    
+    // anchor x
+    if (getNextValue(animProperties.animAnchorX, _elapsed, nextValue))
+        _target->setAnchorPoint(cocos2d::Vec2(nextValue, _target->getAnchorPoint().y));
+    
+    // anchor y
+    if (getNextValue(animProperties.animAnchorY, _elapsed, nextValue))
+        _target->setAnchorPoint(cocos2d::Vec2(_target->getAnchorPoint().x, nextValue));
+    
+    // positoin x
+    if (getNextValue(animProperties.animPositionX, _elapsed, nextValue))
+        _target->setPositionX(nextValue);
+    
+    // position y
+    if (getNextValue(animProperties.animPositionY, _elapsed, nextValue))
+        _target->setPositionY(nextValue);
+
+    _done = _elapsed >= _duration;
+}
+
 
 AnimateClip* AnimateClip::clone() const
 {

@@ -41,7 +41,7 @@ NS_CCR_BEGIN
 
 class AnimationClip;
 
-class AnimateClip: public cocos2d::ActionInterval
+class AnimateClip: public cocos2d::FiniteTimeAction
 {
 public:
     static AnimateClip* createWithAnimationClip(AnimationClip* clip);
@@ -49,11 +49,11 @@ public:
     //
     // Overrides
     //
-    virtual void startWithTarget(cocos2d::Node *target) override;
-    virtual void update(float time) override;
+    virtual void step(float dt) override;
     virtual AnimateClip* clone() const override;
     virtual AnimateClip* reverse() const override;
-
+    virtual bool isDone() const override;
+    
 CC_CONSTRUCTOR_ACCESS:
     AnimateClip();
     virtual ~AnimateClip();
@@ -61,10 +61,9 @@ CC_CONSTRUCTOR_ACCESS:
 
 
     AnimationClip* _clip;
-    cocos2d::Vector<cocos2d::ActionInterval*> _actions;
-
-    template <class A, typename P>
-    void createAction(P const& p, const float framesPerSecond);
+    
+    float _elapsed;
+    bool _done;
 };
 
 NS_CCR_END
