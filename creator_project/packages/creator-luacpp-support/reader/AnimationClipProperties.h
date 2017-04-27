@@ -130,6 +130,8 @@ struct AnimProperties
     std::vector<AnimPropPosition> animPosition;
     std::vector<AnimPropPositionX> animPositionX;
     std::vector<AnimPropPositionY> animPositionY;
+    std::vector<AnimPropScaleX> animScaleX;
+    std::vector<AnimPropScaleY> animScaleY;
     std::vector<AnimPropSkewX> animSkewX;
     std::vector<AnimPropSkewY> animSkewY;
     std::vector<AnimPropAnchorX> animAnchorX;

@@ -1,6 +1,6 @@
 {
   "__type__": "cc.AnimationClip",
-  "_name": "Animation",
+  "_name": "Animation1",
   "_objFlags": 0,
   "_rawFiles": null,
   "_duration": 5.4,
@@ -59,18 +59,6 @@
         {
           "frame": 0.03333333333333333,
           "value": 1
-        }
-      ],
-      "x": [
-        {
-          "frame": 0.06666666666666667,
-          "value": 690
-        }
-      ],
-      "y": [
-        {
-          "frame": 0.11666666666666667,
-          "value": 300
         }
       ],
       "width": [
