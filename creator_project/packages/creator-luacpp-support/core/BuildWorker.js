@@ -21,13 +21,9 @@ class BuildWorker extends WorkerBase {
         this._callback = callback;
         this._state = state;
 
-         // creator json folder if not exist
-        if (!Fs.existsSync(Constants.JSON_PATH))
-            Fs.mkdirSync(Constants.JSON_PATH);
-
-        // creator ccreator folder if not exist
-        if (!Fs.existsSync(Constants.CCREATOR_PATH))
-            Fs.mkdirSync(Constants.CCREATOR_PATH);
+        // clean old json or ccreator files
+        Fs.emptyDirSync(Constants.JSON_PATH);
+        Fs.emptyDirSync(Constants.CCREATOR_PATH);
 
         Utils.getAssetsInfo(function(uuidmap) {
             let copyReourceInfos = this._convertFireToJson(uuidmap);
