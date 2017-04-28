@@ -117,9 +117,9 @@ protected:
 
     template <typename T, typename U>
     void setupAnimClipsPropVec2(T fbPropList, U& proplist);
-
+    
     template <typename T, typename U>
-    void setupAnimClipsPropFloat(T fbPropList, U& proplist);
+    void setupAnimClipsPropValue(T fbPropList, U& proplist);
 
     template <typename T, typename U>
     void setupAnimClipsPropColor(T fbPropList, U& proplist);

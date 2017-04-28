@@ -30,6 +30,7 @@
 namespace  {
     
     // -1: invalid index
+    // -2: haven't reached first frame, so it should be the same as first frame
     template<typename P>
     int getValidIndex(const P &properties, float elapsed)
     {
@@ -37,7 +38,7 @@ namespace  {
             return -1;
         
         if (properties.front().frame > elapsed)
-            return -1;
+            return -2;
 
         if (properties.back().frame <= elapsed)
             return properties.size() - 1;
@@ -53,8 +54,15 @@ namespace  {
     }
     
     template<typename P>
-    float getPercent(const P& p1, const P& p2, float elapsed) {
+    float getPercent(const P& p1, const P& p2, float elapsed)
+    {
         return (elapsed - p1.frame) / (p2.frame - p1.frame);
+    }
+    
+    void assignVec2(const cocos2d::Vec2 &src, cocos2d::Vec2& dst)
+    {
+        dst.x = src.x;
+        dst.y = src.y;
     }
     
     bool getNextPos(const std::vector<creator::AnimPropPosition> &properties, float elapsed, cocos2d::Vec2 &out)
@@ -63,9 +71,15 @@ namespace  {
         if (index == -1)
             return false;
         
-        if (index == properties.size() -1) {
-            out.x = properties.back().value.x;
-            out.y = properties.back().value.y;
+        if (index == -2)
+        {
+            assignVec2(properties.front().value, out);
+            return true;
+        }
+        
+        if (index == properties.size() -1)
+        {
+            assignVec2(properties.back().value, out);
             return true;
         }
         
@@ -91,7 +105,14 @@ namespace  {
         if (index == -1)
             return false;
         
-        if (index == properties.size() -1) {
+        if (index == -2)
+        {
+            assignColor(properties.front().value, out);
+            return true;
+        }
+        
+        if (index == properties.size() -1)
+        {
             assignColor(properties.back().value, out);
             return true;
         }
@@ -112,6 +133,12 @@ namespace  {
         int index = getValidIndex(properties, elapsed);
         if (index == -1)
             return false;
+        
+        if (index == -2)
+        {
+            out = properties.front().value;
+            return true;
+        }
         
         if (index == properties.size() -1)
         {
