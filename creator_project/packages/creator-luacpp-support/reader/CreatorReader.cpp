@@ -146,29 +146,37 @@ void CreatorReader::setupAnimClips()
                 setupAnimClipsPropVec2(fbAnimProps->position(), properties.animPosition);
 
                 // position X
-                setupAnimClipsPropFloat(fbAnimProps->positionX(), properties.animPositionX);
+                setupAnimClipsPropValue(fbAnimProps->positionX(), properties.animPositionX);
 
                 // position Y
-                setupAnimClipsPropFloat(fbAnimProps->positionY(), properties.animPositionY);
+                setupAnimClipsPropValue(fbAnimProps->positionY(), properties.animPositionY);
 
                 // rotation
-                setupAnimClipsPropFloat(fbAnimProps->rotation(), properties.animRotation);
+                setupAnimClipsPropValue(fbAnimProps->rotation(), properties.animRotation);
 
                 // skew X
-                setupAnimClipsPropFloat(fbAnimProps->skewX(), properties.animSkewX);
+                setupAnimClipsPropValue(fbAnimProps->skewX(), properties.animSkewX);
 
                 // skew Y
-                setupAnimClipsPropFloat(fbAnimProps->skewY(), properties.animSkewY);
+                setupAnimClipsPropValue(fbAnimProps->skewY(), properties.animSkewY);
 
                 // scaleX
-                setupAnimClipsPropFloat(fbAnimProps->scaleX(), properties.animScaleX);
+                setupAnimClipsPropValue(fbAnimProps->scaleX(), properties.animScaleX);
                 
                 // scaleY
-                setupAnimClipsPropFloat(fbAnimProps->scaleY(), properties.animScaleY);
+                setupAnimClipsPropValue(fbAnimProps->scaleY(), properties.animScaleY);
 
                 // Color
                 setupAnimClipsPropColor(fbAnimProps->color(), properties.animColor);
-
+                
+                // opacity
+                 setupAnimClipsPropValue(fbAnimProps->opacity(), properties.animOpacity);
+                
+                // anchor x
+                setupAnimClipsPropValue(fbAnimProps->anchorX(), properties.animAnchorX);
+                
+                // anchor y
+                setupAnimClipsPropValue(fbAnimProps->anchorY(), properties.animAnchorY);
 
                 animClip->setAnimProperties(properties);
                 // using UUID intead of Name for key
@@ -179,7 +187,7 @@ void CreatorReader::setupAnimClips()
 }
 
 template <typename T, typename U>
-void CreatorReader::setupAnimClipsPropFloat(T fbPropList, U& proplist)
+void CreatorReader::setupAnimClipsPropValue(T fbPropList, U& proplist)
 {
     if (fbPropList) {
         for(const auto fbProp: *fbPropList) {
