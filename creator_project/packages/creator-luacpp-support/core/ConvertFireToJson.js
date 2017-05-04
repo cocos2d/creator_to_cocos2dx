@@ -943,10 +943,11 @@ class FireParser {
     }
 
     to_json_setup_design_resolution() {
-        this._json_output.designResolution = {
-            w: this._state._design_resolution.width,
-            h: this._state._design_resolution.height
-        }
+        if (this._state._design_resolution)
+            this._json_output.designResolution = {
+                w: this._state._design_resolution.width,
+                h: this._state._design_resolution.height
+            }
 
         this.resolutionFitWidth = state._fit_width;
         this.resolutionFitHeight = state._fit_height;

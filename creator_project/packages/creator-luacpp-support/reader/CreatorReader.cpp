@@ -103,8 +103,6 @@ void CreatorReader::setup()
         const float w = frameSize.width / (frameSize.width / designResolution->w());
         const float h = frameSize.height / (frameSize.width / designResolution->w());
         glview->setDesignResolutionSize(w, h, ResolutionPolicy::NO_BORDER);
-    } else {
-        glview->setDesignResolutionSize(designResolution->w(), designResolution->h(), ResolutionPolicy::NO_BORDER);
     }
 
     setupSpriteFrames();
