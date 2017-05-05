@@ -103,6 +103,9 @@ void CreatorReader::setup()
         const float w = frameSize.width / (frameSize.width / designResolution->w());
         const float h = frameSize.height / (frameSize.width / designResolution->w());
         glview->setDesignResolutionSize(w, h, ResolutionPolicy::NO_BORDER);
+    }else {
+        if (designResolution)
+            glview->setDesignResolutionSize(designResolution->w(), designResolution->h(), ResolutionPolicy::NO_BORDER);
     }
 
     setupSpriteFrames();
@@ -736,7 +739,16 @@ cocos2d::ui::Button* CreatorReader::createButton(const buffers::Button* buttonBu
     const auto& spriteFrameName = buttonBuffer->spriteFrameName();
     const auto& pressedSpriteFrameName = buttonBuffer->pressedSpriteFrameName();
     const auto& disabledSpriteFrameName = buttonBuffer->disabledSpriteFrameName();
-    auto button = ui::Button::create(spriteFrameName->str(), pressedSpriteFrameName->str(), disabledSpriteFrameName->str(), cocos2d::ui::Widget::TextureResType::PLIST);
+    ui::Button* button = nullptr;
+    // should at least have normal sprite
+    if (spriteFrameName)
+        button = ui::Button::create(spriteFrameName->str(), 
+            pressedSpriteFrameName ? pressedSpriteFrameName->str() : "",
+            disabledSpriteFrameName ? disabledSpriteFrameName->str() : "",
+            cocos2d::ui::Widget::TextureResType::PLIST);
+    else
+        button = ui::Button::create();
+
     parseButton(button, buttonBuffer);
     return button;
 }

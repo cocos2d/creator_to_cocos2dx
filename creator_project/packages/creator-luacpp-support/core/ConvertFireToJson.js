@@ -710,18 +710,20 @@ class Button extends Node {
         super.parse_properties();
 
         this._properties = {node: this._properties};
-
         let spr_component = Node.get_node_component_of_type(this._node_data, 'cc.Sprite');
         let but_component = Node.get_node_component_of_type(this._node_data, 'cc.Button');
 
         this._properties.ignoreContentAdaptWithSize = false;
 
-        // normal sprite
-        this._properties.spriteFrameName = Node.get_sprite_frame_name_by_uuid(but_component._N$normalSprite.__uuid__);
+        // normal sprite: get from sprite component
+        if (spr_component)
+            this._properties.spriteFrameName = Node.get_sprite_frame_name_by_uuid(spr_component._spriteFrame.__uuid__);
         // pressed sprite
-        this._properties.pressedSpriteFrameName = Node.get_sprite_frame_name_by_uuid(but_component.pressedSprite.__uuid__);
+        if (but_component.pressedSprite)
+            this._properties.pressedSpriteFrameName = Node.get_sprite_frame_name_by_uuid(but_component.pressedSprite.__uuid__);
         // disabled sprite
-        this._properties.disabledSpriteFrameName = Node.get_sprite_frame_name_by_uuid(but_component._N$disabledSprite.__uuid__);
+        if (but_component._N$disabledSprite)
+            this._properties.disabledSpriteFrameName = Node.get_sprite_frame_name_by_uuid(but_component._N$disabledSprite.__uuid__);
     }
 }
 
