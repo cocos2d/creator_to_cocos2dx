@@ -46,11 +46,20 @@ class BuildWorker extends WorkerBase {
     _compileJsonToBinary(cb) {
         const jsonFiles = this._getJsonList();
 
-        var params = ['-b', '-o', Constants.CCREATOR_PATH, Constants.CREATOR_READER_FBS].concat(jsonFiles);
-        Utils.runcommand(Constants.FLATC, params, (code) => {
-            if (code != 0)
-                Utils.log('[creator-luacpp-support] convert .json to .ccreator error');
-            cb();
+        let i = 0;
+        jsonFiles.forEach(function(file) {
+            let subFolder = Path.dirname(file).substr(Constants.JSON_PATH.length + 1);
+            let creatorPath = Path.join(Constants.CCREATOR_PATH, subFolder);
+            let params = ['-b', '-o', creatorPath, Constants.CREATOR_READER_FBS, file];
+
+            Utils.runcommand(Constants.FLATC, params, function(code){
+                if (code != 0)
+                    Utils.log('[creator-luacpp-support] convert ' + file + ' to .ccreator error');
+
+                ++i;
+                if (i === jsonFiles.length)
+                    cb();
+            });
         });
     }
 
@@ -85,7 +94,7 @@ class BuildWorker extends WorkerBase {
         Del.sync(classes, {force: true});
 
         // copy .ccreator
-        this._copyTo(Constants.CCREATOR_PATH, resdst, ['.ccreator']);
+        this._copyTo(Constants.CCREATOR_PATH, resdst, ['.ccreator'], true);
         // copy reader
         // should exclude binding codes for c++ project
         Fs.copySync(Constants.READER_PATH, classes);
@@ -126,7 +135,7 @@ class BuildWorker extends WorkerBase {
     }
 
     _getJsonList() {
-        return this._getFilesWithExt(Constants.JSON_PATH, ['.json']);
+        return this._getFilesWithExt(Constants.JSON_PATH, ['.json'], true);
     }
 
    // return file list ends with `exts` in dir
