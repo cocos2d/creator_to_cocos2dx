@@ -2,6 +2,7 @@ const fs = require('fs');
 const fire_fs = require('fire-fs');
 const path = require('path');
 const Utils = require('./Utils');
+const Constants = require('./Constants');
 
 let DEBUG = false;
 let uuidInfos = null;
@@ -1049,7 +1050,8 @@ class FireParser {
 
     run(filename, assetpath, path_to_json_files) {
         state._filename = path.basename(filename, '.fire');
-        let json_name = path.join(path_to_json_files, state._filename) + '.json';
+        let sub_folder = path.dirname(filename).substr(Constants.ASSETS_PATH.length + 1);
+        let json_name = path.join(path_to_json_files, sub_folder, state._filename) + '.json';
         this._json_file = this.create_file(json_name);
         state._assetpath = assetpath;
 
