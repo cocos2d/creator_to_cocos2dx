@@ -159,6 +159,8 @@ table Scene
 table Button
 {
     node:Node;
+    transition:int;
+    zoomScale:float;
     spriteFrameName:string;
     pressedSpriteFrameName:string;
     disabledSpriteFrameName:string;

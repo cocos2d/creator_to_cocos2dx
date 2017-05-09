@@ -719,12 +719,23 @@ class Button extends Node {
         // normal sprite: get from sprite component
         if (spr_component)
             this._properties.spriteFrameName = Node.get_sprite_frame_name_by_uuid(spr_component._spriteFrame.__uuid__);
-        // pressed sprite
-        if (but_component.pressedSprite)
-            this._properties.pressedSpriteFrameName = Node.get_sprite_frame_name_by_uuid(but_component.pressedSprite.__uuid__);
-        // disabled sprite
-        if (but_component._N$disabledSprite)
-            this._properties.disabledSpriteFrameName = Node.get_sprite_frame_name_by_uuid(but_component._N$disabledSprite.__uuid__);
+        
+        // transition
+        let transition = but_component.transition;
+        this._properties.transition = transition;
+        if (transition == 1) // COLOR transition
+            Util.log('Button COLOR transition is not supported');
+        if (transition == 3) // SCALE transition
+            this._properties.zoomScale = but_component.zoomScale;
+        if (transition == 2) {
+            // SRPITE transition
+            // pressed sprite
+            if (but_component.pressedSprite)
+                this._properties.pressedSpriteFrameName = Node.get_sprite_frame_name_by_uuid(but_component.pressedSprite.__uuid__);
+            // disabled sprite
+            if (but_component._N$disabledSprite)
+                this._properties.disabledSpriteFrameName = Node.get_sprite_frame_name_by_uuid(but_component._N$disabledSprite.__uuid__);
+        }
     }
 }
 
