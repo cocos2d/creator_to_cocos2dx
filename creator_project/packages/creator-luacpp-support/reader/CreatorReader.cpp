@@ -736,16 +736,17 @@ void CreatorReader::parseEditBox(cocos2d::ui::EditBox* editBox, const buffers::E
 
 cocos2d::ui::Button* CreatorReader::createButton(const buffers::Button* buttonBuffer) const
 {
+    
+    ui::Button* button = nullptr;
+    
     const auto& spriteFrameName = buttonBuffer->spriteFrameName();
     const auto& pressedSpriteFrameName = buttonBuffer->pressedSpriteFrameName();
     const auto& disabledSpriteFrameName = buttonBuffer->disabledSpriteFrameName();
-    ui::Button* button = nullptr;
-    // should at least have normal sprite
     if (spriteFrameName)
-        button = ui::Button::create(spriteFrameName->str(), 
-            pressedSpriteFrameName ? pressedSpriteFrameName->str() : "",
-            disabledSpriteFrameName ? disabledSpriteFrameName->str() : "",
-            cocos2d::ui::Widget::TextureResType::PLIST);
+        button = ui::Button::create(spriteFrameName->str(),
+                                    pressedSpriteFrameName ? pressedSpriteFrameName->str() : "",
+                                    disabledSpriteFrameName ? disabledSpriteFrameName->str() : "",
+                                    cocos2d::ui::Widget::TextureResType::PLIST);
     else
         button = ui::Button::create();
 
@@ -760,6 +761,12 @@ void CreatorReader::parseButton(cocos2d::ui::Button* button, const buffers::Butt
 
     const auto& ignoreContentAdaptWithSize = buttonBuffer->ignoreContentAdaptWithSize();
     button->ignoreContentAdaptWithSize(ignoreContentAdaptWithSize);
+    
+    if (buttonBuffer->transition() == 3)
+    {
+        button->setZoomScale(buttonBuffer->zoomScale() - 1);
+        button->setPressedActionEnabled(true);
+    }
 }
 
 /*=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-

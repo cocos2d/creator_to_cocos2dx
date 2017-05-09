@@ -1276,12 +1276,16 @@ inline flatbuffers::Offset<Scene> CreateScene(flatbuffers::FlatBufferBuilder &_f
 struct Button FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   enum {
     VT_NODE = 4,
-    VT_SPRITEFRAMENAME = 6,
-    VT_PRESSEDSPRITEFRAMENAME = 8,
-    VT_DISABLEDSPRITEFRAMENAME = 10,
-    VT_IGNORECONTENTADAPTWITHSIZE = 12
+    VT_TRANSITION = 6,
+    VT_ZOOMSCALE = 8,
+    VT_SPRITEFRAMENAME = 10,
+    VT_PRESSEDSPRITEFRAMENAME = 12,
+    VT_DISABLEDSPRITEFRAMENAME = 14,
+    VT_IGNORECONTENTADAPTWITHSIZE = 16
   };
   const Node *node() const { return GetPointer<const Node *>(VT_NODE); }
+  int32_t transition() const { return GetField<int32_t>(VT_TRANSITION, 0); }
+  float zoomScale() const { return GetField<float>(VT_ZOOMSCALE, 0.0f); }
   const flatbuffers::String *spriteFrameName() const { return GetPointer<const flatbuffers::String *>(VT_SPRITEFRAMENAME); }
   const flatbuffers::String *pressedSpriteFrameName() const { return GetPointer<const flatbuffers::String *>(VT_PRESSEDSPRITEFRAMENAME); }
   const flatbuffers::String *disabledSpriteFrameName() const { return GetPointer<const flatbuffers::String *>(VT_DISABLEDSPRITEFRAMENAME); }
@@ -1290,6 +1294,8 @@ struct Button FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     return VerifyTableStart(verifier) &&
            VerifyField<flatbuffers::uoffset_t>(verifier, VT_NODE) &&
            verifier.VerifyTable(node()) &&
+           VerifyField<int32_t>(verifier, VT_TRANSITION) &&
+           VerifyField<float>(verifier, VT_ZOOMSCALE) &&
            VerifyField<flatbuffers::uoffset_t>(verifier, VT_SPRITEFRAMENAME) &&
            verifier.Verify(spriteFrameName()) &&
            VerifyField<flatbuffers::uoffset_t>(verifier, VT_PRESSEDSPRITEFRAMENAME) &&
@@ -1305,6 +1311,8 @@ struct ButtonBuilder {
   flatbuffers::FlatBufferBuilder &fbb_;
   flatbuffers::uoffset_t start_;
   void add_node(flatbuffers::Offset<Node> node) { fbb_.AddOffset(Button::VT_NODE, node); }
+  void add_transition(int32_t transition) { fbb_.AddElement<int32_t>(Button::VT_TRANSITION, transition, 0); }
+  void add_zoomScale(float zoomScale) { fbb_.AddElement<float>(Button::VT_ZOOMSCALE, zoomScale, 0.0f); }
   void add_spriteFrameName(flatbuffers::Offset<flatbuffers::String> spriteFrameName) { fbb_.AddOffset(Button::VT_SPRITEFRAMENAME, spriteFrameName); }
   void add_pressedSpriteFrameName(flatbuffers::Offset<flatbuffers::String> pressedSpriteFrameName) { fbb_.AddOffset(Button::VT_PRESSEDSPRITEFRAMENAME, pressedSpriteFrameName); }
   void add_disabledSpriteFrameName(flatbuffers::Offset<flatbuffers::String> disabledSpriteFrameName) { fbb_.AddOffset(Button::VT_DISABLEDSPRITEFRAMENAME, disabledSpriteFrameName); }
@@ -1312,13 +1320,15 @@ struct ButtonBuilder {
   ButtonBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
   ButtonBuilder &operator=(const ButtonBuilder &);
   flatbuffers::Offset<Button> Finish() {
-    auto o = flatbuffers::Offset<Button>(fbb_.EndTable(start_, 5));
+    auto o = flatbuffers::Offset<Button>(fbb_.EndTable(start_, 7));
     return o;
   }
 };
 
 inline flatbuffers::Offset<Button> CreateButton(flatbuffers::FlatBufferBuilder &_fbb,
     flatbuffers::Offset<Node> node = 0,
+    int32_t transition = 0,
+    float zoomScale = 0.0f,
     flatbuffers::Offset<flatbuffers::String> spriteFrameName = 0,
     flatbuffers::Offset<flatbuffers::String> pressedSpriteFrameName = 0,
     flatbuffers::Offset<flatbuffers::String> disabledSpriteFrameName = 0,
@@ -1327,6 +1337,8 @@ inline flatbuffers::Offset<Button> CreateButton(flatbuffers::FlatBufferBuilder &
   builder_.add_disabledSpriteFrameName(disabledSpriteFrameName);
   builder_.add_pressedSpriteFrameName(pressedSpriteFrameName);
   builder_.add_spriteFrameName(spriteFrameName);
+  builder_.add_zoomScale(zoomScale);
+  builder_.add_transition(transition);
   builder_.add_node(node);
   builder_.add_ignoreContentAdaptWithSize(ignoreContentAdaptWithSize);
   return builder_.Finish();
@@ -1334,11 +1346,13 @@ inline flatbuffers::Offset<Button> CreateButton(flatbuffers::FlatBufferBuilder &
 
 inline flatbuffers::Offset<Button> CreateButtonDirect(flatbuffers::FlatBufferBuilder &_fbb,
     flatbuffers::Offset<Node> node = 0,
+    int32_t transition = 0,
+    float zoomScale = 0.0f,
     const char *spriteFrameName = nullptr,
     const char *pressedSpriteFrameName = nullptr,
     const char *disabledSpriteFrameName = nullptr,
     bool ignoreContentAdaptWithSize = false) {
-  return CreateButton(_fbb, node, spriteFrameName ? _fbb.CreateString(spriteFrameName) : 0, pressedSpriteFrameName ? _fbb.CreateString(pressedSpriteFrameName) : 0, disabledSpriteFrameName ? _fbb.CreateString(disabledSpriteFrameName) : 0, ignoreContentAdaptWithSize);
+  return CreateButton(_fbb, node, transition, zoomScale, spriteFrameName ? _fbb.CreateString(spriteFrameName) : 0, pressedSpriteFrameName ? _fbb.CreateString(pressedSpriteFrameName) : 0, disabledSpriteFrameName ? _fbb.CreateString(disabledSpriteFrameName) : 0, ignoreContentAdaptWithSize);
 }
 
 struct ProgressBar FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
