@@ -43,11 +43,9 @@ bool AnimationClip::init()
 
 AnimationClip::AnimationClip()
 : _name("")
-, _uuid("")
 , _speed(0)
 , _sample(0)
 , _duration(0)
-, _objFlags(0)
 , _wrapMode(WrapMode::Default)
 {
 }
@@ -64,16 +62,6 @@ void AnimationClip::setName(const std::string& name)
 const std::string& AnimationClip::getName() const
 {
     return _name;
-}
-
-void AnimationClip::setUUID(const std::string& uuid)
-{
-    _uuid = uuid;
-}
-
-const std::string& AnimationClip::getUUID() const
-{
-    return _uuid;
 }
 
 void AnimationClip::setDuration(float duration)
@@ -116,12 +104,12 @@ creator::AnimationClip::WrapMode AnimationClip::getWrapMode() const
     return _wrapMode;
 }
 
-void AnimationClip::setAnimProperties(const AnimProperties& properties)
+void AnimationClip::addAnimProperties(const AnimProperties& properties)
 {
-    _animProperties = properties;
+    _animPropertiesVec.push_back(properties);
 }
 
-const AnimProperties& AnimationClip::getAnimProperties() const
+const std::vector<AnimProperties>& AnimationClip::getAnimPropertiesVec() const
 {
-    return _animProperties;
+    return _animPropertiesVec;
 }

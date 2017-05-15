@@ -33,9 +33,6 @@ table SceneGraph
 
     // Frames needed for the Scene
     spriteFrames:[SpriteFrame];
-
-    // array animation clips
-    animationClips:[AnimationClip];
 }
 
 table NodeTree
@@ -221,11 +218,9 @@ table SpineSkeleton
 // an existing animation
 table AnimationRef
 {
-    defaultClip:string;
-    clips:[string];
-    objFlags:int;                           // FIXME: needed ???
-    name:string;
+    clips:[AnimationClip];
     playOnLoad:bool;
+    defaultClip:string;
 }
 
 
@@ -244,18 +239,16 @@ table AnimationClip
 {
     // clip name
     name:string;
-    uuid:string;
     duration:float;
     sample:float;
     speed:float;
     wrapMode:AnimWrapMode;
-    curveData:AnimCurveData;
-    events:[AnimEvents];
-    objFlags:int;                           // FIXME: needed ???
+    curveData:[AnimCurveData];
 }
 
 table AnimCurveData
 {
+    path:string;
     props:AnimProps;
 }
 
@@ -292,7 +285,6 @@ table AnimPropPosition
 {
     frame:float;
     value:Vec2;
-    motionPath:[float];
 }
 
 table AnimPropPositionX

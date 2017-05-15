@@ -40,30 +40,32 @@
 NS_CCR_BEGIN
 
 class AnimationClip;
+struct AnimProperties;
 
-class AnimateClip: public cocos2d::FiniteTimeAction
-{
+class AnimateClip : public cocos2d::Node {
 public:
-    static AnimateClip* createWithAnimationClip(AnimationClip* clip);
+    static AnimateClip* createWithAnimationClip(cocos2d::Node* rootTarget, AnimationClip* clip);
+    void start();
+    
+    virtual ~AnimateClip();
 
     //
     // Overrides
     //
-    virtual void step(float dt) override;
-    virtual AnimateClip* clone() const override;
-    virtual AnimateClip* reverse() const override;
-    virtual bool isDone() const override;
+    virtual void update(float dt) override;
     
 CC_CONSTRUCTOR_ACCESS:
     AnimateClip();
-    virtual ~AnimateClip();
-    bool initWithAnimationClip(AnimationClip* clip);
+    bool initWithAnimationClip(cocos2d::Node* rootTarget, AnimationClip* clip);
+    void doUpdate(const AnimProperties& animProperties) const;
+    cocos2d::Node* getTarget(const std::string &path) const;
 
 
     AnimationClip* _clip;
     
     float _elapsed;
-    bool _done;
+    float _duration;
+    cocos2d::Node *_rootTarget; // weak reference
 };
 
 NS_CCR_END
