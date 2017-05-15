@@ -157,10 +157,10 @@ namespace  {
 
 USING_NS_CCR;
 
-AnimateClip* AnimateClip::createWithAnimationClip(AnimationClip* clip)
+AnimateClip* AnimateClip::createWithAnimationClip(cocos2d::Node* rootTarget, AnimationClip* clip)
 {
     AnimateClip* animate = new (std::nothrow) AnimateClip;
-    if (animate && animate->initWithAnimationClip(clip))
+    if (animate && animate->initWithAnimationClip(rootTarget, clip))
         animate->autorelease();
     else {
         delete animate;
@@ -173,7 +173,7 @@ AnimateClip* AnimateClip::createWithAnimationClip(AnimationClip* clip)
 AnimateClip::AnimateClip()
 : _clip(nullptr)
 , _elapsed(0)
-, _done(false)
+, _rootTarget(nullptr)
 {
 }
 
@@ -182,9 +182,16 @@ AnimateClip::~AnimateClip()
     CC_SAFE_RELEASE(_clip);
 }
 
-bool AnimateClip::initWithAnimationClip(AnimationClip* clip)
+void AnimateClip::start()
+{
+    _running = true;
+    scheduleUpdate();
+}
+
+bool AnimateClip::initWithAnimationClip(cocos2d::Node* rootTarget, AnimationClip* clip)
 {
     _clip = clip;
+    _rootTarget = rootTarget;
     
     if (_clip)
     {
@@ -196,80 +203,90 @@ bool AnimateClip::initWithAnimationClip(AnimationClip* clip)
     return clip != nullptr;
 }
 
-bool AnimateClip::isDone() const {
-    return _done >= _duration;
-}
-
-void AnimateClip::step(float dt) {
+void AnimateClip::update(float dt) {
     _elapsed += dt;
     
-    auto animProperties = _clip->getAnimProperties();
+    const auto& animPropertiesVec = _clip->getAnimPropertiesVec();
     
-    // update position
-    cocos2d::Vec2 nextPos;
-    if (getNextPos(animProperties.animPosition, _elapsed, nextPos))
-        _target->setPosition(nextPos);
-    
-    // update color
-    cocos2d::Color3B nextColor;
-    if (getNextColor(animProperties.animColor, _elapsed, nextColor))
-        _target->setColor(nextColor);
-    
-    // update scaleX
-    float nextValue;
-    if (getNextValue(animProperties.animScaleX, _elapsed, nextValue))
-        _target->setScaleX(nextValue);
-    
-    // update scaleY
-    if (getNextValue(animProperties.animScaleY, _elapsed, nextValue))
-        _target->setScaleY(nextValue);
-    
-    // rotation
-    if (getNextValue(animProperties.animRotation, _elapsed, nextValue))
-        _target->setRotation(nextValue);
-    
-    // SkewX
-    if (getNextValue(animProperties.animSkewX, _elapsed, nextValue))
-        _target->setSkewX(nextValue);
-    
-    // SkewY
-    if (getNextValue(animProperties.animSkewY, _elapsed, nextValue))
-        _target->setSkewY(nextValue);
-    
-    // Opacity
-    if (getNextValue(animProperties.animOpacity, _elapsed, nextValue))
-        _target->setOpacity(nextValue);
-    
-    // anchor x
-    if (getNextValue(animProperties.animAnchorX, _elapsed, nextValue))
-        _target->setAnchorPoint(cocos2d::Vec2(nextValue, _target->getAnchorPoint().y));
-    
-    // anchor y
-    if (getNextValue(animProperties.animAnchorY, _elapsed, nextValue))
-        _target->setAnchorPoint(cocos2d::Vec2(_target->getAnchorPoint().x, nextValue));
-    
-    // positoin x
-    if (getNextValue(animProperties.animPositionX, _elapsed, nextValue))
-        _target->setPositionX(nextValue);
-    
-    // position y
-    if (getNextValue(animProperties.animPositionY, _elapsed, nextValue))
-        _target->setPositionY(nextValue);
+    for (const auto& animProperties : animPropertiesVec)
+        doUpdate(animProperties);
 
-    _done = _elapsed >= _duration;
+    if (_elapsed >= _duration)
+    {
+        unscheduleUpdate();
+        // release self
+        _running = false;
+        this->release();
+    }
 }
 
-
-AnimateClip* AnimateClip::clone() const
+void AnimateClip::doUpdate(const AnimProperties& animProperties) const
 {
-    // no copy constructor
-    return AnimateClip::createWithAnimationClip(_clip);
+    auto target = getTarget(animProperties.path);
+    if (target)
+    {
+        // update position
+        cocos2d::Vec2 nextPos;
+        if (getNextPos(animProperties.animPosition, _elapsed, nextPos))
+            target->setPosition(nextPos);
+
+        // update color
+        cocos2d::Color3B nextColor;
+        if (getNextColor(animProperties.animColor, _elapsed, nextColor))
+            target->setColor(nextColor);
+
+        // update scaleX
+        float nextValue;
+        if (getNextValue(animProperties.animScaleX, _elapsed, nextValue))
+            target->setScaleX(nextValue);
+
+        // update scaleY
+        if (getNextValue(animProperties.animScaleY, _elapsed, nextValue))
+            target->setScaleY(nextValue);
+
+        // rotation
+        if (getNextValue(animProperties.animRotation, _elapsed, nextValue))
+            target->setRotation(nextValue);
+
+        // SkewX
+        if (getNextValue(animProperties.animSkewX, _elapsed, nextValue))
+            target->setSkewX(nextValue);
+
+        // SkewY
+        if (getNextValue(animProperties.animSkewY, _elapsed, nextValue))
+            target->setSkewY(nextValue);
+
+        // Opacity
+        if (getNextValue(animProperties.animOpacity, _elapsed, nextValue))
+            target->setOpacity(nextValue);
+
+        // anchor x
+        if (getNextValue(animProperties.animAnchorX, _elapsed, nextValue))
+            target->setAnchorPoint(cocos2d::Vec2(nextValue, target->getAnchorPoint().y));
+
+        // anchor y
+        if (getNextValue(animProperties.animAnchorY, _elapsed, nextValue))
+            target->setAnchorPoint(cocos2d::Vec2(target->getAnchorPoint().x, nextValue));
+
+        // positoin x
+        if (getNextValue(animProperties.animPositionX, _elapsed, nextValue))
+            target->setPositionX(nextValue);
+        
+        // position y
+        if (getNextValue(animProperties.animPositionY, _elapsed, nextValue))
+            target->setPositionY(nextValue);
+    }
 }
 
-AnimateClip* AnimateClip::reverse() const
+cocos2d::Node* AnimateClip::getTarget(const std::string &path) const
 {
-    // FIXME: not implemented correclty
-    // How to reverse it? use time reverse I guess since the actions are based on "To" and not "By"
-    // otherwise a "reverse" of sequence could be done
-    return AnimateClip::createWithAnimationClip(_clip);
+    if (path.empty())
+        return _rootTarget;
+    
+    cocos2d::Node *ret = nullptr;
+    _rootTarget->enumerateChildren(path, [&ret](cocos2d::Node* result) -> bool {
+        ret = result;
+        return true;
+    });
+    return ret;
 }

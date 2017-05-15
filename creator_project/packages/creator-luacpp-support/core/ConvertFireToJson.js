@@ -100,7 +100,8 @@ class Node {
             }
         }
         log('Unknown components ' + node_components);
-        return 'unknown';
+        log('treat all unknown components as cc.Node')
+        return 'cc.Node';
     }
 
     static create_node(node_type, node_idx) {
@@ -434,18 +435,106 @@ class Node {
         if (component) {
             let anim = {
                 playOnLoad: component.playOnLoad,
-                name: component._name,
-                objFlags: component._objFlags,
-                defaultClip: component._defaultClip.__uuid__,
                 clips: []
             };
-            component._clips.forEach(function(clips) {
-                let clip_uuid = clips.__uuid__;
-                anim.clips.push(clip_uuid);
 
-                let clip_content = fs.readFileSync(uuidinfos[clip_uuid]);
-                state._clips[clips.__uuid__] = JSON.parse(clip_content);
+            function parseCurveDataProps(props) {
+                function addProp(from, from_key, to, to_key) {
+                    if (from[from_key]) {
+                        to[to_key] = from[from_key];
+                        // FIXME: doesn't support 'curve' field now
+                        to[to_key].forEach(function(prop){
+                            delete prop.curve;
+                        })
+                    }
+                }
+
+                let result = {};
+                addProp(props, 'rotation', result, 'rotation');
+                addProp(props, 'x', result, 'positionX');
+                addProp(props, 'y', result, 'positionY');
+                addProp(props, 'anchorX', result, 'anchorX');
+                addProp(props, 'anchorY', result, 'anchorY');
+                addProp(props, 'scaleX', result, 'scaleX');
+                addProp(props, 'scaleY', result, 'scaleY');
+                addProp(props, 'skewX', result, 'skewX');
+                addProp(props, 'skewY', result, 'skewY');
+                addProp(props, 'opacity', result, 'opacity');
+                
+
+                // position.value -> {x:, y:}
+                if (props.position) {
+                    result.position = [];
+                    props.position.forEach(function(pos) {
+                        result.position.push({
+                            frame: pos.frame,
+                            value: {x: pos.value[0], y: pos.value[1]}
+                        });
+                    });
+                }
+
+                // color: delete color.__type__
+                if (props.color) {
+                    result.color = [];
+                    props.color.forEach(function(clr){
+                        result.color.push({
+                            frame: clr.frame,
+                            value: {r:clr.value.r, g:clr.value.g, b:clr.value.g, a:clr.value.a}
+                        });
+                    });
+                }
+
+                return result;
+            }
+
+            component._clips.forEach(function(clip) {
+                let clip_uuid = clip.__uuid__;
+                if (clip_uuid in state._clips)
+                {
+                    anim.clips.push(state._clips[clip_uuid]);
+                }
+                else
+                {
+                    let clip_content = JSON.parse(fs.readFileSync(uuidinfos[clip_uuid]));
+                    
+                    // parse curveData
+                    let animationClip = {
+                        name: clip_content._name,
+                        duration: clip_content._duration,
+                        sample: clip_content.sample,
+                        speed: clip_content.speed,
+                        wrapMode: clip_content.wrapMode,
+                        curveData: []
+                    };
+
+                    let curveData = clip_content.curveData;
+                    if (curveData.paths)
+                    {
+                        // animationclip of sub nodes
+                        for(let path in curveData.paths) {
+                            if (curveData.paths.hasOwnProperty(path) && curveData.paths[path].props) {
+                                // how to support comps?
+                                let subAnim = {
+                                    path: path,
+                                    props: parseCurveDataProps(curveData.paths[path].props)
+                                };
+                                animationClip.curveData.push(subAnim);
+                            }
+                        }
+                    }
+
+                    // parse self animationclip
+                    if (curveData.props)
+                        animationClip.curveData.push({props: parseCurveDataProps(curveData.props)}); 
+
+                    anim.clips.push(animationClip);
+                    state._clips[clip_uuid] = animationClip;
+                }
             });
+            // default clip
+            if (component._defaultClip)
+                anim.defaultClip = state._clips[component._defaultClip.__uuid__].name;
+
             this._properties.anim = anim;
         }
     }
@@ -953,7 +1042,6 @@ class FireParser {
     to_json_setup() {
         this.to_json_setup_design_resolution();
         this.to_json_setup_sprite_frames();
-        this.to_json_setup_clips();
     }
 
     to_json_setup_design_resolution() {
@@ -997,61 +1085,6 @@ class FireParser {
         }
 
         this._json_output.spriteFrames = sprite_frames;
-    }
-
-    to_json_setup_clips() {
-        let clips = [];
-        
-        let pop = function(obj, prop) {
-            let ret = obj[prop];
-            delete obj[prop];
-            return ret;
-        }
-
-        // convert dictionary to list
-        for (let key in state._clips) {
-            let value = state._clips[key];
-            value.uuid = key;
-            delete value.__type__;
-            delete value._rawFiles;
-
-            // FIXME: comps should be supported
-            if ('curveData' in value && 'comps' in value.curveData)
-                delete value.curveData.comps;
-
-            // sanitize
-            value.duration = pop(value, '_duration');
-            value.objFlags = pop(value, '_objFlags');
-            value.name = pop(value, '_name');
-
-            // remove __type__ from color frames
-            if ('curveData' in value && 'props' in value.curveData && 'color' in value.curveData.props) {
-                let color_frames = value.curveData.props.color;
-                color_frames.forEach(function(frame) {
-                    delete frame.value.__type__;
-                });
-            }
-
-            // convert position [] to x, y
-            if ('curveData' in value && 'props' in value.curveData && 'position' in value.curveData.props) {
-                let pos_frames = value.curveData.props.position;
-                pos_frames.forEach(function(frame){
-                    let pos_value = frame.value;
-                    frame.value = {x: pos_value[0], y: pos_value[1]};
-                });
-            }
-
-            // convert 'x' to 'positionX'
-            if ('curveData' in value && 'props' in value.curveData && 'x' in value.curveData.props)
-                value.curveData.props.positionX = pop(value.curveData.props, 'x');
-
-            // convert 'y' to 'positionY'
-            if ('curveData' in value && 'props' in value.curveData && 'y' in value.curveData.props)
-                value.curveData.props.positionY = pop(value.curveData.props, 'y');
-
-            clips.push(value);
-        }
-        this._json_output.animationClips = clips;
     }
 
     create_file(filename) {

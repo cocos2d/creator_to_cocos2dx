@@ -26,8 +26,6 @@
 #include "AnimationClip.h"
 #include "AnimateClip.h"
 
-#include "CreatorReader_generated.h"
-
 using namespace cocos2d;
 using namespace creator;
 using namespace creator::buffers;
@@ -37,12 +35,60 @@ USING_NS_CCR;
 static void setSpriteQuad(V3F_C4B_T2F_Quad* quad, const cocos2d::Size& origSize, const int x, const int y, float x_factor, float y_factor);
 static void tileSprite(cocos2d::Sprite* sprite);
 
+namespace {
+    template <typename T, typename U>
+    void setupAnimClipsPropValue(T fbPropList, U& proplist)
+    {
+        if (fbPropList) {
+            for(const auto fbProp: *fbPropList) {
+                const auto fbFrame = fbProp->frame();
+                const auto fbValue = fbProp->value();
+                proplist.push_back(
+                                   {fbFrame,
+                                       fbValue
+                                   });
+            }
+        }
+    }
+    
+    template <typename T, typename U>
+    void setupAnimClipsPropVec2(T fbPropList, U& proplist)
+    {
+        if (fbPropList) {
+            for(const auto fbProp: *fbPropList) {
+                const auto fbFrame = fbProp->frame();
+                const auto fbValue = fbProp->value();
+                proplist.push_back(
+                                   {fbFrame,
+                                       cocos2d::Vec2(fbValue->x(), fbValue->y())
+                                   });
+            }
+        }
+    }
+    
+    template <typename T, typename U>
+    void setupAnimClipsPropColor(T fbPropList, U& proplist)
+    {
+        if (fbPropList) {
+            for(const auto fbProp: *fbPropList) {
+                const auto fbFrame = fbProp->frame();
+                const auto fbValue = fbProp->value();
+                proplist.push_back(
+                                   {fbFrame,
+                                       cocos2d::Color3B(fbValue->r(), fbValue->g(), fbValue->b())
+                                   });
+            }
+        }
+    }
+}
+
 //
 // CreatorReader main class
 //
 CreatorReader::CreatorReader()
 : _scene(nullptr)
 , _version("")
+, _animationManager(new AnimationManager())
 {
 }
 
@@ -109,127 +155,6 @@ void CreatorReader::setup()
     }
 
     setupSpriteFrames();
-    setupAnimClips();
-}
-
-void CreatorReader::setupAnimClips()
-{
-    const void* buffer = _data.getBytes();
-    const auto& sceneGraph = GetSceneGraph(buffer);
-    const auto& animationClips = sceneGraph->animationClips();
-
-    for (const auto& fbAnimationClip: *animationClips) {
-        auto animClip = AnimationClip::create();
-
-        const auto& duration = fbAnimationClip->duration();
-        animClip->setDuration(duration);
-
-        const auto& speed = fbAnimationClip->speed();
-        animClip->setSpeed(speed);
-
-        const auto& sample = fbAnimationClip->sample();
-        animClip->setSample(sample);
-
-        const auto& name = fbAnimationClip->name();
-        animClip->setName(name->str());
-
-        const auto& uuid = fbAnimationClip->uuid();
-        animClip->setUUID(uuid->str());
-
-        const AnimCurveData* fbCurveData = fbAnimationClip->curveData();
-        if (fbCurveData) {
-            const AnimProps* fbAnimProps = fbCurveData->props();
-            if (fbAnimProps) {
-
-                AnimProperties properties;
-
-                // position
-                setupAnimClipsPropVec2(fbAnimProps->position(), properties.animPosition);
-
-                // position X
-                setupAnimClipsPropValue(fbAnimProps->positionX(), properties.animPositionX);
-
-                // position Y
-                setupAnimClipsPropValue(fbAnimProps->positionY(), properties.animPositionY);
-
-                // rotation
-                setupAnimClipsPropValue(fbAnimProps->rotation(), properties.animRotation);
-
-                // skew X
-                setupAnimClipsPropValue(fbAnimProps->skewX(), properties.animSkewX);
-
-                // skew Y
-                setupAnimClipsPropValue(fbAnimProps->skewY(), properties.animSkewY);
-
-                // scaleX
-                setupAnimClipsPropValue(fbAnimProps->scaleX(), properties.animScaleX);
-                
-                // scaleY
-                setupAnimClipsPropValue(fbAnimProps->scaleY(), properties.animScaleY);
-
-                // Color
-                setupAnimClipsPropColor(fbAnimProps->color(), properties.animColor);
-                
-                // opacity
-                 setupAnimClipsPropValue(fbAnimProps->opacity(), properties.animOpacity);
-                
-                // anchor x
-                setupAnimClipsPropValue(fbAnimProps->anchorX(), properties.animAnchorX);
-                
-                // anchor y
-                setupAnimClipsPropValue(fbAnimProps->anchorY(), properties.animAnchorY);
-
-                animClip->setAnimProperties(properties);
-                // using UUID intead of Name for key
-                _clips.insert(animClip->getUUID(), animClip);
-            }
-        }
-    }
-}
-
-template <typename T, typename U>
-void CreatorReader::setupAnimClipsPropValue(T fbPropList, U& proplist)
-{
-    if (fbPropList) {
-        for(const auto fbProp: *fbPropList) {
-            const auto fbFrame = fbProp->frame();
-            const auto fbValue = fbProp->value();
-            proplist.push_back(
-                               {fbFrame,
-                                   fbValue
-                               });
-        }
-    }
-}
-
-template <typename T, typename U>
-void CreatorReader::setupAnimClipsPropVec2(T fbPropList, U& proplist)
-{
-    if (fbPropList) {
-        for(const auto fbProp: *fbPropList) {
-            const auto fbFrame = fbProp->frame();
-            const auto fbValue = fbProp->value();
-            proplist.push_back(
-                               {fbFrame,
-                                cocos2d::Vec2(fbValue->x(), fbValue->y())
-                               });
-        }
-    }
-}
-
-template <typename T, typename U>
-void CreatorReader::setupAnimClipsPropColor(T fbPropList, U& proplist)
-{
-    if (fbPropList) {
-        for(const auto fbProp: *fbPropList) {
-            const auto fbFrame = fbProp->frame();
-            const auto fbValue = fbProp->value();
-            proplist.push_back(
-                               {fbFrame,
-                                cocos2d::Color3B(fbValue->r(), fbValue->g(), fbValue->b())
-                               });
-        }
-    }
 }
 
 void CreatorReader::setupSpriteFrames()
@@ -277,6 +202,8 @@ cocos2d::Scene* CreatorReader::getSceneGraph() const
     CCLOG("NodeTree: %p", nodeTree);
 
     cocos2d::Node* node = createTree(nodeTree);
+    
+    _animationManager->playOnLoad();
 
     return static_cast<cocos2d::Scene*>(node);
 }
@@ -385,23 +312,6 @@ cocos2d::Node* CreatorReader::createNode(const buffers::Node* nodeBuffer) const
 
 void CreatorReader::parseNode(cocos2d::Node* node, const buffers::Node* nodeBuffer) const
 {
-    //contentSize:Size;
-    //enabled:bool = true;
-    //name:string;
-    //anchorPoint:Vec2;
-    //cascadeOpacityEnabled:bool = true;
-    //color:ColorRGB;
-    //globalZorder:int = 0;
-    //localZorder:int = 0;
-    //opacity:ubyte = 255;
-    //opacityModifyRGB:bool = true;
-    //position:Vec2;
-    //rotationSkew:Vec2;
-    //scale:Vec2;
-    //tag:int = 0;
-    //anim:AnimationRef
-
-//    auto enabled = nodeBuffer->enabled();
     const auto& globalZOrder = nodeBuffer->globalZOrder();
     node->setGlobalZOrder(globalZOrder);
     const auto& localZOrder = nodeBuffer->localZOrder();
@@ -432,20 +342,97 @@ void CreatorReader::parseNode(cocos2d::Node* node, const buffers::Node* nodeBuff
     if (contentSize) node->setContentSize(cocos2d::Size(contentSize->w(), contentSize->h()));
 
     // animation?
-    const auto animRef = nodeBuffer->anim();
+    parseNodeAnimation(node, nodeBuffer);
+}
+
+void CreatorReader::parseNodeAnimation(cocos2d::Node* node, const buffers::Node* nodeBuffer) const
+{
+    const AnimationRef *animRef = nodeBuffer->anim();
+    
     if (animRef) {
-        const auto def = animRef->defaultClip();
-        const auto autoplay = animRef->playOnLoad();
-        if (def && autoplay) {
-            const auto& key = def->str();
-            AnimationClip* animationClip = _clips.at(key);
-            if (animationClip) {
-                AnimateClip* animateClip = AnimateClip::createWithAnimationClip(animationClip);
-                node->runAction(animateClip);
-            } else {
-                CCLOG("CreatorReader: AnimationClip key not found: %s", key.c_str());
+        AnimationInfo animationInfo;
+        animationInfo.playOnLoad = animRef->playOnLoad();
+        animationInfo.target = node;
+        bool hasDefaultAnimclip = animRef->defaultClip() != nullptr;
+        
+        const auto& animationClips = animRef->clips();
+        
+        for (const auto& fbAnimationClip: *animationClips) {
+            auto animClip = AnimationClip::create();
+            
+            const auto& duration = fbAnimationClip->duration();
+            animClip->setDuration(duration);
+            
+            const auto& speed = fbAnimationClip->speed();
+            animClip->setSpeed(speed);
+            
+            const auto& sample = fbAnimationClip->sample();
+            animClip->setSample(sample);
+            
+            const auto& name = fbAnimationClip->name();
+            animClip->setName(name->str());
+            
+            // is it defalut animation clip?
+            if (hasDefaultAnimclip && name->str() == animRef->defaultClip()->str())
+                animationInfo.defaultClip = animClip;
+            
+            const auto& curveDatas = fbAnimationClip->curveData();
+            for (const auto& fbCurveData: *curveDatas) {
+                
+                if (fbCurveData) {
+                    const AnimProps* fbAnimProps = fbCurveData->props();
+                    AnimProperties properties;
+                    
+                    // position
+                    setupAnimClipsPropVec2(fbAnimProps->position(), properties.animPosition);
+                    
+                    // position X
+                    setupAnimClipsPropValue(fbAnimProps->positionX(), properties.animPositionX);
+                    
+                    // position Y
+                    setupAnimClipsPropValue(fbAnimProps->positionY(), properties.animPositionY);
+                    
+                    // rotation
+                    setupAnimClipsPropValue(fbAnimProps->rotation(), properties.animRotation);
+                    
+                    // skew X
+                    setupAnimClipsPropValue(fbAnimProps->skewX(), properties.animSkewX);
+                    
+                    // skew Y
+                    setupAnimClipsPropValue(fbAnimProps->skewY(), properties.animSkewY);
+                    
+                    // scaleX
+                    setupAnimClipsPropValue(fbAnimProps->scaleX(), properties.animScaleX);
+                    
+                    // scaleY
+                    setupAnimClipsPropValue(fbAnimProps->scaleY(), properties.animScaleY);
+                    
+                    // Color
+                    setupAnimClipsPropColor(fbAnimProps->color(), properties.animColor);
+                    
+                    // opacity
+                    setupAnimClipsPropValue(fbAnimProps->opacity(), properties.animOpacity);
+                    
+                    // anchor x
+                    setupAnimClipsPropValue(fbAnimProps->anchorX(), properties.animAnchorX);
+                    
+                    // anchor y
+                    setupAnimClipsPropValue(fbAnimProps->anchorY(), properties.animAnchorY);
+                    
+                    // path: self's animation doesn't have path
+                    // path is used for sub node
+                    if (fbCurveData->path())
+                        properties.path = fbCurveData->path()->str();
+                    
+                    animClip->addAnimProperties(properties);
+                }
             }
+            
+            animationInfo.clips.pushBack(animClip);
         }
+        
+        // record animation information -> {node: AnimationInfo}
+        _animationManager->addAnimation(std::move(animationInfo));
     }
 }
 
