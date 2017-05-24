@@ -25,21 +25,155 @@
 
 #include "AnimateClip.h"
 #include "AnimationClip.h"
+#include "AnimationClipProperties.h"
+
+namespace  {
+    
+    // -1: invalid index
+    // -2: haven't reached first frame, so it should be the same as first frame
+    template<typename P>
+    int getValidIndex(const P &properties, float elapsed)
+    {
+        if (properties.empty())
+            return -1;
+        
+        if (properties.front().frame > elapsed)
+            return -2;
+
+        if (properties.back().frame <= elapsed)
+            return properties.size() - 1;
+        
+        for (int i = 0, len = properties.size(); i < len; ++i)
+        {
+            const auto& prop = properties[i];
+            if (prop.frame > elapsed)
+                return i - 1;
+        }
+        
+        return -1;
+    }
+    
+    template<typename P>
+    float getPercent(const P& p1, const P& p2, float elapsed)
+    {
+        return (elapsed - p1.frame) / (p2.frame - p1.frame);
+    }
+    
+    void assignVec2(const cocos2d::Vec2 &src, cocos2d::Vec2& dst)
+    {
+        dst.x = src.x;
+        dst.y = src.y;
+    }
+    
+    bool getNextPos(const std::vector<creator::AnimPropPosition> &properties, float elapsed, cocos2d::Vec2 &out)
+    {
+        int index = getValidIndex(properties, elapsed);
+        if (index == -1)
+            return false;
+        
+        if (index == -2)
+        {
+            assignVec2(properties.front().value, out);
+            return true;
+        }
+        
+        if (index == properties.size() -1)
+        {
+            assignVec2(properties.back().value, out);
+            return true;
+        }
+        
+        const auto& prop = properties[index];
+        const auto& nextProp = properties[index+1];
+        float percent = getPercent(prop, nextProp, elapsed);
+        out.x = prop.value.x + percent * (nextProp.value.x - prop.value.x);
+        out.y = prop.value.y + percent * (nextProp.value.y - prop.value.y);
+        
+        return true;
+    }
+    
+    void assignColor(const cocos2d::Color3B& src, cocos2d::Color3B& dst)
+    {
+        dst.r = src.r;
+        dst.g = src.g;
+        dst.b = src.b;
+    }
+    
+    bool getNextColor(const std::vector<creator::AnimPropColor> &properties, float elapsed, cocos2d::Color3B &out)
+    {
+        int index = getValidIndex(properties, elapsed);
+        if (index == -1)
+            return false;
+        
+        if (index == -2)
+        {
+            assignColor(properties.front().value, out);
+            return true;
+        }
+        
+        if (index == properties.size() -1)
+        {
+            assignColor(properties.back().value, out);
+            return true;
+        }
+        
+        const auto& prop = properties[index];
+        const auto& nextProp = properties[index+1];
+        float percent = getPercent(prop, nextProp, elapsed);
+        out.r = prop.value.r + percent * (nextProp.value.r - prop.value.r);
+        out.g = prop.value.g + percent * (nextProp.value.g - prop.value.g);
+        out.b = prop.value.b + percent * (nextProp.value.b - prop.value.b);
+        
+        return true;
+    }
+    
+    template<typename P>
+    bool getNextValue(const P & properties, float elapsed, float &out)
+    {
+        int index = getValidIndex(properties, elapsed);
+        if (index == -1)
+            return false;
+        
+        if (index == -2)
+        {
+            out = properties.front().value;
+            return true;
+        }
+        
+        if (index == properties.size() -1)
+        {
+            out = properties.back().value;
+            return true;
+        }
+        
+        const auto& prop = properties[index];
+        const auto& nextProp = properties[index+1];
+        float percent = getPercent(prop, nextProp, elapsed);
+        out = prop.value + percent * (nextProp.value - prop.value);
+        
+        return true;
+    }
+}
 
 USING_NS_CCR;
 
-AnimateClip* AnimateClip::createWithAnimationClip(AnimationClip* clip)
+AnimateClip* AnimateClip::createWithAnimationClip(cocos2d::Node* rootTarget, AnimationClip* clip)
 {
     AnimateClip* animate = new (std::nothrow) AnimateClip;
-    if (animate && animate->initWithAnimationClip(clip)) {
+    if (animate && animate->initWithAnimationClip(rootTarget, clip))
         animate->autorelease();
-        return animate;
+    else {
+        delete animate;
+        animate = nullptr;
     }
-    return nullptr;
+
+    return animate;
 }
 
 AnimateClip::AnimateClip()
 : _clip(nullptr)
+, _elapsed(0)
+, _rootTarget(nullptr)
 {
 }
 
@@ -48,96 +182,111 @@ AnimateClip::~AnimateClip()
     CC_SAFE_RELEASE(_clip);
 }
 
-void AnimateClip::startWithTarget(cocos2d::Node *target)
+void AnimateClip::start()
 {
-    // probably nothing
-    ActionInterval::startWithTarget(target);
+    _running = true;
+    scheduleUpdate();
+}
 
-    for (const auto& action: _actions) {
-        action->startWithTarget(target);
+bool AnimateClip::initWithAnimationClip(cocos2d::Node* rootTarget, AnimationClip* clip)
+{
+    _clip = clip;
+    _rootTarget = rootTarget;
+    
+    if (_clip)
+    {
+        _clip->retain();
+        _duration = _clip->getDuration();
+    }
+    
+
+    return clip != nullptr;
+}
+
+void AnimateClip::update(float dt) {
+    _elapsed += dt;
+    
+    const auto& animPropertiesVec = _clip->getAnimPropertiesVec();
+    
+    for (const auto& animProperties : animPropertiesVec)
+        doUpdate(animProperties);
+
+    if (_elapsed >= _duration)
+    {
+        unscheduleUpdate();
+        // release self
+        _running = false;
+        this->release();
     }
 }
 
-void AnimateClip::update(float time)
+void AnimateClip::doUpdate(const AnimProperties& animProperties) const
 {
-    for (const auto& action: _actions) {
-        action->update(time);
-    }
-}
+    auto target = getTarget(animProperties.path);
+    if (target)
+    {
+        // update position
+        cocos2d::Vec2 nextPos;
+        if (getNextPos(animProperties.animPosition, _elapsed, nextPos))
+            target->setPosition(nextPos);
 
-bool AnimateClip::initWithAnimationClip(AnimationClip* clip)
-{
-    bool ret = (clip != nullptr);
-    if (!ret)
-        return ret;
+        // update color
+        cocos2d::Color3B nextColor;
+        if (getNextColor(animProperties.animColor, _elapsed, nextColor))
+            target->setColor(nextColor);
 
-    const float framesPerSecond = 60.0f / clip->getSample();
-    const float duration = clip->getDuration() * framesPerSecond;
-    ret &= ActionInterval::initWithDuration(duration);
-    if (ret) {
-        if (_clip != clip) {
-            CC_SAFE_RELEASE(_clip);
-            _clip = clip;
-            CC_SAFE_RETAIN(_clip);
-        }
+        // update scaleX
+        float nextValue;
+        if (getNextValue(animProperties.animScaleX, _elapsed, nextValue))
+            target->setScaleX(nextValue);
 
-        auto animProperties = _clip->getAnimProperties();
-
-        // position
-        createAction<cocos2d::MoveTo>(animProperties.animPosition, framesPerSecond);
+        // update scaleY
+        if (getNextValue(animProperties.animScaleY, _elapsed, nextValue))
+            target->setScaleY(nextValue);
 
         // rotation
-        createAction<cocos2d::RotateTo>(animProperties.animRotation, framesPerSecond);
+        if (getNextValue(animProperties.animRotation, _elapsed, nextValue))
+            target->setRotation(nextValue);
 
-        // scale
-        createAction<cocos2d::ScaleTo>(animProperties.animSkewX, framesPerSecond);
+        // SkewX
+        if (getNextValue(animProperties.animSkewX, _elapsed, nextValue))
+            target->setSkewX(nextValue);
 
-        // color
-        createAction<cocos2d::TintTo>(animProperties.animColor, framesPerSecond);
+        // SkewY
+        if (getNextValue(animProperties.animSkewY, _elapsed, nextValue))
+            target->setSkewY(nextValue);
 
-        // opacity
-        createAction<cocos2d::FadeTo>(animProperties.animOpacity, framesPerSecond);
+        // Opacity
+        if (getNextValue(animProperties.animOpacity, _elapsed, nextValue))
+            target->setOpacity(nextValue);
+
+        // anchor x
+        if (getNextValue(animProperties.animAnchorX, _elapsed, nextValue))
+            target->setAnchorPoint(cocos2d::Vec2(nextValue, target->getAnchorPoint().y));
+
+        // anchor y
+        if (getNextValue(animProperties.animAnchorY, _elapsed, nextValue))
+            target->setAnchorPoint(cocos2d::Vec2(target->getAnchorPoint().x, nextValue));
+
+        // positoin x
+        if (getNextValue(animProperties.animPositionX, _elapsed, nextValue))
+            target->setPositionX(nextValue);
+        
+        // position y
+        if (getNextValue(animProperties.animPositionY, _elapsed, nextValue))
+            target->setPositionY(nextValue);
     }
+}
 
+cocos2d::Node* AnimateClip::getTarget(const std::string &path) const
+{
+    if (path.empty())
+        return _rootTarget;
+    
+    cocos2d::Node *ret = nullptr;
+    _rootTarget->enumerateChildren(path, [&ret](cocos2d::Node* result) -> bool {
+        ret = result;
+        return true;
+    });
     return ret;
-}
-
-template <class A, typename P>
-void AnimateClip::createAction(const P &properties, const float framesPerSecond)
-{
-    cocos2d::Vector<cocos2d::FiniteTimeAction*> array;
-    float prevFrame = 0;        // because it uses absolute values
-    bool firstProcessed = false;
-    for (const auto& prop: properties) {
-        if (!firstProcessed) {
-            if (prop.frame != 0) {
-                // create pause until action start
-                auto delay = cocos2d::DelayTime::create(prop.frame * framesPerSecond);
-                array.pushBack(delay);
-            }
-            firstProcessed = true;
-        }
-        auto a = A::create((prop.frame - prevFrame) * framesPerSecond, prop.value);
-        array.pushBack(a);
-
-        prevFrame = prop.frame;
-    }
-    if (array.size() > 0) {
-        auto seq = cocos2d::Sequence::create(array);
-        _actions.pushBack(seq);
-    }
-}
-
-AnimateClip* AnimateClip::clone() const
-{
-    // no copy constructor
-    return AnimateClip::createWithAnimationClip(_clip);
-}
-
-AnimateClip* AnimateClip::reverse() const
-{
-    // FIXME: not implemented correclty
-    // How to reverse it? use time reverse I guess since the actions are based on "To" and not "By"
-    // otherwise a "reverse" of sequence could be done
-    return AnimateClip::createWithAnimationClip(_clip);
 }

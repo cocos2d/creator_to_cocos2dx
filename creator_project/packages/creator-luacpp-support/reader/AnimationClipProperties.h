@@ -49,7 +49,6 @@ struct AnimPropPosition
 {
     float frame;
     cocos2d::Vec2 value;
-    std::vector<float> motionPath;
 };
 
 struct AnimPropPositionX
@@ -130,6 +129,8 @@ struct AnimProperties
     std::vector<AnimPropPosition> animPosition;
     std::vector<AnimPropPositionX> animPositionX;
     std::vector<AnimPropPositionY> animPositionY;
+    std::vector<AnimPropScaleX> animScaleX;
+    std::vector<AnimPropScaleY> animScaleY;
     std::vector<AnimPropSkewX> animSkewX;
     std::vector<AnimPropSkewY> animSkewY;
     std::vector<AnimPropAnchorX> animAnchorX;
@@ -138,6 +139,7 @@ struct AnimProperties
     std::vector<AnimPropOpacity> animOpacity;
     std::vector<AnimPropWidth> animWidth;
     std::vector<AnimPropHeight> animHeight;
+    std::string path;
 };
 
 NS_CCR_END

@@ -27,6 +27,7 @@
 #include "cocos2d.h"
 #include "ui/CocosGUI.h"
 #include "AnimationClip.h"
+#include "AnimationManager.h"
 #include <spine/spine-cocos2dx.h>
 
 #include "CreatorReader_generated.h"
@@ -81,6 +82,7 @@ protected:
 
     cocos2d::Node* createNode(const buffers::Node* nodeBuffer) const;
     void parseNode(cocos2d::Node* node, const buffers::Node* nodeBuffer) const;
+    void parseNodeAnimation(cocos2d::Node* node, const buffers::Node* nodeBuffer) const;
 
     cocos2d::Sprite* createSprite(const buffers::Sprite* spriteBuffer) const;
     void parseSprite(cocos2d::Sprite* sprite, const buffers::Sprite* spriteBuffer) const;
@@ -113,16 +115,6 @@ protected:
     void parseSpineSkeleton(spine::SkeletonAnimation* button, const buffers::SpineSkeleton* spineBuffer) const;
 
     void setupSpriteFrames();
-    void setupAnimClips();
-
-    template <typename T, typename U>
-    void setupAnimClipsPropVec2(T fbPropList, U& proplist);
-
-    template <typename T, typename U>
-    void setupAnimClipsPropFloat(T fbPropList, U& proplist);
-
-    template <typename T, typename U>
-    void setupAnimClipsPropColor(T fbPropList, U& proplist);
 
 
     /** Creator uses parent's anchorpoint for child positioning.
@@ -134,8 +126,8 @@ protected:
     cocos2d::Scene* _scene;
     cocos2d::Data _data;
     std::string _version;
-
-    cocos2d::Map<std::string, AnimationClip*> _clips;
+    
+    AnimationManager *_animationManager;
 };
 
 NS_CCR_END

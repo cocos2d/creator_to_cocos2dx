@@ -40,31 +40,32 @@
 NS_CCR_BEGIN
 
 class AnimationClip;
+struct AnimProperties;
 
-class AnimateClip: public cocos2d::ActionInterval
-{
+class AnimateClip : public cocos2d::Node {
 public:
-    static AnimateClip* createWithAnimationClip(AnimationClip* clip);
+    static AnimateClip* createWithAnimationClip(cocos2d::Node* rootTarget, AnimationClip* clip);
+    void start();
+    
+    virtual ~AnimateClip();
 
     //
     // Overrides
     //
-    virtual void startWithTarget(cocos2d::Node *target) override;
-    virtual void update(float time) override;
-    virtual AnimateClip* clone() const override;
-    virtual AnimateClip* reverse() const override;
-
+    virtual void update(float dt) override;
+    
 CC_CONSTRUCTOR_ACCESS:
     AnimateClip();
-    virtual ~AnimateClip();
-    bool initWithAnimationClip(AnimationClip* clip);
+    bool initWithAnimationClip(cocos2d::Node* rootTarget, AnimationClip* clip);
+    void doUpdate(const AnimProperties& animProperties) const;
+    cocos2d::Node* getTarget(const std::string &path) const;
 
 
     AnimationClip* _clip;
-    cocos2d::Vector<cocos2d::ActionInterval*> _actions;
-
-    template <class A, typename P>
-    void createAction(P const& p, const float framesPerSecond);
+    
+    float _elapsed;
+    float _duration;
+    cocos2d::Node *_rootTarget; // weak reference
 };
 
 NS_CCR_END

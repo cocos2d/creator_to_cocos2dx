@@ -470,8 +470,7 @@ struct SceneGraph FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     VT_DESIGNRESOLUTION = 8,
     VT_RESOLUTIONFITWIDTH = 10,
     VT_RESOLUTIONFITHEIGHT = 12,
-    VT_SPRITEFRAMES = 14,
-    VT_ANIMATIONCLIPS = 16
+    VT_SPRITEFRAMES = 14
   };
   const flatbuffers::String *version() const { return GetPointer<const flatbuffers::String *>(VT_VERSION); }
   const NodeTree *root() const { return GetPointer<const NodeTree *>(VT_ROOT); }
@@ -479,7 +478,6 @@ struct SceneGraph FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   bool resolutionFitWidth() const { return GetField<uint8_t>(VT_RESOLUTIONFITWIDTH, 0) != 0; }
   bool resolutionFitHeight() const { return GetField<uint8_t>(VT_RESOLUTIONFITHEIGHT, 0) != 0; }
   const flatbuffers::Vector<flatbuffers::Offset<SpriteFrame>> *spriteFrames() const { return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<SpriteFrame>> *>(VT_SPRITEFRAMES); }
-  const flatbuffers::Vector<flatbuffers::Offset<AnimationClip>> *animationClips() const { return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<AnimationClip>> *>(VT_ANIMATIONCLIPS); }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<flatbuffers::uoffset_t>(verifier, VT_VERSION) &&
@@ -492,9 +490,6 @@ struct SceneGraph FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
            VerifyField<flatbuffers::uoffset_t>(verifier, VT_SPRITEFRAMES) &&
            verifier.Verify(spriteFrames()) &&
            verifier.VerifyVectorOfTables(spriteFrames()) &&
-           VerifyField<flatbuffers::uoffset_t>(verifier, VT_ANIMATIONCLIPS) &&
-           verifier.Verify(animationClips()) &&
-           verifier.VerifyVectorOfTables(animationClips()) &&
            verifier.EndTable();
   }
 };
@@ -508,11 +503,10 @@ struct SceneGraphBuilder {
   void add_resolutionFitWidth(bool resolutionFitWidth) { fbb_.AddElement<uint8_t>(SceneGraph::VT_RESOLUTIONFITWIDTH, static_cast<uint8_t>(resolutionFitWidth), 0); }
   void add_resolutionFitHeight(bool resolutionFitHeight) { fbb_.AddElement<uint8_t>(SceneGraph::VT_RESOLUTIONFITHEIGHT, static_cast<uint8_t>(resolutionFitHeight), 0); }
   void add_spriteFrames(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<SpriteFrame>>> spriteFrames) { fbb_.AddOffset(SceneGraph::VT_SPRITEFRAMES, spriteFrames); }
-  void add_animationClips(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<AnimationClip>>> animationClips) { fbb_.AddOffset(SceneGraph::VT_ANIMATIONCLIPS, animationClips); }
   SceneGraphBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
   SceneGraphBuilder &operator=(const SceneGraphBuilder &);
   flatbuffers::Offset<SceneGraph> Finish() {
-    auto o = flatbuffers::Offset<SceneGraph>(fbb_.EndTable(start_, 7));
+    auto o = flatbuffers::Offset<SceneGraph>(fbb_.EndTable(start_, 6));
     return o;
   }
 };
@@ -523,10 +517,8 @@ inline flatbuffers::Offset<SceneGraph> CreateSceneGraph(flatbuffers::FlatBufferB
     const Size *designResolution = 0,
     bool resolutionFitWidth = false,
     bool resolutionFitHeight = false,
-    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<SpriteFrame>>> spriteFrames = 0,
-    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<AnimationClip>>> animationClips = 0) {
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<SpriteFrame>>> spriteFrames = 0) {
   SceneGraphBuilder builder_(_fbb);
-  builder_.add_animationClips(animationClips);
   builder_.add_spriteFrames(spriteFrames);
   builder_.add_designResolution(designResolution);
   builder_.add_root(root);
@@ -542,9 +534,8 @@ inline flatbuffers::Offset<SceneGraph> CreateSceneGraphDirect(flatbuffers::FlatB
     const Size *designResolution = 0,
     bool resolutionFitWidth = false,
     bool resolutionFitHeight = false,
-    const std::vector<flatbuffers::Offset<SpriteFrame>> *spriteFrames = nullptr,
-    const std::vector<flatbuffers::Offset<AnimationClip>> *animationClips = nullptr) {
-  return CreateSceneGraph(_fbb, version ? _fbb.CreateString(version) : 0, root, designResolution, resolutionFitWidth, resolutionFitHeight, spriteFrames ? _fbb.CreateVector<flatbuffers::Offset<SpriteFrame>>(*spriteFrames) : 0, animationClips ? _fbb.CreateVector<flatbuffers::Offset<AnimationClip>>(*animationClips) : 0);
+    const std::vector<flatbuffers::Offset<SpriteFrame>> *spriteFrames = nullptr) {
+  return CreateSceneGraph(_fbb, version ? _fbb.CreateString(version) : 0, root, designResolution, resolutionFitWidth, resolutionFitHeight, spriteFrames ? _fbb.CreateVector<flatbuffers::Offset<SpriteFrame>>(*spriteFrames) : 0);
 }
 
 struct NodeTree FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
@@ -1276,18 +1267,32 @@ inline flatbuffers::Offset<Scene> CreateScene(flatbuffers::FlatBufferBuilder &_f
 struct Button FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   enum {
     VT_NODE = 4,
-    VT_SPRITEFRAMENAME = 6,
-    VT_IGNORECONTENTADAPTWITHSIZE = 8
+    VT_TRANSITION = 6,
+    VT_ZOOMSCALE = 8,
+    VT_SPRITEFRAMENAME = 10,
+    VT_PRESSEDSPRITEFRAMENAME = 12,
+    VT_DISABLEDSPRITEFRAMENAME = 14,
+    VT_IGNORECONTENTADAPTWITHSIZE = 16
   };
   const Node *node() const { return GetPointer<const Node *>(VT_NODE); }
+  int32_t transition() const { return GetField<int32_t>(VT_TRANSITION, 0); }
+  float zoomScale() const { return GetField<float>(VT_ZOOMSCALE, 0.0f); }
   const flatbuffers::String *spriteFrameName() const { return GetPointer<const flatbuffers::String *>(VT_SPRITEFRAMENAME); }
+  const flatbuffers::String *pressedSpriteFrameName() const { return GetPointer<const flatbuffers::String *>(VT_PRESSEDSPRITEFRAMENAME); }
+  const flatbuffers::String *disabledSpriteFrameName() const { return GetPointer<const flatbuffers::String *>(VT_DISABLEDSPRITEFRAMENAME); }
   bool ignoreContentAdaptWithSize() const { return GetField<uint8_t>(VT_IGNORECONTENTADAPTWITHSIZE, 0) != 0; }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<flatbuffers::uoffset_t>(verifier, VT_NODE) &&
            verifier.VerifyTable(node()) &&
+           VerifyField<int32_t>(verifier, VT_TRANSITION) &&
+           VerifyField<float>(verifier, VT_ZOOMSCALE) &&
            VerifyField<flatbuffers::uoffset_t>(verifier, VT_SPRITEFRAMENAME) &&
            verifier.Verify(spriteFrameName()) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_PRESSEDSPRITEFRAMENAME) &&
+           verifier.Verify(pressedSpriteFrameName()) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_DISABLEDSPRITEFRAMENAME) &&
+           verifier.Verify(disabledSpriteFrameName()) &&
            VerifyField<uint8_t>(verifier, VT_IGNORECONTENTADAPTWITHSIZE) &&
            verifier.EndTable();
   }
@@ -1297,22 +1302,34 @@ struct ButtonBuilder {
   flatbuffers::FlatBufferBuilder &fbb_;
   flatbuffers::uoffset_t start_;
   void add_node(flatbuffers::Offset<Node> node) { fbb_.AddOffset(Button::VT_NODE, node); }
+  void add_transition(int32_t transition) { fbb_.AddElement<int32_t>(Button::VT_TRANSITION, transition, 0); }
+  void add_zoomScale(float zoomScale) { fbb_.AddElement<float>(Button::VT_ZOOMSCALE, zoomScale, 0.0f); }
   void add_spriteFrameName(flatbuffers::Offset<flatbuffers::String> spriteFrameName) { fbb_.AddOffset(Button::VT_SPRITEFRAMENAME, spriteFrameName); }
+  void add_pressedSpriteFrameName(flatbuffers::Offset<flatbuffers::String> pressedSpriteFrameName) { fbb_.AddOffset(Button::VT_PRESSEDSPRITEFRAMENAME, pressedSpriteFrameName); }
+  void add_disabledSpriteFrameName(flatbuffers::Offset<flatbuffers::String> disabledSpriteFrameName) { fbb_.AddOffset(Button::VT_DISABLEDSPRITEFRAMENAME, disabledSpriteFrameName); }
   void add_ignoreContentAdaptWithSize(bool ignoreContentAdaptWithSize) { fbb_.AddElement<uint8_t>(Button::VT_IGNORECONTENTADAPTWITHSIZE, static_cast<uint8_t>(ignoreContentAdaptWithSize), 0); }
   ButtonBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
   ButtonBuilder &operator=(const ButtonBuilder &);
   flatbuffers::Offset<Button> Finish() {
-    auto o = flatbuffers::Offset<Button>(fbb_.EndTable(start_, 3));
+    auto o = flatbuffers::Offset<Button>(fbb_.EndTable(start_, 7));
     return o;
   }
 };
 
 inline flatbuffers::Offset<Button> CreateButton(flatbuffers::FlatBufferBuilder &_fbb,
     flatbuffers::Offset<Node> node = 0,
+    int32_t transition = 0,
+    float zoomScale = 0.0f,
     flatbuffers::Offset<flatbuffers::String> spriteFrameName = 0,
+    flatbuffers::Offset<flatbuffers::String> pressedSpriteFrameName = 0,
+    flatbuffers::Offset<flatbuffers::String> disabledSpriteFrameName = 0,
     bool ignoreContentAdaptWithSize = false) {
   ButtonBuilder builder_(_fbb);
+  builder_.add_disabledSpriteFrameName(disabledSpriteFrameName);
+  builder_.add_pressedSpriteFrameName(pressedSpriteFrameName);
   builder_.add_spriteFrameName(spriteFrameName);
+  builder_.add_zoomScale(zoomScale);
+  builder_.add_transition(transition);
   builder_.add_node(node);
   builder_.add_ignoreContentAdaptWithSize(ignoreContentAdaptWithSize);
   return builder_.Finish();
@@ -1320,9 +1337,13 @@ inline flatbuffers::Offset<Button> CreateButton(flatbuffers::FlatBufferBuilder &
 
 inline flatbuffers::Offset<Button> CreateButtonDirect(flatbuffers::FlatBufferBuilder &_fbb,
     flatbuffers::Offset<Node> node = 0,
+    int32_t transition = 0,
+    float zoomScale = 0.0f,
     const char *spriteFrameName = nullptr,
+    const char *pressedSpriteFrameName = nullptr,
+    const char *disabledSpriteFrameName = nullptr,
     bool ignoreContentAdaptWithSize = false) {
-  return CreateButton(_fbb, node, spriteFrameName ? _fbb.CreateString(spriteFrameName) : 0, ignoreContentAdaptWithSize);
+  return CreateButton(_fbb, node, transition, zoomScale, spriteFrameName ? _fbb.CreateString(spriteFrameName) : 0, pressedSpriteFrameName ? _fbb.CreateString(pressedSpriteFrameName) : 0, disabledSpriteFrameName ? _fbb.CreateString(disabledSpriteFrameName) : 0, ignoreContentAdaptWithSize);
 }
 
 struct ProgressBar FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
@@ -1666,28 +1687,21 @@ inline flatbuffers::Offset<SpineSkeleton> CreateSpineSkeletonDirect(flatbuffers:
 
 struct AnimationRef FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   enum {
-    VT_DEFAULTCLIP = 4,
-    VT_CLIPS = 6,
-    VT_OBJFLAGS = 8,
-    VT_NAME = 10,
-    VT_PLAYONLOAD = 12
+    VT_CLIPS = 4,
+    VT_PLAYONLOAD = 6,
+    VT_DEFAULTCLIP = 8
   };
-  const flatbuffers::String *defaultClip() const { return GetPointer<const flatbuffers::String *>(VT_DEFAULTCLIP); }
-  const flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>> *clips() const { return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>> *>(VT_CLIPS); }
-  int32_t objFlags() const { return GetField<int32_t>(VT_OBJFLAGS, 0); }
-  const flatbuffers::String *name() const { return GetPointer<const flatbuffers::String *>(VT_NAME); }
+  const flatbuffers::Vector<flatbuffers::Offset<AnimationClip>> *clips() const { return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<AnimationClip>> *>(VT_CLIPS); }
   bool playOnLoad() const { return GetField<uint8_t>(VT_PLAYONLOAD, 0) != 0; }
+  const flatbuffers::String *defaultClip() const { return GetPointer<const flatbuffers::String *>(VT_DEFAULTCLIP); }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
-           VerifyField<flatbuffers::uoffset_t>(verifier, VT_DEFAULTCLIP) &&
-           verifier.Verify(defaultClip()) &&
            VerifyField<flatbuffers::uoffset_t>(verifier, VT_CLIPS) &&
            verifier.Verify(clips()) &&
-           verifier.VerifyVectorOfStrings(clips()) &&
-           VerifyField<int32_t>(verifier, VT_OBJFLAGS) &&
-           VerifyField<flatbuffers::uoffset_t>(verifier, VT_NAME) &&
-           verifier.Verify(name()) &&
+           verifier.VerifyVectorOfTables(clips()) &&
            VerifyField<uint8_t>(verifier, VT_PLAYONLOAD) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_DEFAULTCLIP) &&
+           verifier.Verify(defaultClip()) &&
            verifier.EndTable();
   }
 };
@@ -1695,80 +1709,61 @@ struct AnimationRef FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
 struct AnimationRefBuilder {
   flatbuffers::FlatBufferBuilder &fbb_;
   flatbuffers::uoffset_t start_;
-  void add_defaultClip(flatbuffers::Offset<flatbuffers::String> defaultClip) { fbb_.AddOffset(AnimationRef::VT_DEFAULTCLIP, defaultClip); }
-  void add_clips(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>>> clips) { fbb_.AddOffset(AnimationRef::VT_CLIPS, clips); }
-  void add_objFlags(int32_t objFlags) { fbb_.AddElement<int32_t>(AnimationRef::VT_OBJFLAGS, objFlags, 0); }
-  void add_name(flatbuffers::Offset<flatbuffers::String> name) { fbb_.AddOffset(AnimationRef::VT_NAME, name); }
+  void add_clips(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<AnimationClip>>> clips) { fbb_.AddOffset(AnimationRef::VT_CLIPS, clips); }
   void add_playOnLoad(bool playOnLoad) { fbb_.AddElement<uint8_t>(AnimationRef::VT_PLAYONLOAD, static_cast<uint8_t>(playOnLoad), 0); }
+  void add_defaultClip(flatbuffers::Offset<flatbuffers::String> defaultClip) { fbb_.AddOffset(AnimationRef::VT_DEFAULTCLIP, defaultClip); }
   AnimationRefBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
   AnimationRefBuilder &operator=(const AnimationRefBuilder &);
   flatbuffers::Offset<AnimationRef> Finish() {
-    auto o = flatbuffers::Offset<AnimationRef>(fbb_.EndTable(start_, 5));
+    auto o = flatbuffers::Offset<AnimationRef>(fbb_.EndTable(start_, 3));
     return o;
   }
 };
 
 inline flatbuffers::Offset<AnimationRef> CreateAnimationRef(flatbuffers::FlatBufferBuilder &_fbb,
-    flatbuffers::Offset<flatbuffers::String> defaultClip = 0,
-    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>>> clips = 0,
-    int32_t objFlags = 0,
-    flatbuffers::Offset<flatbuffers::String> name = 0,
-    bool playOnLoad = false) {
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<AnimationClip>>> clips = 0,
+    bool playOnLoad = false,
+    flatbuffers::Offset<flatbuffers::String> defaultClip = 0) {
   AnimationRefBuilder builder_(_fbb);
-  builder_.add_name(name);
-  builder_.add_objFlags(objFlags);
-  builder_.add_clips(clips);
   builder_.add_defaultClip(defaultClip);
+  builder_.add_clips(clips);
   builder_.add_playOnLoad(playOnLoad);
   return builder_.Finish();
 }
 
 inline flatbuffers::Offset<AnimationRef> CreateAnimationRefDirect(flatbuffers::FlatBufferBuilder &_fbb,
-    const char *defaultClip = nullptr,
-    const std::vector<flatbuffers::Offset<flatbuffers::String>> *clips = nullptr,
-    int32_t objFlags = 0,
-    const char *name = nullptr,
-    bool playOnLoad = false) {
-  return CreateAnimationRef(_fbb, defaultClip ? _fbb.CreateString(defaultClip) : 0, clips ? _fbb.CreateVector<flatbuffers::Offset<flatbuffers::String>>(*clips) : 0, objFlags, name ? _fbb.CreateString(name) : 0, playOnLoad);
+    const std::vector<flatbuffers::Offset<AnimationClip>> *clips = nullptr,
+    bool playOnLoad = false,
+    const char *defaultClip = nullptr) {
+  return CreateAnimationRef(_fbb, clips ? _fbb.CreateVector<flatbuffers::Offset<AnimationClip>>(*clips) : 0, playOnLoad, defaultClip ? _fbb.CreateString(defaultClip) : 0);
 }
 
 struct AnimationClip FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   enum {
     VT_NAME = 4,
-    VT_UUID = 6,
-    VT_DURATION = 8,
-    VT_SAMPLE = 10,
-    VT_SPEED = 12,
-    VT_WRAPMODE = 14,
-    VT_CURVEDATA = 16,
-    VT_EVENTS = 18,
-    VT_OBJFLAGS = 20
+    VT_DURATION = 6,
+    VT_SAMPLE = 8,
+    VT_SPEED = 10,
+    VT_WRAPMODE = 12,
+    VT_CURVEDATA = 14
   };
   const flatbuffers::String *name() const { return GetPointer<const flatbuffers::String *>(VT_NAME); }
-  const flatbuffers::String *uuid() const { return GetPointer<const flatbuffers::String *>(VT_UUID); }
   float duration() const { return GetField<float>(VT_DURATION, 0.0f); }
   float sample() const { return GetField<float>(VT_SAMPLE, 0.0f); }
   float speed() const { return GetField<float>(VT_SPEED, 0.0f); }
   AnimWrapMode wrapMode() const { return static_cast<AnimWrapMode>(GetField<int8_t>(VT_WRAPMODE, 0)); }
-  const AnimCurveData *curveData() const { return GetPointer<const AnimCurveData *>(VT_CURVEDATA); }
-  const flatbuffers::Vector<flatbuffers::Offset<AnimEvents>> *events() const { return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<AnimEvents>> *>(VT_EVENTS); }
-  int32_t objFlags() const { return GetField<int32_t>(VT_OBJFLAGS, 0); }
+  const flatbuffers::Vector<flatbuffers::Offset<AnimCurveData>> *curveData() const { return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<AnimCurveData>> *>(VT_CURVEDATA); }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<flatbuffers::uoffset_t>(verifier, VT_NAME) &&
            verifier.Verify(name()) &&
-           VerifyField<flatbuffers::uoffset_t>(verifier, VT_UUID) &&
-           verifier.Verify(uuid()) &&
            VerifyField<float>(verifier, VT_DURATION) &&
            VerifyField<float>(verifier, VT_SAMPLE) &&
            VerifyField<float>(verifier, VT_SPEED) &&
            VerifyField<int8_t>(verifier, VT_WRAPMODE) &&
            VerifyField<flatbuffers::uoffset_t>(verifier, VT_CURVEDATA) &&
-           verifier.VerifyTable(curveData()) &&
-           VerifyField<flatbuffers::uoffset_t>(verifier, VT_EVENTS) &&
-           verifier.Verify(events()) &&
-           verifier.VerifyVectorOfTables(events()) &&
-           VerifyField<int32_t>(verifier, VT_OBJFLAGS) &&
+           verifier.Verify(curveData()) &&
+           verifier.VerifyVectorOfTables(curveData()) &&
            verifier.EndTable();
   }
 };
@@ -1777,40 +1772,31 @@ struct AnimationClipBuilder {
   flatbuffers::FlatBufferBuilder &fbb_;
   flatbuffers::uoffset_t start_;
   void add_name(flatbuffers::Offset<flatbuffers::String> name) { fbb_.AddOffset(AnimationClip::VT_NAME, name); }
-  void add_uuid(flatbuffers::Offset<flatbuffers::String> uuid) { fbb_.AddOffset(AnimationClip::VT_UUID, uuid); }
   void add_duration(float duration) { fbb_.AddElement<float>(AnimationClip::VT_DURATION, duration, 0.0f); }
   void add_sample(float sample) { fbb_.AddElement<float>(AnimationClip::VT_SAMPLE, sample, 0.0f); }
   void add_speed(float speed) { fbb_.AddElement<float>(AnimationClip::VT_SPEED, speed, 0.0f); }
   void add_wrapMode(AnimWrapMode wrapMode) { fbb_.AddElement<int8_t>(AnimationClip::VT_WRAPMODE, static_cast<int8_t>(wrapMode), 0); }
-  void add_curveData(flatbuffers::Offset<AnimCurveData> curveData) { fbb_.AddOffset(AnimationClip::VT_CURVEDATA, curveData); }
-  void add_events(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<AnimEvents>>> events) { fbb_.AddOffset(AnimationClip::VT_EVENTS, events); }
-  void add_objFlags(int32_t objFlags) { fbb_.AddElement<int32_t>(AnimationClip::VT_OBJFLAGS, objFlags, 0); }
+  void add_curveData(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<AnimCurveData>>> curveData) { fbb_.AddOffset(AnimationClip::VT_CURVEDATA, curveData); }
   AnimationClipBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
   AnimationClipBuilder &operator=(const AnimationClipBuilder &);
   flatbuffers::Offset<AnimationClip> Finish() {
-    auto o = flatbuffers::Offset<AnimationClip>(fbb_.EndTable(start_, 9));
+    auto o = flatbuffers::Offset<AnimationClip>(fbb_.EndTable(start_, 6));
     return o;
   }
 };
 
 inline flatbuffers::Offset<AnimationClip> CreateAnimationClip(flatbuffers::FlatBufferBuilder &_fbb,
     flatbuffers::Offset<flatbuffers::String> name = 0,
-    flatbuffers::Offset<flatbuffers::String> uuid = 0,
     float duration = 0.0f,
     float sample = 0.0f,
     float speed = 0.0f,
     AnimWrapMode wrapMode = AnimWrapMode_Default,
-    flatbuffers::Offset<AnimCurveData> curveData = 0,
-    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<AnimEvents>>> events = 0,
-    int32_t objFlags = 0) {
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<AnimCurveData>>> curveData = 0) {
   AnimationClipBuilder builder_(_fbb);
-  builder_.add_objFlags(objFlags);
-  builder_.add_events(events);
   builder_.add_curveData(curveData);
   builder_.add_speed(speed);
   builder_.add_sample(sample);
   builder_.add_duration(duration);
-  builder_.add_uuid(uuid);
   builder_.add_name(name);
   builder_.add_wrapMode(wrapMode);
   return builder_.Finish();
@@ -1818,24 +1804,25 @@ inline flatbuffers::Offset<AnimationClip> CreateAnimationClip(flatbuffers::FlatB
 
 inline flatbuffers::Offset<AnimationClip> CreateAnimationClipDirect(flatbuffers::FlatBufferBuilder &_fbb,
     const char *name = nullptr,
-    const char *uuid = nullptr,
     float duration = 0.0f,
     float sample = 0.0f,
     float speed = 0.0f,
     AnimWrapMode wrapMode = AnimWrapMode_Default,
-    flatbuffers::Offset<AnimCurveData> curveData = 0,
-    const std::vector<flatbuffers::Offset<AnimEvents>> *events = nullptr,
-    int32_t objFlags = 0) {
-  return CreateAnimationClip(_fbb, name ? _fbb.CreateString(name) : 0, uuid ? _fbb.CreateString(uuid) : 0, duration, sample, speed, wrapMode, curveData, events ? _fbb.CreateVector<flatbuffers::Offset<AnimEvents>>(*events) : 0, objFlags);
+    const std::vector<flatbuffers::Offset<AnimCurveData>> *curveData = nullptr) {
+  return CreateAnimationClip(_fbb, name ? _fbb.CreateString(name) : 0, duration, sample, speed, wrapMode, curveData ? _fbb.CreateVector<flatbuffers::Offset<AnimCurveData>>(*curveData) : 0);
 }
 
 struct AnimCurveData FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   enum {
-    VT_PROPS = 4
+    VT_PATH = 4,
+    VT_PROPS = 6
   };
+  const flatbuffers::String *path() const { return GetPointer<const flatbuffers::String *>(VT_PATH); }
   const AnimProps *props() const { return GetPointer<const AnimProps *>(VT_PROPS); }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_PATH) &&
+           verifier.Verify(path()) &&
            VerifyField<flatbuffers::uoffset_t>(verifier, VT_PROPS) &&
            verifier.VerifyTable(props()) &&
            verifier.EndTable();
@@ -1845,20 +1832,29 @@ struct AnimCurveData FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
 struct AnimCurveDataBuilder {
   flatbuffers::FlatBufferBuilder &fbb_;
   flatbuffers::uoffset_t start_;
+  void add_path(flatbuffers::Offset<flatbuffers::String> path) { fbb_.AddOffset(AnimCurveData::VT_PATH, path); }
   void add_props(flatbuffers::Offset<AnimProps> props) { fbb_.AddOffset(AnimCurveData::VT_PROPS, props); }
   AnimCurveDataBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
   AnimCurveDataBuilder &operator=(const AnimCurveDataBuilder &);
   flatbuffers::Offset<AnimCurveData> Finish() {
-    auto o = flatbuffers::Offset<AnimCurveData>(fbb_.EndTable(start_, 1));
+    auto o = flatbuffers::Offset<AnimCurveData>(fbb_.EndTable(start_, 2));
     return o;
   }
 };
 
 inline flatbuffers::Offset<AnimCurveData> CreateAnimCurveData(flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> path = 0,
     flatbuffers::Offset<AnimProps> props = 0) {
   AnimCurveDataBuilder builder_(_fbb);
   builder_.add_props(props);
+  builder_.add_path(path);
   return builder_.Finish();
+}
+
+inline flatbuffers::Offset<AnimCurveData> CreateAnimCurveDataDirect(flatbuffers::FlatBufferBuilder &_fbb,
+    const char *path = nullptr,
+    flatbuffers::Offset<AnimProps> props = 0) {
+  return CreateAnimCurveData(_fbb, path ? _fbb.CreateString(path) : 0, props);
 }
 
 struct AnimProps FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
@@ -2079,18 +2075,14 @@ inline flatbuffers::Offset<AnimPropRotation> CreateAnimPropRotation(flatbuffers:
 struct AnimPropPosition FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   enum {
     VT_FRAME = 4,
-    VT_VALUE = 6,
-    VT_MOTIONPATH = 8
+    VT_VALUE = 6
   };
   float frame() const { return GetField<float>(VT_FRAME, 0.0f); }
   const Vec2 *value() const { return GetStruct<const Vec2 *>(VT_VALUE); }
-  const flatbuffers::Vector<float> *motionPath() const { return GetPointer<const flatbuffers::Vector<float> *>(VT_MOTIONPATH); }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<float>(verifier, VT_FRAME) &&
            VerifyField<Vec2>(verifier, VT_VALUE) &&
-           VerifyField<flatbuffers::uoffset_t>(verifier, VT_MOTIONPATH) &&
-           verifier.Verify(motionPath()) &&
            verifier.EndTable();
   }
 };
@@ -2100,31 +2092,21 @@ struct AnimPropPositionBuilder {
   flatbuffers::uoffset_t start_;
   void add_frame(float frame) { fbb_.AddElement<float>(AnimPropPosition::VT_FRAME, frame, 0.0f); }
   void add_value(const Vec2 *value) { fbb_.AddStruct(AnimPropPosition::VT_VALUE, value); }
-  void add_motionPath(flatbuffers::Offset<flatbuffers::Vector<float>> motionPath) { fbb_.AddOffset(AnimPropPosition::VT_MOTIONPATH, motionPath); }
   AnimPropPositionBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
   AnimPropPositionBuilder &operator=(const AnimPropPositionBuilder &);
   flatbuffers::Offset<AnimPropPosition> Finish() {
-    auto o = flatbuffers::Offset<AnimPropPosition>(fbb_.EndTable(start_, 3));
+    auto o = flatbuffers::Offset<AnimPropPosition>(fbb_.EndTable(start_, 2));
     return o;
   }
 };
 
 inline flatbuffers::Offset<AnimPropPosition> CreateAnimPropPosition(flatbuffers::FlatBufferBuilder &_fbb,
     float frame = 0.0f,
-    const Vec2 *value = 0,
-    flatbuffers::Offset<flatbuffers::Vector<float>> motionPath = 0) {
+    const Vec2 *value = 0) {
   AnimPropPositionBuilder builder_(_fbb);
-  builder_.add_motionPath(motionPath);
   builder_.add_value(value);
   builder_.add_frame(frame);
   return builder_.Finish();
-}
-
-inline flatbuffers::Offset<AnimPropPosition> CreateAnimPropPositionDirect(flatbuffers::FlatBufferBuilder &_fbb,
-    float frame = 0.0f,
-    const Vec2 *value = 0,
-    const std::vector<float> *motionPath = nullptr) {
-  return CreateAnimPropPosition(_fbb, frame, value, motionPath ? _fbb.CreateVector<float>(*motionPath) : 0);
 }
 
 struct AnimPropPositionX FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {

@@ -6,6 +6,7 @@
 
 const Path = require('path');
 const Fs = require('fire-fs');
+const Constants = require('./Constants');
 
 class Utils {
     static log(data) {
@@ -42,6 +43,47 @@ class Utils {
     static isLuaProject(dir) {
         let config = Path.join(dir, 'config.json');
         return Fs.existsSync(config);
+    }
+
+    static getRelativePath(fullpath, uuid) {
+        // let path = Editor.assetdb.mountInfoByUuid(uuid).path;
+        // return fullpath.substring(path.length);
+
+        return Editor.assetdb.mountInfoByUuid(uuid);
+    }
+
+    // should be invoked in renderer process
+    static getAssetsInfo(cb) {
+        Editor.remote.assetdb.queryMetas('db://**/*', '', function(err, metaInfos) {
+            let uuidmaps = {};
+
+            for (let i = 0, len = metaInfos.length; i < len; ++i) {
+                let meta = metaInfos[i];
+                let type = meta.assetType();
+                if (type === 'folder' || type === 'javascript')
+                    continue;
+
+                let uuid = meta.uuid;
+                let path = null;
+                if (meta && !meta.useRawfile()) {
+                    path = Editor.remote.assetdb._uuidToImportPathNoExt(uuid);
+                    path += '.json';
+                }
+
+                if (!path)
+                    path = Editor.remote.assetdb.uuidToFspath(uuid);
+
+                let url = path.replace(/\\/g, '/');
+
+                uuidmaps[uuid] = url;
+            }
+
+            cb(uuidmaps);
+        })
+    }
+
+    static replaceExt(path, ext) {
+        return (path.substr(0, path.lastIndexOf(".")) + ext);
     }
 }
 

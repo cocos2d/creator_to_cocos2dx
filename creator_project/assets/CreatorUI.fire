@@ -267,6 +267,7 @@
     "_enableWrapText": false,
     "_N$file": null,
     "_isSystemFontUsed": true,
+    "_spacingX": 0,
     "_N$string": "This is a button",
     "_N$horizontalAlign": 1,
     "_N$verticalAlign": 1,
@@ -484,6 +485,7 @@
       "__uuid__": "58b104e0-68e1-4f7a-ab38-4f44521a7943"
     },
     "_isSystemFontUsed": false,
+    "_spacingX": 0,
     "_N$string": "Button 2",
     "_N$horizontalAlign": 1,
     "_N$verticalAlign": 1,
@@ -701,6 +703,7 @@
       "__uuid__": "27d18d5e-feac-410d-a9f8-8a9ddb7213c2"
     },
     "_isSystemFontUsed": false,
+    "_spacingX": 0,
     "_N$string": "Another Button",
     "_N$horizontalAlign": 1,
     "_N$verticalAlign": 1,
@@ -1159,7 +1162,10 @@
     },
     "_enabled": true,
     "_type": 0,
-    "_segements": 64
+    "_segements": 64,
+    "_N$spriteFrame": null,
+    "_N$alphaThreshold": 1,
+    "_N$inverted": false
   },
   {
     "__type__": "cc.Node",
@@ -1306,6 +1312,7 @@
     "_enableWrapText": true,
     "_N$file": null,
     "_isSystemFontUsed": true,
+    "_spacingX": 0,
     "_N$string": "ScrollView content\n\n",
     "_N$horizontalAlign": 1,
     "_N$verticalAlign": 0,
@@ -1437,6 +1444,7 @@
     "_enableWrapText": false,
     "_N$file": null,
     "_isSystemFontUsed": true,
+    "_spacingX": 0,
     "_N$string": "button",
     "_N$horizontalAlign": 1,
     "_N$verticalAlign": 1,
@@ -1535,6 +1543,7 @@
     },
     "_enabled": true,
     "isAlignOnce": true,
+    "_target": null,
     "_alignFlags": 37,
     "_left": 350.07654921020657,
     "_right": 0,
@@ -2191,7 +2200,10 @@
     },
     "_enabled": true,
     "_type": 0,
-    "_segements": 64
+    "_segements": 64,
+    "_N$spriteFrame": null,
+    "_N$alphaThreshold": 1,
+    "_N$inverted": false
   },
   {
     "__type__": "cc.Sprite",
@@ -2622,7 +2634,10 @@
     },
     "_enabled": true,
     "_type": 0,
-    "_segements": 64
+    "_segements": 64,
+    "_N$spriteFrame": null,
+    "_N$alphaThreshold": 1,
+    "_N$inverted": false
   },
   {
     "__type__": "cc.Node",
@@ -2750,6 +2765,7 @@
     "_enableWrapText": false,
     "_N$file": null,
     "_isSystemFontUsed": true,
+    "_spacingX": 0,
     "_N$string": "button",
     "_N$horizontalAlign": 1,
     "_N$verticalAlign": 1,
@@ -2965,6 +2981,7 @@
     "_enableWrapText": false,
     "_N$file": null,
     "_isSystemFontUsed": true,
+    "_spacingX": 0,
     "_N$string": "button",
     "_N$horizontalAlign": 1,
     "_N$verticalAlign": 1,
@@ -3180,6 +3197,7 @@
     "_enableWrapText": false,
     "_N$file": null,
     "_isSystemFontUsed": true,
+    "_spacingX": 0,
     "_N$string": "button",
     "_N$horizontalAlign": 1,
     "_N$verticalAlign": 1,
@@ -3395,6 +3413,7 @@
     "_enableWrapText": false,
     "_N$file": null,
     "_isSystemFontUsed": true,
+    "_spacingX": 0,
     "_N$string": "button",
     "_N$horizontalAlign": 1,
     "_N$verticalAlign": 1,
@@ -3610,6 +3629,7 @@
     "_enableWrapText": false,
     "_N$file": null,
     "_isSystemFontUsed": true,
+    "_spacingX": 0,
     "_N$string": "button",
     "_N$horizontalAlign": 1,
     "_N$verticalAlign": 1,
@@ -3825,6 +3845,7 @@
     "_enableWrapText": false,
     "_N$file": null,
     "_isSystemFontUsed": true,
+    "_spacingX": 0,
     "_N$string": "button",
     "_N$horizontalAlign": 1,
     "_N$verticalAlign": 1,
@@ -4003,6 +4024,7 @@
     },
     "_enabled": true,
     "isAlignOnce": true,
+    "_target": null,
     "_alignFlags": 37,
     "_left": 350.07654921020657,
     "_right": 0,
@@ -4157,9 +4179,9 @@
     "_N$placeholderFontSize": 20,
     "_N$placeholderFontColor": {
       "__type__": "cc.Color",
-      "r": 127.5,
-      "g": 127.5,
-      "b": 127.5,
+      "r": 127,
+      "g": 127,
+      "b": 127,
       "a": 255
     },
     "_N$maxLength": 14,

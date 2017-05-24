@@ -24,10 +24,6 @@
 
 #pragma once
 
-#include "cocos2d.h"
-
-#include "AnimationClipProperties.h"
-
 #ifdef __cplusplus
 #define NS_CCR_BEGIN                     namespace creator {
 #define NS_CCR_END                       }
@@ -39,45 +35,31 @@
 #define NS_CC
 #endif
 
+#include <vector>
+
+#include "AnimationClip.h"
+
 NS_CCR_BEGIN
 
-class AnimationClip: public cocos2d::Ref
+struct AnimationInfo
 {
-public:
-    enum class WrapMode {Default, Normal, Loop, PingPong, Reverse, LoopReverse, PingPongReverse};
-
-    static AnimationClip* create();
-    virtual ~AnimationClip();
-    
-    bool init();
-
-    void setName(const std::string& name);
-    const std::string& getName() const;
-
-    void setDuration(float duration);
-    float getDuration() const;
-
-    void setSample(float sample);
-    float getSample() const;
-
-    void setSpeed(float speed);
-    float getSpeed() const;
-
-    void setWrapMode(WrapMode wrapMode);
-    WrapMode getWrapMode() const;
-
-    void addAnimProperties(const AnimProperties& properties);
-    const std::vector<AnimProperties>& getAnimPropertiesVec() const;
-
-protected:
-    AnimationClip();
-
-    std::string _name;
-    float _duration;
-    float _sample;
-    float _speed;
-    WrapMode _wrapMode;
-    std::vector<AnimProperties> _animPropertiesVec;
+    AnimationClip* defaultClip;
+    cocos2d::Vector<AnimationClip*> clips;
+    bool playOnLoad;
+    cocos2d::Node* target;
 };
 
-NS_CCR_END
+class AnimationManager
+{
+public:
+    void addAnimation(const AnimationInfo& animationInfo);
+    // play the action clip that should play on load
+    void playOnLoad() const;
+    void playActionClip(cocos2d::Node *target, const std::string &animationClipName) const;
+private:
+    void runAnimationClip(cocos2d::Node *target, AnimationClip* animationClip) const;
+    
+    std::vector<AnimationInfo> _animations;
+};
+
+NS_CC_END
