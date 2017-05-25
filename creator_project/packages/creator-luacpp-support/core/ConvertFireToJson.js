@@ -1035,7 +1035,7 @@ class FireParser {
     constructor() {
         this._state = state;
         this._json_file = null;
-        this._json_output = {version: 'alpha1', root: {}};
+        this._json_output = {version: '0.1', root: {}};
         this._creatorassets = null;
     }
 
