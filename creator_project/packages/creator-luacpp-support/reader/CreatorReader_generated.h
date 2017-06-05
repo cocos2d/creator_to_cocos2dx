@@ -1349,15 +1349,29 @@ inline flatbuffers::Offset<Button> CreateButtonDirect(flatbuffers::FlatBufferBui
 struct ProgressBar FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   enum {
     VT_NODE = 4,
-    VT_PERCENT = 6
+    VT_PERCENT = 6,
+    VT_BACKGROUNDSPRITEFRAMENAME = 8,
+    VT_BARSPRITEFRAMENAME = 10,
+    VT_BARSPRITETYPE = 12,
+    VT_REVERSE = 14
   };
   const Node *node() const { return GetPointer<const Node *>(VT_NODE); }
   float percent() const { return GetField<float>(VT_PERCENT, 0.0f); }
+  const flatbuffers::String *backgroundSpriteFrameName() const { return GetPointer<const flatbuffers::String *>(VT_BACKGROUNDSPRITEFRAMENAME); }
+  const flatbuffers::String *barSpriteFrameName() const { return GetPointer<const flatbuffers::String *>(VT_BARSPRITEFRAMENAME); }
+  int32_t barSpriteType() const { return GetField<int32_t>(VT_BARSPRITETYPE, 0); }
+  bool reverse() const { return GetField<uint8_t>(VT_REVERSE, 0) != 0; }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<flatbuffers::uoffset_t>(verifier, VT_NODE) &&
            verifier.VerifyTable(node()) &&
            VerifyField<float>(verifier, VT_PERCENT) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_BACKGROUNDSPRITEFRAMENAME) &&
+           verifier.Verify(backgroundSpriteFrameName()) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_BARSPRITEFRAMENAME) &&
+           verifier.Verify(barSpriteFrameName()) &&
+           VerifyField<int32_t>(verifier, VT_BARSPRITETYPE) &&
+           VerifyField<uint8_t>(verifier, VT_REVERSE) &&
            verifier.EndTable();
   }
 };
@@ -1367,21 +1381,43 @@ struct ProgressBarBuilder {
   flatbuffers::uoffset_t start_;
   void add_node(flatbuffers::Offset<Node> node) { fbb_.AddOffset(ProgressBar::VT_NODE, node); }
   void add_percent(float percent) { fbb_.AddElement<float>(ProgressBar::VT_PERCENT, percent, 0.0f); }
+  void add_backgroundSpriteFrameName(flatbuffers::Offset<flatbuffers::String> backgroundSpriteFrameName) { fbb_.AddOffset(ProgressBar::VT_BACKGROUNDSPRITEFRAMENAME, backgroundSpriteFrameName); }
+  void add_barSpriteFrameName(flatbuffers::Offset<flatbuffers::String> barSpriteFrameName) { fbb_.AddOffset(ProgressBar::VT_BARSPRITEFRAMENAME, barSpriteFrameName); }
+  void add_barSpriteType(int32_t barSpriteType) { fbb_.AddElement<int32_t>(ProgressBar::VT_BARSPRITETYPE, barSpriteType, 0); }
+  void add_reverse(bool reverse) { fbb_.AddElement<uint8_t>(ProgressBar::VT_REVERSE, static_cast<uint8_t>(reverse), 0); }
   ProgressBarBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
   ProgressBarBuilder &operator=(const ProgressBarBuilder &);
   flatbuffers::Offset<ProgressBar> Finish() {
-    auto o = flatbuffers::Offset<ProgressBar>(fbb_.EndTable(start_, 2));
+    auto o = flatbuffers::Offset<ProgressBar>(fbb_.EndTable(start_, 6));
     return o;
   }
 };
 
 inline flatbuffers::Offset<ProgressBar> CreateProgressBar(flatbuffers::FlatBufferBuilder &_fbb,
     flatbuffers::Offset<Node> node = 0,
-    float percent = 0.0f) {
+    float percent = 0.0f,
+    flatbuffers::Offset<flatbuffers::String> backgroundSpriteFrameName = 0,
+    flatbuffers::Offset<flatbuffers::String> barSpriteFrameName = 0,
+    int32_t barSpriteType = 0,
+    bool reverse = false) {
   ProgressBarBuilder builder_(_fbb);
+  builder_.add_barSpriteType(barSpriteType);
+  builder_.add_barSpriteFrameName(barSpriteFrameName);
+  builder_.add_backgroundSpriteFrameName(backgroundSpriteFrameName);
   builder_.add_percent(percent);
   builder_.add_node(node);
+  builder_.add_reverse(reverse);
   return builder_.Finish();
+}
+
+inline flatbuffers::Offset<ProgressBar> CreateProgressBarDirect(flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<Node> node = 0,
+    float percent = 0.0f,
+    const char *backgroundSpriteFrameName = nullptr,
+    const char *barSpriteFrameName = nullptr,
+    int32_t barSpriteType = 0,
+    bool reverse = false) {
+  return CreateProgressBar(_fbb, node, percent, backgroundSpriteFrameName ? _fbb.CreateString(backgroundSpriteFrameName) : 0, barSpriteFrameName ? _fbb.CreateString(barSpriteFrameName) : 0, barSpriteType, reverse);
 }
 
 struct ScrollView FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {

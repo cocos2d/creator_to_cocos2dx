@@ -168,6 +168,10 @@ table ProgressBar
 {
     node:Node;
     percent:float;
+    backgroundSpriteFrameName:string;
+    barSpriteFrameName:string;
+    barSpriteType:int;
+    reverse:bool;
 }
 
 table ScrollView

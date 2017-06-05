@@ -139,9 +139,16 @@ class Node {
             return null;
     }
 
+    /**
+     * The sprite frame name will include path information if it is not a texture packer
+     */
     static get_sprite_frame_name_by_uuid(uuid) {
         if (uuid in state._sprite_frames) {
-            return state._sprite_frames[uuid].name;
+            let uuid_info = state._sprite_frames[uuid];
+            if (uuid_info.is_texture_packer)
+                return uuid_info.name;
+            else
+                return uuid_info.texture_path;
         }
         else {
             let jsonfile = uuidinfos[uuid];
@@ -151,9 +158,12 @@ class Node {
 
                 let metauuid;
                 let texture_uuid = contents_json.content.texture;
-                if (contents_json.content.atlas !== '')
+                let is_texture_packer = false;
+                if (contents_json.content.atlas !== '') {
                     // texture packer
                     metauuid = contents_json.content.atlas;
+                    is_texture_packer = true;
+                }
                 else
                     // a single picture
                     metauuid = texture_uuid;
@@ -170,12 +180,17 @@ class Node {
                     let sprite_frame_info = meta[sprite_frame_name];
                     sprite_frame_info.name = sprite_frame_name;
                     sprite_frame_info.texture_path = path_info.relative_path;
+                    sprite_frame_info.is_texture_packer = is_texture_packer;
 
                     let sprite_frame_uuid = sprite_frame_info.uuid; 
                     state._sprite_frames[sprite_frame_uuid] = sprite_frame_info;
 
-                    if (sprite_frame_uuid == uuid)
-                        found_sprite_frame_name = sprite_frame_name;
+                    if (sprite_frame_uuid == uuid) {
+                        if (is_texture_packer)
+                            found_sprite_frame_name = sprite_frame_name;
+                        else
+                            found_sprite_frame_name = sprite_frame_info.texture_path;
+                    }
                 });
                 return found_sprite_frame_name;
             }
@@ -386,7 +401,6 @@ class Node {
     parse_properties() {
         // 1st: parse self
         this.parse_node_properties();
-        this.parse_clip();
         
         // 2nd: parse children
         this._node_data._children.forEach(function(item) {
@@ -414,6 +428,8 @@ class Node {
         this.add_property_int('skewX', '_skewX', data);
         this.add_property_int('skewY', '_skewY', data);
         this.add_property_int('tag', '_tag', data);
+
+        this.parse_clip();
     }
 
     parse_child(node_idx) {
@@ -835,16 +851,48 @@ class ProgressBar extends Node {
     constructor(data) {
         super(data);
         this._jsonNode.object_type = 'ProgressBar';
-
-        Utils.log('WARNING: ProgressBar support is an experimental feature');
     }
 
     parse_properties() {
-        super.parse_properties();
+        // 1st: parse self
+        this.parse_node_properties();
         this._properties = {node: this._properties};
 
-        let component = Node.get_node_component_of_type(this._node_data, 'cc.ProgressBar');
-        this._properties.percent = component._N$progress * 100;
+        // background sprite
+        let bg_component = Node.get_node_component_of_type(this._node_data, 'cc.Sprite');
+        if (bg_component._spriteFrame)
+            this._properties.backgroundSpriteFrameName = state._assetpath + Node.get_sprite_frame_name_by_uuid(bg_component._spriteFrame.__uuid__);
+
+        let bar_component = Node.get_node_component_of_type(this._node_data, 'cc.ProgressBar');
+        this._properties.percent = bar_component._N$progress * 100;
+
+        // texture of progress bar
+        let bar_sprite = bar_component._N$barSprite;
+        if (bar_sprite) {
+            let bar_sprite_data = state._json_data[bar_sprite.__id__];
+            let bar_sprite_uuid = bar_sprite_data._spriteFrame.__uuid__;
+            this._properties.barSpriteFrameName = state._assetpath + Node.get_sprite_frame_name_by_uuid(bar_sprite_uuid);
+            this._properties.barSpriteType = bar_sprite_data._type;
+
+            // should remove the child of bar sprite
+            let children = this._node_data._children;
+            for (let i = 0, len = children.length; i < len; ++i) {
+                let child = children[i];
+                let child_data = state._json_data[child.__id__];
+                child_data._components.forEach(function(component) {
+                    if (component.__id__ == bar_sprite.__id__) {
+                        children.splice(i, 1);
+                    }
+                });
+            }
+        }
+
+        this._properties.reverse = bar_component._N$reverse;
+
+        // 2nd: parse children
+        this._node_data._children.forEach(function(item) {
+            this.parse_child(item.__id__);
+        }.bind(this));
     }
 }
 
@@ -1062,7 +1110,7 @@ class FireParser {
             let sprite_frame = state._sprite_frames[sprite_frame_uuid];
 
             let frame = {
-                name: sprite_frame.name,
+                name: Node.get_sprite_frame_name_by_uuid(sprite_frame_uuid),
                 texturePath: state._assetpath + sprite_frame.texture_path,
                 rect: {x:sprite_frame.trimX, y:sprite_frame.trimY, w:sprite_frame.width, h:sprite_frame.height},
                 offset: {x:sprite_frame.offsetX, y:sprite_frame.offsetY},
