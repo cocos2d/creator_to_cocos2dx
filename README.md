@@ -36,7 +36,7 @@ Supported nodes:
 * `ParticleSystem`
 * `TiledMap`
 * `Button`
-* `ProgressBar` (experimental support: unfinished)
+* `ProgressBar`
 * `RichText` (experimental support: unfinished)
 * `SpineSkeleton`
 * `Widget`: only supports `AlignOnce`
