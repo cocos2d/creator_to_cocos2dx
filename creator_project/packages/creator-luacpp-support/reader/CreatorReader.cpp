@@ -661,7 +661,8 @@ void CreatorReader::parseScrollView(cocos2d::ui::ScrollView* scrollView, const b
 
 cocos2d::ui::LoadingBar* CreatorReader::createProgressBar(const buffers::ProgressBar* progressBarBuffer) const
 {
-    auto progressBar = ui::LoadingBar::create();
+    ui::LoadingBar* progressBar = ui::LoadingBar::create();
+
     parseProgressBar(progressBar, progressBarBuffer);
     return progressBar;
 }
@@ -669,6 +670,30 @@ void CreatorReader::parseProgressBar(cocos2d::ui::LoadingBar* progressBar, const
 {
     const auto& nodeBuffer = progressBarBuffer->node();
     parseNode(progressBar, nodeBuffer);
+    
+    progressBar->ignoreContentAdaptWithSize(false);
+    
+    if (progressBarBuffer->barSpriteFrameName())
+        progressBar->loadTexture(progressBarBuffer->barSpriteFrameName()->c_str());
+    
+    progressBar->setPercent(progressBarBuffer->percent());
+    
+    // TODO: other types support?
+    if (progressBarBuffer->barSpriteType() == buffers::SpriteType_Sliced)
+        progressBar->setScale9Enabled(true);
+    
+    // background sprite
+    if (progressBarBuffer->backgroundSpriteFrameName()) {
+        auto sprite = cocos2d::Sprite::create(progressBarBuffer->backgroundSpriteFrameName()->c_str());
+        sprite->setStretchEnabled(true);
+        sprite->setContentSize(progressBar->getContentSize());
+        sprite->setAnchorPoint(cocos2d::Vec2(0,0));
+        // background sprite should show first
+        progressBar->addChild(sprite, -1);
+    }
+    
+    if (progressBarBuffer->reverse())
+        progressBar->setDirection(cocos2d::ui::LoadingBar::Direction::RIGHT);
 }
 
 cocos2d::ui::EditBox* CreatorReader::createEditBox(const buffers::EditBox* editBoxBuffer) const
