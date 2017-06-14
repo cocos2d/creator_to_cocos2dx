@@ -2,10 +2,13 @@
 # Fireball Projects
 #/////////////////////////////////////////////////////////////////////////////
 
-library/
-temp/
-local/
-build/
+creator_project/library/
+creator_project/temp/
+creator_project/local/
+creator_project/build/
+creator_project/temp/
+creator_project/settings/
+*.meta
 
 #/////////////////////////////////////////////////////////////////////////////
 # Logs and databases
