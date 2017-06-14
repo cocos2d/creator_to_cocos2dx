@@ -1099,8 +1099,8 @@ class FireParser {
                 h: this._state._design_resolution.height
             }
 
-        this.resolutionFitWidth = state._fit_width;
-        this.resolutionFitHeight = state._fit_height;
+        this._json_output.resolutionFitWidth = state._fit_width;
+        this._json_output.resolutionFitHeight = state._fit_height;
     }
 
     to_json_setup_sprite_frames() {
