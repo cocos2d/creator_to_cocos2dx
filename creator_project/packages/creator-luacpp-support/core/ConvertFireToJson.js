@@ -739,8 +739,22 @@ class RichText extends Node {
         this._properties = {node: this._properties};
 
         let component = Node.get_node_component_of_type(this._node_data, 'cc.RichText');
+ 
+        // <outline xxx=yyy ...> -> <outline xxx='yyy' ...>
+        var text = component._N$string;
+        let regex = /(<outline color|width)=(\w*) (color|width)=(\w*)/;
+        var match = text.match(regex);
+        text = text.replace(regex, "$1='$2' $3='$4'");
 
-        this._properties.text = component._N$string;
+        // <br/> -> \n
+        text = text.replace('<br/>', '\n');
+
+        // add <font></font> if the text starts with charactor
+        if (text[0] !== '<')
+            text = '<font>' + text + '</font>';
+
+        this._properties.text = text;
+
         this._properties.horizontalAlignment = Label.H_ALIGNMENTS[component._N$horizontalAlign];
         this._properties.fontSize = component._N$fontSize;
         this._properties.maxWidth = component._N$maxWidth;
@@ -1099,8 +1113,8 @@ class FireParser {
                 h: this._state._design_resolution.height
             }
 
-        this.resolutionFitWidth = state._fit_width;
-        this.resolutionFitHeight = state._fit_height;
+        this._json_output.resolutionFitWidth = state._fit_width;
+        this._json_output.resolutionFitHeight = state._fit_height;
     }
 
     to_json_setup_sprite_frames() {

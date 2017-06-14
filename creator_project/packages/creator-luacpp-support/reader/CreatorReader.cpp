@@ -25,6 +25,7 @@
 #include "CreatorReader.h"
 #include "AnimationClip.h"
 #include "AnimateClip.h"
+#include "RichtextStringVisitor.h"
 
 using namespace cocos2d;
 using namespace creator;
@@ -563,31 +564,15 @@ void CreatorReader::parseLabel(cocos2d::Label* label, const buffers::Label* labe
 
 cocos2d::ui::RichText* CreatorReader::createRichText(const buffers::RichText* richTextBuffer) const
 {
-    cocos2d::ui::RichText* richText = nullptr;
-    const auto& text = richTextBuffer->text();
-    if (text)
-        richText = cocos2d::ui::RichText::createWithXML(text->str());
-    else
-        richText = cocos2d::ui::RichText::create();
+    cocos2d::ui::RichText* richText = cocos2d::ui::RichText::create();
     parseRichText(richText, richTextBuffer);
     return richText;
 }
 
 void CreatorReader::parseRichText(cocos2d::ui::RichText* richText, const buffers::RichText* richTextBuffer) const
 {
-    // FIXME: EXPERIMENTAL SUPPORT
-    // Creator's RichText uses a different format than Cocos2d-x's RichText
-    // Having 100% compatibility is feaseble, but not easy.
-
     const auto& nodeBuffer = richTextBuffer->node();
     parseNode(richText, nodeBuffer);
-
-    // text:string;
-    // horizontalAlignment:HorizontalAlignment;
-    // fontSize:int;
-    // maxWidth:int;
-    // lineHeight:int;
-    // fontFilename:string;
 
     const auto& fontSize = richTextBuffer->fontSize();
     richText->setFontSize(fontSize);
@@ -597,6 +582,17 @@ void CreatorReader::parseRichText(cocos2d::ui::RichText* richText, const buffers
     if (fontFilename) richText->setFontFace(fontFilename->str());
 
 //    richText->ignoreContentAdaptWithSize(false);
+    
+    const auto& text = richTextBuffer->text();
+    if (text)
+    {
+        RichtextStringVisitor visitor;;
+        SAXParser parser;
+        parser.setDelegator(&visitor);
+        parser.parseIntrusive(const_cast<char*>(text->c_str()), text->Length());
+        
+        richText->initWithXML(visitor.getOutput());
+    }
 }
 
 cocos2d::ParticleSystemQuad* CreatorReader::createParticle(const buffers::Particle* particleBuffer) const
