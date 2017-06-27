@@ -37,7 +37,7 @@ Supported nodes:
 * `TiledMap`
 * `Button`
 * `ProgressBar`
-* `RichText` (experimental support: unfinished)
+* `RichText`: img tag is not supported
 * `SpineSkeleton`
 * `Widget`: only supports `AlignOnce`
 * `Animations`: only supports linear animation
