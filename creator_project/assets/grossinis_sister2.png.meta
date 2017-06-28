@@ -1,0 +1,30 @@
+{
+  "ver": "1.0.0",
+  "uuid": "55a00ee1-d4e3-4981-aa79-fa17aa2e0940",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "subMetas": {
+    "grossinis_sister2": {
+      "ver": "1.0.3",
+      "uuid": "0f491ace-1ca9-452a-9d37-7c2c618f6dda",
+      "rawTextureUuid": "55a00ee1-d4e3-4981-aa79-fa17aa2e0940",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": -0.5,
+      "offsetY": -2,
+      "trimX": 1,
+      "trimY": 8,
+      "width": 53,
+      "height": 126,
+      "rawWidth": 56,
+      "rawHeight": 138,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}
