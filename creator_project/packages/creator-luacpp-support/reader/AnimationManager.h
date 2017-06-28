@@ -46,17 +46,23 @@ struct AnimationInfo
     AnimationClip* defaultClip;
     cocos2d::Vector<AnimationClip*> clips;
     bool playOnLoad;
-    cocos2d::Node* target;
+    cocos2d::Node* target; // will retain the target
 };
 
-class AnimationManager
+class AnimationManager : public cocos2d::Ref
 {
 public:
-    void addAnimation(const AnimationInfo& animationInfo);
-    // play the action clip that should play on load
-    void playOnLoad() const;
-    void playActionClip(cocos2d::Node *target, const std::string &animationClipName) const;
+    static AnimationManager* create();
+    ~AnimationManager();
+    
+    void playAnimationClip(cocos2d::Node *target, const std::string &animationClipName) const;
 private:
+    friend class CreatorReader;
+    
+    // functions invoked by CreatorReader only
+    void addAnimation(const AnimationInfo& animationInfo);
+    void playOnLoad() const;
+    
     void runAnimationClip(cocos2d::Node *target, AnimationClip* animationClip) const;
     
     std::vector<AnimationInfo> _animations;

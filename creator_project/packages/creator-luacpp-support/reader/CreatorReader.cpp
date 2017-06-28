@@ -89,13 +89,15 @@ namespace {
 CreatorReader::CreatorReader()
 : _scene(nullptr)
 , _version("")
-, _animationManager(new AnimationManager())
 {
+    _animationManager = AnimationManager::create();
+    _animationManager->retain();
 }
 
 CreatorReader::~CreatorReader()
 {
     CC_SAFE_RELEASE(_scene);
+    _animationManager->release();
 }
 
 CreatorReader* CreatorReader::createWithFilename(const std::string& filename)
@@ -207,6 +209,11 @@ cocos2d::Scene* CreatorReader::getSceneGraph() const
     _animationManager->playOnLoad();
 
     return static_cast<cocos2d::Scene*>(node);
+}
+
+AnimationManager* CreatorReader::getAnimationManager() const
+{
+    return _animationManager;
 }
 
 std::string CreatorReader::getVersion() const
@@ -354,6 +361,7 @@ void CreatorReader::parseNodeAnimation(cocos2d::Node* node, const buffers::Node*
         AnimationInfo animationInfo;
         animationInfo.playOnLoad = animRef->playOnLoad();
         animationInfo.target = node;
+        node->retain();
         bool hasDefaultAnimclip = animRef->defaultClip() != nullptr;
         
         const auto& animationClips = animRef->clips();

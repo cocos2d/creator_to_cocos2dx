@@ -50,12 +50,13 @@ class CreatorReader: public cocos2d::Ref
 public:
     static CreatorReader* createWithFilename(const std::string& filename);
 
-
     /**
      Returns the scenegraph contained in the .ccreator file
      @return A `Scene*`
      */
     cocos2d::Scene* getSceneGraph() const;
+    
+    AnimationManager* getAnimationManager() const;
 
 
     /**
