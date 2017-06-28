@@ -36,10 +36,14 @@
 #endif
 
 #include <vector>
+#include <tuple>
 
 #include "AnimationClip.h"
 
+
 NS_CCR_BEGIN
+
+class AnimateClip;
 
 struct AnimationInfo
 {
@@ -55,17 +59,25 @@ public:
     static AnimationManager* create();
     ~AnimationManager();
     
-    void playAnimationClip(cocos2d::Node *target, const std::string &animationClipName) const;
+    void playAnimationClip(cocos2d::Node *target, const std::string &animationClipName);
+    // if AnimationClip is stopped, can not run it again.
+    void stopAnimationClip(cocos2d::Node *target, const std::string &animationClipName);
+    void pauseAnimationClip(cocos2d::Node *target, const std::string &animationClipName);
+    void resumeAnimationClip(cocos2d::Node *target, const std::string &animationClipName);
 private:
     friend class CreatorReader;
     
     // functions invoked by CreatorReader only
     void addAnimation(const AnimationInfo& animationInfo);
-    void playOnLoad() const;
+    void playOnLoad();
     
-    void runAnimationClip(cocos2d::Node *target, AnimationClip* animationClip) const;
+    void runAnimationClip(cocos2d::Node *target, AnimationClip* animationClip);
+    // AnimateClip will be released
+    void removeAnimateClip(cocos2d::Node *target, const std::string &animationClipName);
+    AnimateClip* getAnimateClip(cocos2d::Node *target, const std::string &animationClipName) const;
     
     std::vector<AnimationInfo> _animations;
+    std::vector<std::tuple<cocos2d::Node*, std::string, AnimateClip*>> _cachedAnimates;
 };
 
 NS_CC_END

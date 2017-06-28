@@ -56,6 +56,10 @@ public:
      */
     cocos2d::Scene* getSceneGraph() const;
     
+    /**
+     Return the AnimationManager, will be released when CreatorReader is destroyed
+     @return The `AnimationManager` of the scene
+     */
     AnimationManager* getAnimationManager() const;
 
 

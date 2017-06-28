@@ -180,18 +180,42 @@ AnimateClip::AnimateClip()
 AnimateClip::~AnimateClip()
 {
     CC_SAFE_RELEASE(_clip);
+    CC_SAFE_RELEASE(_rootTarget);
 }
 
-void AnimateClip::start()
+void AnimateClip::startAnimate()
 {
     _running = true;
     scheduleUpdate();
+}
+
+void AnimateClip::stopAnimate()
+{
+    unscheduleUpdate();
+    // release self
+    _running = false;
+}
+
+void AnimateClip::pauseAnimate()
+{
+    unscheduleUpdate();
+}
+
+void AnimateClip::resumeAnimate()
+{
+    scheduleUpdate();
+}
+
+void AnimateClip::setCallbackForEndevent(const AnimateEndCallback &callback)
+{
+    _endCallback = std::move(callback);
 }
 
 bool AnimateClip::initWithAnimationClip(cocos2d::Node* rootTarget, AnimationClip* clip)
 {
     _clip = clip;
     _rootTarget = rootTarget;
+    CC_SAFE_RETAIN(_rootTarget);
     
     if (_clip)
     {
@@ -213,10 +237,9 @@ void AnimateClip::update(float dt) {
 
     if (_elapsed >= _duration)
     {
-        unscheduleUpdate();
-        // release self
-        _running = false;
-        this->release();
+        stopAnimate();
+        if (_endCallback)
+            _endCallback();
     }
 }
 
