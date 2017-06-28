@@ -44,8 +44,17 @@ struct AnimProperties;
 
 class AnimateClip : public cocos2d::Node {
 public:
+    
+    typedef std::function<void()> AnimateEndCallback;
+    
     static AnimateClip* createWithAnimationClip(cocos2d::Node* rootTarget, AnimationClip* clip);
-    void start();
+    
+    void startAnimate();
+    void stopAnimate();
+    void pauseAnimate();
+    void resumeAnimate();
+    
+    void setCallbackForEndevent(const AnimateEndCallback &callback);
     
     virtual ~AnimateClip();
 
@@ -65,7 +74,9 @@ CC_CONSTRUCTOR_ACCESS:
     
     float _elapsed;
     float _duration;
-    cocos2d::Node *_rootTarget; // weak reference
+    cocos2d::Node *_rootTarget;
+    
+    AnimateEndCallback _endCallback;
 };
 
 NS_CCR_END
