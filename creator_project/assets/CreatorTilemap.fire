@@ -414,14 +414,14 @@
       "r": 255,
       "g": 255,
       "b": 255,
-      "a": 0
+      "a": 255
     },
     "_endColorVar": {
       "__type__": "cc.Color",
       "r": 0,
       "g": 0,
       "b": 0,
-      "a": 0
+      "a": 255
     },
     "_angle": 90,
     "_angleVar": 20,
@@ -488,8 +488,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 85,
-      "height": 121
+      "width": 52,
+      "height": 139
     },
     "_children": [],
     "_rotationX": 0,
@@ -526,7 +526,7 @@
     },
     "_enabled": true,
     "_spriteFrame": {
-      "__uuid__": "4f39fc84-eaed-4f05-95ff-f636066e8de8"
+      "__uuid__": "5a78327f-4897-45ef-8bc4-b32538899821"
     },
     "_type": 0,
     "_sizeMode": 2,
@@ -604,7 +604,7 @@
     },
     "_enabled": true,
     "_spriteFrame": {
-      "__uuid__": "4f39fc84-eaed-4f05-95ff-f636066e8de8"
+      "__uuid__": "fb83d83d-136a-463f-9d42-455a6b624d39"
     },
     "_type": 0,
     "_sizeMode": 2,
@@ -688,6 +688,7 @@
     "_enableWrapText": true,
     "_N$file": null,
     "_isSystemFontUsed": true,
+    "_spacingX": 0,
     "_N$string": "This is a label",
     "_N$horizontalAlign": 1,
     "_N$verticalAlign": 1,
@@ -763,6 +764,7 @@
     "_enableWrapText": true,
     "_N$file": null,
     "_isSystemFontUsed": true,
+    "_spacingX": 0,
     "_N$string": "This is another label",
     "_N$horizontalAlign": 1,
     "_N$verticalAlign": 1,
