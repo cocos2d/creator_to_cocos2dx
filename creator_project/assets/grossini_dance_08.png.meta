@@ -1,0 +1,30 @@
+{
+  "ver": "1.0.0",
+  "uuid": "4e2edada-a2d6-4635-afdf-c426810de768",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "subMetas": {
+    "grossini_dance_08": {
+      "ver": "1.0.3",
+      "uuid": "fb83d83d-136a-463f-9d42-455a6b624d39",
+      "rawTextureUuid": "4e2edada-a2d6-4635-afdf-c426810de768",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": -1,
+      "trimX": 17,
+      "trimY": 7,
+      "width": 51,
+      "height": 109,
+      "rawWidth": 85,
+      "rawHeight": 121,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}
