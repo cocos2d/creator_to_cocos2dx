@@ -9,7 +9,7 @@ const Utils = require('./Utils');
 const Constants = require('./Constants');
 const Fs = require('fire-fs');
 const Del = require('del')
-const parse_fire = require('./ConvertFireToJson');
+const parse_fire = require('./parser/ConvertFireToJson');
 
 const {WorkerBase, registerWorker} = require('./WorkerBase');
 
