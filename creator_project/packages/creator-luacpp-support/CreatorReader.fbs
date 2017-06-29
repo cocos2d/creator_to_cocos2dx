@@ -19,7 +19,7 @@ enum LabelOverflowType:byte {None, Clamp, Shrink, ResizeHeight}
 
 // New nodes should be added at the end of the union
 // no more than 255 union objects can be added
-union AnyNode {Scene, Sprite, Label, Particle, TileMap, Node, Button, ProgressBar, ScrollView, CreatorScene, EditBox, RichText, SpineSkeleton}
+union AnyNode {Scene, Sprite, Label, Particle, TileMap, Node, Button, ProgressBar, ScrollView, CreatorScene, EditBox, RichText, SpineSkeleton, VideoPlayer}
 
 table SceneGraph
 {
@@ -199,6 +199,16 @@ table EditBox
     placeholderFontColor:ColorRGB;
     maxLength:int;
     text:string;
+}
+
+table VideoPlayer
+{
+    node:Node;
+    isLocal:bool;
+    url:string;
+    fullScreen:bool;
+    keepAspect:bool;
+    // currentTime:float;  // creator doesn't export this attribute
 }
 
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-

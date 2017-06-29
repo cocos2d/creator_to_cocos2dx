@@ -33,7 +33,8 @@ class Node {
         // ScrollView, Button & ProgressBar should be before Sprite
         let supported_components = ['cc.Button', 'cc.ProgressBar', 'cc.ScrollView',
             'cc.EditBox', 'cc.Label', 'sp.Skeleton', 'cc.Sprite',
-            'cc.ParticleSystem', 'cc.TiledMap', 'cc.Canvas', 'cc.RichText'];
+            'cc.ParticleSystem', 'cc.TiledMap', 'cc.Canvas', 'cc.RichText',
+            'cc.VideoPlayer'];
         let node_components = components.map(x => x.__type__);
         // special case for object without components
         if (node_components.length == 0)

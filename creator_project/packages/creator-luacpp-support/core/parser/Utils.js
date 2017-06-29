@@ -3,10 +3,15 @@ const fs = require('fs');
 const state = require('./Global').state;
 const Utils = require('../Utils');
 
+/**
+ * Get resource path by uuid.
+ * The return value:
+ * @fullpath: full path of the resource
+ * @relative_path: relative path to assets folder or creator default asset path
+ */
 get_relative_full_path_by_uuid = function(uuid) {
     let fullpath = Editor.remote.assetdb.uuidToFspath(uuid);
     let mountInfo = Editor.remote.assetdb.mountInfoByUuid(uuid);
-    // get texture path information, which is used to copy resources
     let root = mountInfo.path;
     let relative_path = fullpath.substring(root.length + 1);
 
@@ -223,6 +228,7 @@ create_node = function (node_type, node_idx) {
     const SpineSkeleton = require('./SpineSkeleton');
     const Sprite = require('./Sprite');
     const TiledMap = require('./TiledMap');
+    const VideoPlayer = require('./VideoPlayer');
 
     let n = null;
     if (node_type === 'cc.Sprite')
@@ -247,6 +253,8 @@ create_node = function (node_type, node_idx) {
         n = new ParticleSystem(state._json_data[node_idx]);
     else if (node_type === 'sp.Skeleton')
         n = new SpineSkeleton(state._json_data[node_idx]);
+    else if (node_type === 'cc.VideoPlayer')
+        n = new VideoPlayer(state._json_data[node_idx])
 
     if (n != null) {
         n.parse_properties();

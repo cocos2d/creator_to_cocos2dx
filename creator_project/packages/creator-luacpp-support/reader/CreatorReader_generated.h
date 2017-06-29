@@ -38,6 +38,8 @@ struct ScrollView;
 
 struct EditBox;
 
+struct VideoPlayer;
+
 struct SpineSkeleton;
 
 struct AnimationRef;
@@ -267,12 +269,13 @@ enum AnyNode {
   AnyNode_EditBox = 11,
   AnyNode_RichText = 12,
   AnyNode_SpineSkeleton = 13,
+  AnyNode_VideoPlayer = 14,
   AnyNode_MIN = AnyNode_NONE,
-  AnyNode_MAX = AnyNode_SpineSkeleton
+  AnyNode_MAX = AnyNode_VideoPlayer
 };
 
 inline const char **EnumNamesAnyNode() {
-  static const char *names[] = { "NONE", "Scene", "Sprite", "Label", "Particle", "TileMap", "Node", "Button", "ProgressBar", "ScrollView", "CreatorScene", "EditBox", "RichText", "SpineSkeleton", nullptr };
+  static const char *names[] = { "NONE", "Scene", "Sprite", "Label", "Particle", "TileMap", "Node", "Button", "ProgressBar", "ScrollView", "CreatorScene", "EditBox", "RichText", "SpineSkeleton", "VideoPlayer", nullptr };
   return names;
 }
 
@@ -332,6 +335,10 @@ template<> struct AnyNodeTraits<RichText> {
 
 template<> struct AnyNodeTraits<SpineSkeleton> {
   static const AnyNode enum_value = AnyNode_SpineSkeleton;
+};
+
+template<> struct AnyNodeTraits<VideoPlayer> {
+  static const AnyNode enum_value = AnyNode_VideoPlayer;
 };
 
 inline bool VerifyAnyNode(flatbuffers::Verifier &verifier, const void *union_obj, AnyNode type);
@@ -1617,6 +1624,72 @@ inline flatbuffers::Offset<EditBox> CreateEditBoxDirect(flatbuffers::FlatBufferB
   return CreateEditBox(_fbb, node, backgroundImage ? _fbb.CreateString(backgroundImage) : 0, returnType, inputFlag, inputMode, fontSize, fontColor, placeholder ? _fbb.CreateString(placeholder) : 0, placeholderFontSize, placeholderFontColor, maxLength, text ? _fbb.CreateString(text) : 0);
 }
 
+struct VideoPlayer FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum {
+    VT_NODE = 4,
+    VT_ISLOCAL = 6,
+    VT_URL = 8,
+    VT_FULLSCREEN = 10,
+    VT_KEEPASPECT = 12
+  };
+  const Node *node() const { return GetPointer<const Node *>(VT_NODE); }
+  bool isLocal() const { return GetField<uint8_t>(VT_ISLOCAL, 0) != 0; }
+  const flatbuffers::String *url() const { return GetPointer<const flatbuffers::String *>(VT_URL); }
+  bool fullScreen() const { return GetField<uint8_t>(VT_FULLSCREEN, 0) != 0; }
+  bool keepAspect() const { return GetField<uint8_t>(VT_KEEPASPECT, 0) != 0; }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_NODE) &&
+           verifier.VerifyTable(node()) &&
+           VerifyField<uint8_t>(verifier, VT_ISLOCAL) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_URL) &&
+           verifier.Verify(url()) &&
+           VerifyField<uint8_t>(verifier, VT_FULLSCREEN) &&
+           VerifyField<uint8_t>(verifier, VT_KEEPASPECT) &&
+           verifier.EndTable();
+  }
+};
+
+struct VideoPlayerBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_node(flatbuffers::Offset<Node> node) { fbb_.AddOffset(VideoPlayer::VT_NODE, node); }
+  void add_isLocal(bool isLocal) { fbb_.AddElement<uint8_t>(VideoPlayer::VT_ISLOCAL, static_cast<uint8_t>(isLocal), 0); }
+  void add_url(flatbuffers::Offset<flatbuffers::String> url) { fbb_.AddOffset(VideoPlayer::VT_URL, url); }
+  void add_fullScreen(bool fullScreen) { fbb_.AddElement<uint8_t>(VideoPlayer::VT_FULLSCREEN, static_cast<uint8_t>(fullScreen), 0); }
+  void add_keepAspect(bool keepAspect) { fbb_.AddElement<uint8_t>(VideoPlayer::VT_KEEPASPECT, static_cast<uint8_t>(keepAspect), 0); }
+  VideoPlayerBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
+  VideoPlayerBuilder &operator=(const VideoPlayerBuilder &);
+  flatbuffers::Offset<VideoPlayer> Finish() {
+    auto o = flatbuffers::Offset<VideoPlayer>(fbb_.EndTable(start_, 5));
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<VideoPlayer> CreateVideoPlayer(flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<Node> node = 0,
+    bool isLocal = false,
+    flatbuffers::Offset<flatbuffers::String> url = 0,
+    bool fullScreen = false,
+    bool keepAspect = false) {
+  VideoPlayerBuilder builder_(_fbb);
+  builder_.add_url(url);
+  builder_.add_node(node);
+  builder_.add_keepAspect(keepAspect);
+  builder_.add_fullScreen(fullScreen);
+  builder_.add_isLocal(isLocal);
+  return builder_.Finish();
+}
+
+inline flatbuffers::Offset<VideoPlayer> CreateVideoPlayerDirect(flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<Node> node = 0,
+    bool isLocal = false,
+    const char *url = nullptr,
+    bool fullScreen = false,
+    bool keepAspect = false) {
+  return CreateVideoPlayer(_fbb, node, isLocal, url ? _fbb.CreateString(url) : 0, fullScreen, keepAspect);
+}
+
 struct SpineSkeleton FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   enum {
     VT_NODE = 4,
@@ -2605,6 +2678,7 @@ inline bool VerifyAnyNode(flatbuffers::Verifier &verifier, const void *union_obj
     case AnyNode_EditBox: return verifier.VerifyTable(reinterpret_cast<const EditBox *>(union_obj));
     case AnyNode_RichText: return verifier.VerifyTable(reinterpret_cast<const RichText *>(union_obj));
     case AnyNode_SpineSkeleton: return verifier.VerifyTable(reinterpret_cast<const SpineSkeleton *>(union_obj));
+    case AnyNode_VideoPlayer: return verifier.VerifyTable(reinterpret_cast<const VideoPlayer *>(union_obj));
     default: return false;
   }
 }
