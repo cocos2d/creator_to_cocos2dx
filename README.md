@@ -42,6 +42,7 @@ Supported nodes:
 * `Widget`: only supports `AlignOnce`
 * `Animations`: only supports linear animation
 * `VideoPlayer`: iOS should add `MediaPlayer.framework` to the project
+* `WebView`
 
 
 Supporting JavaScript scripts would be overkill. If you need JavaScript scripting
