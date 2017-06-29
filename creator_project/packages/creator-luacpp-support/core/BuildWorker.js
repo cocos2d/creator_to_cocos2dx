@@ -31,6 +31,7 @@ class BuildWorker extends WorkerBase {
                 this._copyResources(copyReourceInfos);
                 Editor.Ipc.sendToAll('creator-luacpp-support:state-changed', 'finish', 100);
                 this._callback();
+                Utils.log('[creator-luacpp-support] build end');
             }.bind(this));
         }.bind(this));
     }
@@ -100,8 +101,13 @@ class BuildWorker extends WorkerBase {
         Fs.copySync(Constants.READER_PATH, classes);
         if (!isLuaProject)
         {
-            Fs.unlink(Path.join(classes, 'CreatorReaderBinding.h'));
-            Fs.unlink(Path.join(classes, 'CreatorReaderBinding.cpp'));
+            let bindingHeaderPath = Path.join(classes, 'CreatorReaderBinding.h');
+            if (Fs.existsSync(bindingHeaderPath))
+                Fs.unlink(bindingHeaderPath);
+
+            let bindingSourcePath = Path.join(classes, 'CreatorReaderBinding.cpp');
+            if (Fs.existsSync(bindingSourcePath))
+                Fs.unlink(bindingSourcePath);
         }
 
         Object.keys(copyReourceInfos).forEach(function(uuid) {
