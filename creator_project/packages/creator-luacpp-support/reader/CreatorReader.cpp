@@ -229,7 +229,7 @@ cocos2d::Node* CreatorReader::createTree(const buffers::NodeTree* tree) const
     const void* buffer = tree->object();
     buffers::AnyNode bufferType = tree->object_type();
     
-    switch (bufferType) {
+    switch (static_cast<int>(bufferType)) {
         case buffers::AnyNode_NONE:
             break;
         case buffers::AnyNode_Node:
@@ -274,6 +274,9 @@ cocos2d::Node* CreatorReader::createTree(const buffers::NodeTree* tree) const
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID || CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
         case buffers::AnyNode_VideoPlayer:
             node = createVideoPlayer(static_cast<const buffers::VideoPlayer*>(buffer));
+            break;
+        case buffers::AnyNode_WebView:
+            node = createWebView(static_cast<const buffers::WebView*>(buffer));
             break;
 #endif
     }
@@ -815,6 +818,23 @@ void CreatorReader::parseVideoPlayer(cocos2d::experimental::ui::VideoPlayer* vid
         videoPlayer->setFileName(url->str());
     else
         videoPlayer->setURL(url->str());
+}
+
+cocos2d::experimental::ui::WebView* CreatorReader::createWebView(const buffers::WebView* webViewBuffer) const
+{
+    auto webView = cocos2d::experimental::ui::WebView::create();
+    parseWebView(webView, webViewBuffer);
+    return webView;
+}
+
+void CreatorReader::parseWebView(cocos2d::experimental::ui::WebView* webView, const buffers::WebView* webViewBuffer) const
+{
+    const auto& nodeBuffer = webViewBuffer->node();
+    parseNode(webView, nodeBuffer);
+    
+    const auto& url = webViewBuffer->url();
+    if (url)
+        webView->loadURL(url->str());
 }
 #endif
 

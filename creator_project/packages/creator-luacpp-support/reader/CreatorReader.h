@@ -122,6 +122,9 @@ protected:
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID || CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
     cocos2d::experimental::ui::VideoPlayer* createVideoPlayer(const buffers::VideoPlayer* videoPlayerBuffer) const;
     void parseVideoPlayer(cocos2d::experimental::ui::VideoPlayer* videoPlayer, const buffers::VideoPlayer* videoPlayerBuffer) const;
+    
+    cocos2d::experimental::ui::WebView* createWebView(const buffers::WebView* webViewBuffer) const;
+    void parseWebView(cocos2d::experimental::ui::WebView* webView, const buffers::WebView* webViewBuffer) const;
 #endif
     
     void setupSpriteFrames();

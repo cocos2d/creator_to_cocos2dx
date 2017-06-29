@@ -9,7 +9,7 @@ const Utils = require('../Utils');
  * @fullpath: full path of the resource
  * @relative_path: relative path to assets folder or creator default asset path
  */
-get_relative_full_path_by_uuid = function(uuid) {
+let get_relative_full_path_by_uuid = function(uuid) {
     let fullpath = Editor.remote.assetdb.uuidToFspath(uuid);
     let mountInfo = Editor.remote.assetdb.mountInfoByUuid(uuid);
     let root = mountInfo.path;
@@ -25,7 +25,7 @@ get_relative_full_path_by_uuid = function(uuid) {
 /**
  * The sprite frame name will include path information if it is not a texture packer
  */
-get_sprite_frame_name_by_uuid = function(uuid) {
+let get_sprite_frame_name_by_uuid = function(uuid) {
     if (uuid in state._sprite_frames) {
         let uuid_info = state._sprite_frames[uuid];
         if (uuid_info.is_texture_packer)
@@ -84,7 +84,7 @@ get_sprite_frame_name_by_uuid = function(uuid) {
     }
 }
 
-get_font_path_by_uuid = function(uuid) {
+let get_font_path_by_uuid = function(uuid) {
     if (uuid in state._uuid)
         return state._uuid[uuid].relative_path;
     else {
@@ -134,7 +134,7 @@ get_font_path_by_uuid = function(uuid) {
 /**
  * return json file path and atlas path
  */
-get_spine_info_by_uuid = function (uuid) {
+let get_spine_info_by_uuid = function (uuid) {
     if (uuid in state._uuid)
         return state._uuid[uuid];
 
@@ -170,7 +170,7 @@ get_spine_info_by_uuid = function (uuid) {
     }
 }
 
-get_tiledmap_path_by_uuid = function (uuid) {
+let get_tiledmap_path_by_uuid = function (uuid) {
     if (uuid in state._uuid)
         return state._uuid.relative_path;
 
@@ -200,7 +200,7 @@ get_tiledmap_path_by_uuid = function (uuid) {
     }
 }
 
-get_particle_system_path_by_uuid = function (uuid) {
+let get_particle_system_path_by_uuid = function (uuid) {
     if (uuid in state._uuid)
         return state._uuid[uuid].relative_path;
 
@@ -215,7 +215,7 @@ log = function(s) {
         Utils.log(s);
 }
 
-create_node = function (node_type, node_idx) {
+let create_node = function (node_type, node_idx) {
     const Node = require('./Node');
     const Button = require('./Button');
     const Canvas = require('./Canvas');
@@ -229,6 +229,7 @@ create_node = function (node_type, node_idx) {
     const Sprite = require('./Sprite');
     const TiledMap = require('./TiledMap');
     const VideoPlayer = require('./VideoPlayer');
+    const WebView = require('./WebView');
 
     let n = null;
     if (node_type === 'cc.Sprite')
@@ -255,6 +256,8 @@ create_node = function (node_type, node_idx) {
         n = new SpineSkeleton(state._json_data[node_idx]);
     else if (node_type === 'cc.VideoPlayer')
         n = new VideoPlayer(state._json_data[node_idx])
+    else if (node_type === 'cc.WebView')
+        n = new WebView(state._json_data[node_idx]);
 
     if (n != null) {
         n.parse_properties();
