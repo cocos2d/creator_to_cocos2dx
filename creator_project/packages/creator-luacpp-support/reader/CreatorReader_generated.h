@@ -40,6 +40,8 @@ struct EditBox;
 
 struct VideoPlayer;
 
+struct WebView;
+
 struct SpineSkeleton;
 
 struct AnimationRef;
@@ -270,12 +272,13 @@ enum AnyNode {
   AnyNode_RichText = 12,
   AnyNode_SpineSkeleton = 13,
   AnyNode_VideoPlayer = 14,
+  AnyNode_WebView = 15,
   AnyNode_MIN = AnyNode_NONE,
-  AnyNode_MAX = AnyNode_VideoPlayer
+  AnyNode_MAX = AnyNode_WebView
 };
 
 inline const char **EnumNamesAnyNode() {
-  static const char *names[] = { "NONE", "Scene", "Sprite", "Label", "Particle", "TileMap", "Node", "Button", "ProgressBar", "ScrollView", "CreatorScene", "EditBox", "RichText", "SpineSkeleton", "VideoPlayer", nullptr };
+  static const char *names[] = { "NONE", "Scene", "Sprite", "Label", "Particle", "TileMap", "Node", "Button", "ProgressBar", "ScrollView", "CreatorScene", "EditBox", "RichText", "SpineSkeleton", "VideoPlayer", "WebView", nullptr };
   return names;
 }
 
@@ -339,6 +342,10 @@ template<> struct AnyNodeTraits<SpineSkeleton> {
 
 template<> struct AnyNodeTraits<VideoPlayer> {
   static const AnyNode enum_value = AnyNode_VideoPlayer;
+};
+
+template<> struct AnyNodeTraits<WebView> {
+  static const AnyNode enum_value = AnyNode_WebView;
 };
 
 inline bool VerifyAnyNode(flatbuffers::Verifier &verifier, const void *union_obj, AnyNode type);
@@ -1690,6 +1697,51 @@ inline flatbuffers::Offset<VideoPlayer> CreateVideoPlayerDirect(flatbuffers::Fla
   return CreateVideoPlayer(_fbb, node, isLocal, url ? _fbb.CreateString(url) : 0, fullScreen, keepAspect);
 }
 
+struct WebView FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum {
+    VT_NODE = 4,
+    VT_URL = 6
+  };
+  const Node *node() const { return GetPointer<const Node *>(VT_NODE); }
+  const flatbuffers::String *url() const { return GetPointer<const flatbuffers::String *>(VT_URL); }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_NODE) &&
+           verifier.VerifyTable(node()) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_URL) &&
+           verifier.Verify(url()) &&
+           verifier.EndTable();
+  }
+};
+
+struct WebViewBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_node(flatbuffers::Offset<Node> node) { fbb_.AddOffset(WebView::VT_NODE, node); }
+  void add_url(flatbuffers::Offset<flatbuffers::String> url) { fbb_.AddOffset(WebView::VT_URL, url); }
+  WebViewBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
+  WebViewBuilder &operator=(const WebViewBuilder &);
+  flatbuffers::Offset<WebView> Finish() {
+    auto o = flatbuffers::Offset<WebView>(fbb_.EndTable(start_, 2));
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<WebView> CreateWebView(flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<Node> node = 0,
+    flatbuffers::Offset<flatbuffers::String> url = 0) {
+  WebViewBuilder builder_(_fbb);
+  builder_.add_url(url);
+  builder_.add_node(node);
+  return builder_.Finish();
+}
+
+inline flatbuffers::Offset<WebView> CreateWebViewDirect(flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<Node> node = 0,
+    const char *url = nullptr) {
+  return CreateWebView(_fbb, node, url ? _fbb.CreateString(url) : 0);
+}
+
 struct SpineSkeleton FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   enum {
     VT_NODE = 4,
@@ -2679,6 +2731,7 @@ inline bool VerifyAnyNode(flatbuffers::Verifier &verifier, const void *union_obj
     case AnyNode_RichText: return verifier.VerifyTable(reinterpret_cast<const RichText *>(union_obj));
     case AnyNode_SpineSkeleton: return verifier.VerifyTable(reinterpret_cast<const SpineSkeleton *>(union_obj));
     case AnyNode_VideoPlayer: return verifier.VerifyTable(reinterpret_cast<const VideoPlayer *>(union_obj));
+    case AnyNode_WebView: return verifier.VerifyTable(reinterpret_cast<const WebView *>(union_obj));
     default: return false;
   }
 }
