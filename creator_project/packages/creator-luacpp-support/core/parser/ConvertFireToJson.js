@@ -3,9 +3,9 @@ const fire_fs = require('fire-fs');
 const path = require('path');
 const Utils = require('../Utils');
 const Constants = require('../Constants');
-let Scene = require('./Scene');
-let state = require('./Global').state;
-let get_sprite_frame_name_by_uuid = require('./Utils').get_sprite_frame_name_by_uuid;
+const Scene = require('./Scene');
+const state = require('./Global').state;
+const get_sprite_frame_name_by_uuid = require('./Utils').get_sprite_frame_name_by_uuid;
 
 let uuidInfos = null;
 

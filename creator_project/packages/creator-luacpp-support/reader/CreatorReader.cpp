@@ -271,6 +271,11 @@ cocos2d::Node* CreatorReader::createTree(const buffers::NodeTree* tree) const
         case buffers::AnyNode_SpineSkeleton:
             node = createSpineSkeleton(static_cast<const buffers::SpineSkeleton*>(buffer));
             break;
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID || CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+        case buffers::AnyNode_VideoPlayer:
+            node = createVideoPlayer(static_cast<const buffers::VideoPlayer*>(buffer));
+            break;
+#endif
     }
 
     // recursively add its children
@@ -784,6 +789,34 @@ void CreatorReader::parseButton(cocos2d::ui::Button* button, const buffers::Butt
         button->setPressedActionEnabled(true);
     }
 }
+
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID || CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+cocos2d::experimental::ui::VideoPlayer* CreatorReader::createVideoPlayer(const buffers::VideoPlayer* videoPlayerBuffer) const
+{
+    auto videoPlayer = cocos2d::experimental::ui::VideoPlayer::create();
+    parseVideoPlayer(videoPlayer, videoPlayerBuffer);
+    return videoPlayer;
+}
+
+void CreatorReader::parseVideoPlayer(cocos2d::experimental::ui::VideoPlayer* videoPlayer, const buffers::VideoPlayer* videoPlayerBuffer) const
+{
+    const auto& nodeBuffer = videoPlayerBuffer->node();
+    parseNode(videoPlayer, nodeBuffer);
+    
+    const auto& fullScreen = videoPlayerBuffer->fullScreen();
+    videoPlayer->setFullScreenEnabled(fullScreen);
+    
+    const auto& keepAspect = videoPlayerBuffer->keepAspect();
+    videoPlayer->setKeepAspectRatioEnabled(keepAspect);
+    
+    const auto& isLocal = videoPlayerBuffer->isLocal();
+    const auto& url = videoPlayerBuffer->url();
+    if (isLocal)
+        videoPlayer->setFileName(url->str());
+    else
+        videoPlayer->setURL(url->str());
+}
+#endif
 
 /*=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  *

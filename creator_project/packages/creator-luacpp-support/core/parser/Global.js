@@ -12,9 +12,6 @@ class State {
         // the .fire file being parsed
         this._json_data = [];
 
-        // FIXME: it is useless
-        this._meta_data = {};
-
         // record all sprite frames
         // key is uuid, value is the information of the sprite frame
         this._sprite_frames = {};
