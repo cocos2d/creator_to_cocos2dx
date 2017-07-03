@@ -220,10 +220,12 @@ table Slider
 {
     node:Node;
     percent:int;
+    barTexturePath:string;
+    barSize:Size;                                // size of bar sprite
     normalTexturePath:string;
     pressedTexturePath:string;
     disabledTexturePath:string;
-    ballSize:Size;
+    ballSize:Size;                              // size of ball, used to scale normal/pressed/disabled sprite 
 }
 
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-

@@ -1753,13 +1753,17 @@ struct Slider FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   enum {
     VT_NODE = 4,
     VT_PERCENT = 6,
-    VT_NORMALTEXTUREPATH = 8,
-    VT_PRESSEDTEXTUREPATH = 10,
-    VT_DISABLEDTEXTUREPATH = 12,
-    VT_BALLSIZE = 14
+    VT_BARTEXTUREPATH = 8,
+    VT_BARSIZE = 10,
+    VT_NORMALTEXTUREPATH = 12,
+    VT_PRESSEDTEXTUREPATH = 14,
+    VT_DISABLEDTEXTUREPATH = 16,
+    VT_BALLSIZE = 18
   };
   const Node *node() const { return GetPointer<const Node *>(VT_NODE); }
   int32_t percent() const { return GetField<int32_t>(VT_PERCENT, 0); }
+  const flatbuffers::String *barTexturePath() const { return GetPointer<const flatbuffers::String *>(VT_BARTEXTUREPATH); }
+  const Size *barSize() const { return GetStruct<const Size *>(VT_BARSIZE); }
   const flatbuffers::String *normalTexturePath() const { return GetPointer<const flatbuffers::String *>(VT_NORMALTEXTUREPATH); }
   const flatbuffers::String *pressedTexturePath() const { return GetPointer<const flatbuffers::String *>(VT_PRESSEDTEXTUREPATH); }
   const flatbuffers::String *disabledTexturePath() const { return GetPointer<const flatbuffers::String *>(VT_DISABLEDTEXTUREPATH); }
@@ -1769,6 +1773,9 @@ struct Slider FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
            VerifyField<flatbuffers::uoffset_t>(verifier, VT_NODE) &&
            verifier.VerifyTable(node()) &&
            VerifyField<int32_t>(verifier, VT_PERCENT) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_BARTEXTUREPATH) &&
+           verifier.Verify(barTexturePath()) &&
+           VerifyField<Size>(verifier, VT_BARSIZE) &&
            VerifyField<flatbuffers::uoffset_t>(verifier, VT_NORMALTEXTUREPATH) &&
            verifier.Verify(normalTexturePath()) &&
            VerifyField<flatbuffers::uoffset_t>(verifier, VT_PRESSEDTEXTUREPATH) &&
@@ -1785,6 +1792,8 @@ struct SliderBuilder {
   flatbuffers::uoffset_t start_;
   void add_node(flatbuffers::Offset<Node> node) { fbb_.AddOffset(Slider::VT_NODE, node); }
   void add_percent(int32_t percent) { fbb_.AddElement<int32_t>(Slider::VT_PERCENT, percent, 0); }
+  void add_barTexturePath(flatbuffers::Offset<flatbuffers::String> barTexturePath) { fbb_.AddOffset(Slider::VT_BARTEXTUREPATH, barTexturePath); }
+  void add_barSize(const Size *barSize) { fbb_.AddStruct(Slider::VT_BARSIZE, barSize); }
   void add_normalTexturePath(flatbuffers::Offset<flatbuffers::String> normalTexturePath) { fbb_.AddOffset(Slider::VT_NORMALTEXTUREPATH, normalTexturePath); }
   void add_pressedTexturePath(flatbuffers::Offset<flatbuffers::String> pressedTexturePath) { fbb_.AddOffset(Slider::VT_PRESSEDTEXTUREPATH, pressedTexturePath); }
   void add_disabledTexturePath(flatbuffers::Offset<flatbuffers::String> disabledTexturePath) { fbb_.AddOffset(Slider::VT_DISABLEDTEXTUREPATH, disabledTexturePath); }
@@ -1792,7 +1801,7 @@ struct SliderBuilder {
   SliderBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
   SliderBuilder &operator=(const SliderBuilder &);
   flatbuffers::Offset<Slider> Finish() {
-    auto o = flatbuffers::Offset<Slider>(fbb_.EndTable(start_, 6));
+    auto o = flatbuffers::Offset<Slider>(fbb_.EndTable(start_, 8));
     return o;
   }
 };
@@ -1800,6 +1809,8 @@ struct SliderBuilder {
 inline flatbuffers::Offset<Slider> CreateSlider(flatbuffers::FlatBufferBuilder &_fbb,
     flatbuffers::Offset<Node> node = 0,
     int32_t percent = 0,
+    flatbuffers::Offset<flatbuffers::String> barTexturePath = 0,
+    const Size *barSize = 0,
     flatbuffers::Offset<flatbuffers::String> normalTexturePath = 0,
     flatbuffers::Offset<flatbuffers::String> pressedTexturePath = 0,
     flatbuffers::Offset<flatbuffers::String> disabledTexturePath = 0,
@@ -1809,6 +1820,8 @@ inline flatbuffers::Offset<Slider> CreateSlider(flatbuffers::FlatBufferBuilder &
   builder_.add_disabledTexturePath(disabledTexturePath);
   builder_.add_pressedTexturePath(pressedTexturePath);
   builder_.add_normalTexturePath(normalTexturePath);
+  builder_.add_barSize(barSize);
+  builder_.add_barTexturePath(barTexturePath);
   builder_.add_percent(percent);
   builder_.add_node(node);
   return builder_.Finish();
@@ -1817,11 +1830,13 @@ inline flatbuffers::Offset<Slider> CreateSlider(flatbuffers::FlatBufferBuilder &
 inline flatbuffers::Offset<Slider> CreateSliderDirect(flatbuffers::FlatBufferBuilder &_fbb,
     flatbuffers::Offset<Node> node = 0,
     int32_t percent = 0,
+    const char *barTexturePath = nullptr,
+    const Size *barSize = 0,
     const char *normalTexturePath = nullptr,
     const char *pressedTexturePath = nullptr,
     const char *disabledTexturePath = nullptr,
     const Size *ballSize = 0) {
-  return CreateSlider(_fbb, node, percent, normalTexturePath ? _fbb.CreateString(normalTexturePath) : 0, pressedTexturePath ? _fbb.CreateString(pressedTexturePath) : 0, disabledTexturePath ? _fbb.CreateString(disabledTexturePath) : 0, ballSize);
+  return CreateSlider(_fbb, node, percent, barTexturePath ? _fbb.CreateString(barTexturePath) : 0, barSize, normalTexturePath ? _fbb.CreateString(normalTexturePath) : 0, pressedTexturePath ? _fbb.CreateString(pressedTexturePath) : 0, disabledTexturePath ? _fbb.CreateString(disabledTexturePath) : 0, ballSize);
 }
 
 struct SpineSkeleton FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {

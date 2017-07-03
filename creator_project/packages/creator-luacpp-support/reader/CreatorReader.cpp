@@ -852,14 +852,21 @@ cocos2d::ui::Slider* CreatorReader::createSlider(const buffers::Slider* sliderBu
 
 void CreatorReader::parseSlider(cocos2d::ui::Slider* slider, const buffers::Slider* sliderBuffer) const
 {
-    // should set before parseNode
-    slider->ignoreContentAdaptWithSize(false);
     const auto& nodeBuffer = sliderBuffer->node();
     parseNode(slider, nodeBuffer);
     
     const auto& percent = sliderBuffer->percent();
     slider->setPercent(percent);
     slider->setMaxPercent(100);
+    
+    slider->setScale9Enabled(true);
+    const auto& barSpritePath = sliderBuffer->barTexturePath();
+    if (barSpritePath)
+    {
+        slider->loadBarTexture(barSpritePath->str());
+        const auto& barSize = sliderBuffer->barSize();
+        slider->setCapInsetsBarRenderer(cocos2d::Rect(0, 0, barSize->w(), barSize->h()));
+    }
     
     cocos2d::Sprite* render = nullptr;
     
