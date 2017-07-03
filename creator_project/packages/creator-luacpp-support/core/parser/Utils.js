@@ -230,6 +230,7 @@ let create_node = function (node_type, node_idx) {
     const TiledMap = require('./TiledMap');
     const VideoPlayer = require('./VideoPlayer');
     const WebView = require('./WebView');
+    const Slider = require('./Slider');
 
     let n = null;
     if (node_type === 'cc.Sprite')
@@ -258,6 +259,8 @@ let create_node = function (node_type, node_idx) {
         n = new VideoPlayer(state._json_data[node_idx])
     else if (node_type === 'cc.WebView')
         n = new WebView(state._json_data[node_idx]);
+    else if (node_type === 'cc.Slider')
+        n = new Slider(state._json_data[node_idx])
 
     if (n != null) {
         n.parse_properties();
@@ -265,6 +268,22 @@ let create_node = function (node_type, node_idx) {
     }
     else
         return null;
+}
+
+/**
+ * remove a child from node's children by child's id
+ * @param {node} the Node that to be applied to 
+ * @param {id} child's id
+ */
+let remove_child_by_id = function (node, id) {
+    let children = node._node_data._children;
+    for (let i = 0, len = children.length; i < len; ++i) {
+        let child = children[i];
+        if (child.__id__ === id) {
+            children.splice(i, 1);
+            break;
+        }
+    }
 }
 
 module.exports = {
@@ -275,5 +294,6 @@ module.exports = {
     get_tiledmap_path_by_uuid: get_tiledmap_path_by_uuid,
     get_particle_system_path_by_uuid : get_particle_system_path_by_uuid,
     create_node: create_node,
-    log: log
+    log: log,
+    remove_child_by_id: remove_child_by_id
 }
