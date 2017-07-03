@@ -234,7 +234,9 @@ let create_node = function (node_type, node_idx) {
     const Toggle = require('./Toggle');
 
     let n = null;
-    if (node_type === 'cc.Sprite')
+    if (node_type === 'cc.Node')
+        n = new Node(state._json_data[node_idx]);
+    else if (node_type === 'cc.Sprite')
         n = new Sprite(state._json_data[node_idx]);
     else if (node_type === 'cc.Canvas')
         n = new Canvas(state._json_data[node_idx]);
