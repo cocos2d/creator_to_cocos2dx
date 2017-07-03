@@ -231,6 +231,7 @@ let create_node = function (node_type, node_idx) {
     const VideoPlayer = require('./VideoPlayer');
     const WebView = require('./WebView');
     const Slider = require('./Slider');
+    const Toggle = require('./Toggle');
 
     let n = null;
     if (node_type === 'cc.Sprite')
@@ -256,11 +257,13 @@ let create_node = function (node_type, node_idx) {
     else if (node_type === 'sp.Skeleton')
         n = new SpineSkeleton(state._json_data[node_idx]);
     else if (node_type === 'cc.VideoPlayer')
-        n = new VideoPlayer(state._json_data[node_idx])
+        n = new VideoPlayer(state._json_data[node_idx]);
     else if (node_type === 'cc.WebView')
         n = new WebView(state._json_data[node_idx]);
     else if (node_type === 'cc.Slider')
-        n = new Slider(state._json_data[node_idx])
+        n = new Slider(state._json_data[node_idx]);
+    else if (node_type === 'cc.Toggle')
+        n = new Toggle(state._json_data[node_idx]);
 
     if (n != null) {
         n.parse_properties();
