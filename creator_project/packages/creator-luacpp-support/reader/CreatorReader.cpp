@@ -282,6 +282,9 @@ cocos2d::Node* CreatorReader::createTree(const buffers::NodeTree* tree) const
         case buffers::AnyNode_Slider:
             node = createSlider(static_cast<const buffers::Slider*>(buffer));
             break;
+        case buffers::AnyNode_Toggle:
+            node = createToggle(static_cast<const buffers::Toggle*>(buffer));
+            break;
     }
 
     // recursively add its children
@@ -894,6 +897,37 @@ void CreatorReader::parseSlider(cocos2d::ui::Slider* slider, const buffers::Slid
         const auto contentSize = render->getContentSize();
         ball->setScale(ballSize->w() / contentSize.width,
                        ballSize->h() / contentSize.height);
+    }
+}
+
+cocos2d::ui::CheckBox* CreatorReader::createToggle(const buffers::Toggle* toggleBuffer) const
+{
+    const auto& backgroundSpritePath = toggleBuffer->backgroundSpritePath();
+    const auto& checkMarkSpritePath = toggleBuffer->checkMarkSpritePath();
+    const std::string strBackgroundSpritePath = backgroundSpritePath ? backgroundSpritePath->str() : "";
+    const std::string crossSpritePath = checkMarkSpritePath ? checkMarkSpritePath->str() : "";
+    
+    auto checkBox = cocos2d::ui::CheckBox::create(strBackgroundSpritePath, crossSpritePath);
+    parseToggle(checkBox, toggleBuffer);
+    return checkBox;
+}
+
+void CreatorReader::parseToggle(cocos2d::ui::CheckBox* toggle, const buffers::Toggle* toggleBuffer) const
+{
+    const auto& nodeBuffer = toggleBuffer->node();
+    parseNode(toggle, nodeBuffer);
+    
+    const auto& isChecked = toggleBuffer->isChecked();
+    toggle->setSelected(isChecked);
+    
+    const auto& interactable = toggleBuffer->interactable();
+    if (!interactable)
+    {
+        toggle->setTouchEnabled(false);
+        
+        const auto& enableAutoGrayEffect = toggleBuffer->enableAutoGrayEffect();
+        if (enableAutoGrayEffect)
+            toggle->setSelected(false);
     }
 }
 
