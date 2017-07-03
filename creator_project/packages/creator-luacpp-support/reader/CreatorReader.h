@@ -127,6 +127,9 @@ protected:
     void parseWebView(cocos2d::experimental::ui::WebView* webView, const buffers::WebView* webViewBuffer) const;
 #endif
     
+    cocos2d::ui::Slider* createSlider(const buffers::Slider* sliderBuffer) const;
+    void parseSlider(cocos2d::ui::Slider* slider, const buffers::Slider* sliderBuffer) const;
+    
     void setupSpriteFrames();
 
 

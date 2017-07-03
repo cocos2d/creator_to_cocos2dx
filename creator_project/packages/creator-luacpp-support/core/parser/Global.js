@@ -9,6 +9,9 @@ class State {
     reset() {
         this._filename = '';
 
+        // prefix path of all assets
+        this._assetpath = '';
+
         // the .fire file being parsed
         this._json_data = [];
 

@@ -279,6 +279,9 @@ cocos2d::Node* CreatorReader::createTree(const buffers::NodeTree* tree) const
             node = createWebView(static_cast<const buffers::WebView*>(buffer));
             break;
 #endif
+        case buffers::AnyNode_Slider:
+            node = createSlider(static_cast<const buffers::Slider*>(buffer));
+            break;
     }
 
     // recursively add its children
@@ -356,6 +359,8 @@ void CreatorReader::parseNode(cocos2d::Node* node, const buffers::Node* nodeBuff
     node->setTag(tag);
     const auto contentSize = nodeBuffer->contentSize();
     if (contentSize) node->setContentSize(cocos2d::Size(contentSize->w(), contentSize->h()));
+    const auto enabled = nodeBuffer->enabled();
+    node->setVisible(enabled);
 
     // animation?
     parseNodeAnimation(node, nodeBuffer);
@@ -837,6 +842,53 @@ void CreatorReader::parseWebView(cocos2d::experimental::ui::WebView* webView, co
         webView->loadURL(url->str());
 }
 #endif
+
+cocos2d::ui::Slider* CreatorReader::createSlider(const buffers::Slider* sliderBuffer) const
+{
+    auto slider = cocos2d::ui::Slider::create();
+    parseSlider(slider, sliderBuffer);
+    return slider;
+}
+
+void CreatorReader::parseSlider(cocos2d::ui::Slider* slider, const buffers::Slider* sliderBuffer) const
+{
+    // should set before parseNode
+    slider->ignoreContentAdaptWithSize(false);
+    const auto& nodeBuffer = sliderBuffer->node();
+    parseNode(slider, nodeBuffer);
+    
+    const auto& percent = sliderBuffer->percent();
+    slider->setPercent(percent);
+    slider->setMaxPercent(100);
+    
+    cocos2d::Sprite* render = nullptr;
+    
+    const auto& normalSpritePath = sliderBuffer->normalTexturePath();
+    if (normalSpritePath)
+    {
+        slider->loadSlidBallTextureNormal(normalSpritePath->str());
+        render = slider->getSlidBallNormalRenderer();
+    }
+    
+    const auto& pressedSpritePath = sliderBuffer->pressedTexturePath();
+    if (pressedSpritePath)
+        slider->loadSlidBallTexturePressed(pressedSpritePath->str());
+        
+    const auto& disabledSpritePath = sliderBuffer->disabledTexturePath();
+    if (disabledSpritePath)
+        slider->loadSlidBallTextureDisabled(disabledSpritePath->str());
+    
+    slider->setUnifySizeEnabled(true);
+    
+    if (render)
+    {
+        const auto&& ballSize = sliderBuffer->ballSize();
+        const auto&& ball = slider->getSlidBallRenderer();
+        const auto contentSize = render->getContentSize();
+        ball->setScale(ballSize->w() / contentSize.width,
+                       ballSize->h() / contentSize.height);
+    }
+}
 
 /*=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  *

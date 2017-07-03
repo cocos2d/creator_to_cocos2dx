@@ -42,6 +42,8 @@ struct VideoPlayer;
 
 struct WebView;
 
+struct Slider;
+
 struct SpineSkeleton;
 
 struct AnimationRef;
@@ -273,12 +275,13 @@ enum AnyNode {
   AnyNode_SpineSkeleton = 13,
   AnyNode_VideoPlayer = 14,
   AnyNode_WebView = 15,
+  AnyNode_Slider = 16,
   AnyNode_MIN = AnyNode_NONE,
-  AnyNode_MAX = AnyNode_WebView
+  AnyNode_MAX = AnyNode_Slider
 };
 
 inline const char **EnumNamesAnyNode() {
-  static const char *names[] = { "NONE", "Scene", "Sprite", "Label", "Particle", "TileMap", "Node", "Button", "ProgressBar", "ScrollView", "CreatorScene", "EditBox", "RichText", "SpineSkeleton", "VideoPlayer", "WebView", nullptr };
+  static const char *names[] = { "NONE", "Scene", "Sprite", "Label", "Particle", "TileMap", "Node", "Button", "ProgressBar", "ScrollView", "CreatorScene", "EditBox", "RichText", "SpineSkeleton", "VideoPlayer", "WebView", "Slider", nullptr };
   return names;
 }
 
@@ -346,6 +349,10 @@ template<> struct AnyNodeTraits<VideoPlayer> {
 
 template<> struct AnyNodeTraits<WebView> {
   static const AnyNode enum_value = AnyNode_WebView;
+};
+
+template<> struct AnyNodeTraits<Slider> {
+  static const AnyNode enum_value = AnyNode_Slider;
 };
 
 inline bool VerifyAnyNode(flatbuffers::Verifier &verifier, const void *union_obj, AnyNode type);
@@ -1742,6 +1749,81 @@ inline flatbuffers::Offset<WebView> CreateWebViewDirect(flatbuffers::FlatBufferB
   return CreateWebView(_fbb, node, url ? _fbb.CreateString(url) : 0);
 }
 
+struct Slider FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum {
+    VT_NODE = 4,
+    VT_PERCENT = 6,
+    VT_NORMALTEXTUREPATH = 8,
+    VT_PRESSEDTEXTUREPATH = 10,
+    VT_DISABLEDTEXTUREPATH = 12,
+    VT_BALLSIZE = 14
+  };
+  const Node *node() const { return GetPointer<const Node *>(VT_NODE); }
+  int32_t percent() const { return GetField<int32_t>(VT_PERCENT, 0); }
+  const flatbuffers::String *normalTexturePath() const { return GetPointer<const flatbuffers::String *>(VT_NORMALTEXTUREPATH); }
+  const flatbuffers::String *pressedTexturePath() const { return GetPointer<const flatbuffers::String *>(VT_PRESSEDTEXTUREPATH); }
+  const flatbuffers::String *disabledTexturePath() const { return GetPointer<const flatbuffers::String *>(VT_DISABLEDTEXTUREPATH); }
+  const Size *ballSize() const { return GetStruct<const Size *>(VT_BALLSIZE); }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_NODE) &&
+           verifier.VerifyTable(node()) &&
+           VerifyField<int32_t>(verifier, VT_PERCENT) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_NORMALTEXTUREPATH) &&
+           verifier.Verify(normalTexturePath()) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_PRESSEDTEXTUREPATH) &&
+           verifier.Verify(pressedTexturePath()) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_DISABLEDTEXTUREPATH) &&
+           verifier.Verify(disabledTexturePath()) &&
+           VerifyField<Size>(verifier, VT_BALLSIZE) &&
+           verifier.EndTable();
+  }
+};
+
+struct SliderBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_node(flatbuffers::Offset<Node> node) { fbb_.AddOffset(Slider::VT_NODE, node); }
+  void add_percent(int32_t percent) { fbb_.AddElement<int32_t>(Slider::VT_PERCENT, percent, 0); }
+  void add_normalTexturePath(flatbuffers::Offset<flatbuffers::String> normalTexturePath) { fbb_.AddOffset(Slider::VT_NORMALTEXTUREPATH, normalTexturePath); }
+  void add_pressedTexturePath(flatbuffers::Offset<flatbuffers::String> pressedTexturePath) { fbb_.AddOffset(Slider::VT_PRESSEDTEXTUREPATH, pressedTexturePath); }
+  void add_disabledTexturePath(flatbuffers::Offset<flatbuffers::String> disabledTexturePath) { fbb_.AddOffset(Slider::VT_DISABLEDTEXTUREPATH, disabledTexturePath); }
+  void add_ballSize(const Size *ballSize) { fbb_.AddStruct(Slider::VT_BALLSIZE, ballSize); }
+  SliderBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
+  SliderBuilder &operator=(const SliderBuilder &);
+  flatbuffers::Offset<Slider> Finish() {
+    auto o = flatbuffers::Offset<Slider>(fbb_.EndTable(start_, 6));
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<Slider> CreateSlider(flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<Node> node = 0,
+    int32_t percent = 0,
+    flatbuffers::Offset<flatbuffers::String> normalTexturePath = 0,
+    flatbuffers::Offset<flatbuffers::String> pressedTexturePath = 0,
+    flatbuffers::Offset<flatbuffers::String> disabledTexturePath = 0,
+    const Size *ballSize = 0) {
+  SliderBuilder builder_(_fbb);
+  builder_.add_ballSize(ballSize);
+  builder_.add_disabledTexturePath(disabledTexturePath);
+  builder_.add_pressedTexturePath(pressedTexturePath);
+  builder_.add_normalTexturePath(normalTexturePath);
+  builder_.add_percent(percent);
+  builder_.add_node(node);
+  return builder_.Finish();
+}
+
+inline flatbuffers::Offset<Slider> CreateSliderDirect(flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<Node> node = 0,
+    int32_t percent = 0,
+    const char *normalTexturePath = nullptr,
+    const char *pressedTexturePath = nullptr,
+    const char *disabledTexturePath = nullptr,
+    const Size *ballSize = 0) {
+  return CreateSlider(_fbb, node, percent, normalTexturePath ? _fbb.CreateString(normalTexturePath) : 0, pressedTexturePath ? _fbb.CreateString(pressedTexturePath) : 0, disabledTexturePath ? _fbb.CreateString(disabledTexturePath) : 0, ballSize);
+}
+
 struct SpineSkeleton FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   enum {
     VT_NODE = 4,
@@ -2732,6 +2814,7 @@ inline bool VerifyAnyNode(flatbuffers::Verifier &verifier, const void *union_obj
     case AnyNode_SpineSkeleton: return verifier.VerifyTable(reinterpret_cast<const SpineSkeleton *>(union_obj));
     case AnyNode_VideoPlayer: return verifier.VerifyTable(reinterpret_cast<const VideoPlayer *>(union_obj));
     case AnyNode_WebView: return verifier.VerifyTable(reinterpret_cast<const WebView *>(union_obj));
+    case AnyNode_Slider: return verifier.VerifyTable(reinterpret_cast<const Slider *>(union_obj));
     default: return false;
   }
 }

@@ -1,6 +1,6 @@
 const Node = require('./Node');
 const state = require('./Global').state;
-const get_sprite_frame_name_by_uuid = require('./Utils').get_sprite_frame_name_by_uuid;
+const Utils = require('./Utils');
 
 class ProgressBar extends Node {
     constructor(data) {
@@ -16,7 +16,7 @@ class ProgressBar extends Node {
         // background sprite
         let bg_component = Node.get_node_component_of_type(this._node_data, 'cc.Sprite');
         if (bg_component._spriteFrame)
-            this._properties.backgroundSpriteFrameName = state._assetpath + get_sprite_frame_name_by_uuid(bg_component._spriteFrame.__uuid__);
+            this._properties.backgroundSpriteFrameName = state._assetpath + Utils.get_sprite_frame_name_by_uuid(bg_component._spriteFrame.__uuid__);
 
         let bar_component = Node.get_node_component_of_type(this._node_data, 'cc.ProgressBar');
         this._properties.percent = bar_component._N$progress * 100;
@@ -26,20 +26,12 @@ class ProgressBar extends Node {
         if (bar_sprite) {
             let bar_sprite_data = state._json_data[bar_sprite.__id__];
             let bar_sprite_uuid = bar_sprite_data._spriteFrame.__uuid__;
-            this._properties.barSpriteFrameName = state._assetpath + get_sprite_frame_name_by_uuid(bar_sprite_uuid);
+            this._properties.barSpriteFrameName = state._assetpath + Utils.get_sprite_frame_name_by_uuid(bar_sprite_uuid);
             this._properties.barSpriteType = bar_sprite_data._type;
 
-            // should remove the child of bar sprite
-            let children = this._node_data._children;
-            for (let i = 0, len = children.length; i < len; ++i) {
-                let child = children[i];
-                let child_data = state._json_data[child.__id__];
-                child_data._components.forEach(function(component) {
-                    if (component.__id__ == bar_sprite.__id__) {
-                        children.splice(i, 1);
-                    }
-                });
-            }
+            // should remove the child: bar sprite node
+            let bar_sprite_node_id = state._json_data[bar_sprite.__id__].node.__id__;
+            Utils.remove_child_by_id(this, bar_sprite_node_id);
         }
 
         this._properties.reverse = bar_component._N$reverse;

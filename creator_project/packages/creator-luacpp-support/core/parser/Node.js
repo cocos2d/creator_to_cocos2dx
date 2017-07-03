@@ -34,7 +34,7 @@ class Node {
         let supported_components = ['cc.Button', 'cc.ProgressBar', 'cc.ScrollView',
             'cc.EditBox', 'cc.Label', 'sp.Skeleton', 'cc.Sprite',
             'cc.ParticleSystem', 'cc.TiledMap', 'cc.Canvas', 'cc.RichText',
-            'cc.VideoPlayer', 'cc.WebView'];
+            'cc.VideoPlayer', 'cc.WebView', 'cc.Slider'];
         let node_components = components.map(x => x.__type__);
         // special case for object without components
         if (node_components.length == 0)
@@ -124,7 +124,7 @@ class Node {
     parse_node_properties() {
         let data = this._node_data;
         this.add_property_size('contentSize', '_contentSize', data);
-        this.add_property_bool('enabled', '_enabled', data);
+        this.add_property_bool('enabled', '_active', data);
         this.add_property_str('name', '_name', data);
         this.add_property_vec2('anchorPoint', '_anchorPoint', data);
         this.add_property_bool('cascadeOpacityEnabled', '_cascadeOpacityEnabled', data);
