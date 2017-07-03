@@ -44,14 +44,43 @@ class Slider extends Node {
         let handle_data = state._json_data[handle_id];
         this.add_property_size('ballSize', '_contentSize', handle_data);
 
-        // remove Handle child from children
-        
+        // bar sprite
+        let background_node_id = this.get_background_node_id(handle_id);
+        if (background_node_id) {
+            let background_node_data = state._json_data[background_node_id];
+            let background_sprite_data = Node.get_node_component_of_type(background_node_data, 'cc.Sprite');
+
+            if (background_sprite_data._spriteFrame) {
+                let path = Utils.get_sprite_frame_name_by_uuid(background_sprite_data._spriteFrame.__uuid__);
+                this._properties.barTexturePath = state._assetpath + path;
+
+                // size
+                this.add_property_size('barSize', '_contentSize', background_node_data);
+            }
+        }
+
+        // remove Backgournd and Handle from children
         Utils.remove_child_by_id(this, handle_id);
+        Utils.remove_child_by_id(this, background_node_id);
 
         // 2nd: parse children
         this._node_data._children.forEach(function(item) {
             this.parse_child(item.__id__);
         }.bind(this));
+    }
+
+    get_background_node_id(handle_id) {
+        // Background and Handle are children of Slider
+        // and Background is before Handle, we use this feature to get Background id
+        let background_id = null;
+        for(let child_idx in this._node_data._children) {
+            let child = this._node_data._children[child_idx];
+            if (child.__id__ === handle_id)
+                break;
+
+            background_id = child.__id__;
+        }
+        return background_id;
     }
 }
 
