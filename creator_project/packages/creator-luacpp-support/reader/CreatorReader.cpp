@@ -600,12 +600,8 @@ void CreatorReader::parseRichText(cocos2d::ui::RichText* richText, const buffers
 
     const auto& fontSize = richTextBuffer->fontSize();
     richText->setFontSize(fontSize);
-    const auto& lineHeight = richTextBuffer->lineHeight();
-    richText->setVerticalSpace(lineHeight);
     const auto& fontFilename = richTextBuffer->fontFilename();
     if (fontFilename) richText->setFontFace(fontFilename->str());
-
-//    richText->ignoreContentAdaptWithSize(false);
     
     const auto& text = richTextBuffer->text();
     if (text)
@@ -617,6 +613,11 @@ void CreatorReader::parseRichText(cocos2d::ui::RichText* richText, const buffers
         
         richText->initWithXML(visitor.getOutput());
     }
+    
+    // should do it after richText->initWithXML
+    const auto& maxWidth = richTextBuffer->maxWidth();
+    if (maxWidth > 0)
+        richText->ignoreContentAdaptWithSize(false);
 }
 
 cocos2d::ParticleSystemQuad* CreatorReader::createParticle(const buffers::Particle* particleBuffer) const
