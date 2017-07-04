@@ -85,13 +85,6 @@ void some_function()
 }
 ```
 
-
-A working example can be found here:
-
-* https://github.com/ricardoquesada/cocos2d-x/tree/creator_reader
-
-Just run "cpp-tests" and select "CreatorTest"
-
 ## Using it from lua
 
 Register creator binding codes in c++
