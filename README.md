@@ -43,7 +43,8 @@ Supported nodes:
 * `Animations`: only supports linear animation
 * `VideoPlayer`: iOS should add `MediaPlayer.framework` to the project
 * `WebView`
-
+* `Slider`
+* `Toggle`
 
 Supporting JavaScript scripts would be overkill. If you need JavaScript scripting
 support, just use Creator.
