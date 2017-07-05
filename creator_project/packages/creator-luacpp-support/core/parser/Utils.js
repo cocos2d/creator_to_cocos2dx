@@ -232,6 +232,7 @@ let create_node = function (node_type, node_idx) {
     const WebView = require('./WebView');
     const Slider = require('./Slider');
     const Toggle = require('./Toggle');
+    const ToggleGroup = require('./ToggleGroup');
 
     let n = null;
     if (node_type === 'cc.Node')
@@ -266,6 +267,8 @@ let create_node = function (node_type, node_idx) {
         n = new Slider(state._json_data[node_idx]);
     else if (node_type === 'cc.Toggle')
         n = new Toggle(state._json_data[node_idx]);
+    else if (node_type === 'cc.ToggleGroup')
+        n = new ToggleGroup(state._json_data[node_idx]);
 
     if (n != null) {
         n.parse_properties();

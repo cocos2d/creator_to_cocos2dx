@@ -46,6 +46,8 @@ struct Slider;
 
 struct Toggle;
 
+struct ToggleGroup;
+
 struct SpineSkeleton;
 
 struct AnimationRef;
@@ -280,12 +282,13 @@ enum AnyNode {
   AnyNode_WebView = 15,
   AnyNode_Slider = 16,
   AnyNode_Toggle = 17,
+  AnyNode_ToggleGroup = 18,
   AnyNode_MIN = AnyNode_NONE,
-  AnyNode_MAX = AnyNode_Toggle
+  AnyNode_MAX = AnyNode_ToggleGroup
 };
 
 inline const char **EnumNamesAnyNode() {
-  static const char *names[] = { "NONE", "Scene", "Sprite", "Label", "Particle", "TileMap", "Node", "Button", "ProgressBar", "ScrollView", "CreatorScene", "EditBox", "RichText", "SpineSkeleton", "VideoPlayer", "WebView", "Slider", "Toggle", nullptr };
+  static const char *names[] = { "NONE", "Scene", "Sprite", "Label", "Particle", "TileMap", "Node", "Button", "ProgressBar", "ScrollView", "CreatorScene", "EditBox", "RichText", "SpineSkeleton", "VideoPlayer", "WebView", "Slider", "Toggle", "ToggleGroup", nullptr };
   return names;
 }
 
@@ -361,6 +364,10 @@ template<> struct AnyNodeTraits<Slider> {
 
 template<> struct AnyNodeTraits<Toggle> {
   static const AnyNode enum_value = AnyNode_Toggle;
+};
+
+template<> struct AnyNodeTraits<ToggleGroup> {
+  static const AnyNode enum_value = AnyNode_ToggleGroup;
 };
 
 inline bool VerifyAnyNode(flatbuffers::Verifier &verifier, const void *union_obj, AnyNode type);
@@ -1854,7 +1861,8 @@ struct Toggle FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     VT_ENABLEAUTOGRAYEFFECT = 8,
     VT_ISCHECKED = 10,
     VT_BACKGROUNDSPRITEPATH = 12,
-    VT_CHECKMARKSPRITEPATH = 14
+    VT_CHECKMARKSPRITEPATH = 14,
+    VT_ZOOMSCALE = 16
   };
   const Node *node() const { return GetPointer<const Node *>(VT_NODE); }
   bool interactable() const { return GetField<uint8_t>(VT_INTERACTABLE, 0) != 0; }
@@ -1862,6 +1870,7 @@ struct Toggle FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   bool isChecked() const { return GetField<uint8_t>(VT_ISCHECKED, 0) != 0; }
   const flatbuffers::String *backgroundSpritePath() const { return GetPointer<const flatbuffers::String *>(VT_BACKGROUNDSPRITEPATH); }
   const flatbuffers::String *checkMarkSpritePath() const { return GetPointer<const flatbuffers::String *>(VT_CHECKMARKSPRITEPATH); }
+  float zoomScale() const { return GetField<float>(VT_ZOOMSCALE, 0.0f); }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<flatbuffers::uoffset_t>(verifier, VT_NODE) &&
@@ -1873,6 +1882,7 @@ struct Toggle FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
            verifier.Verify(backgroundSpritePath()) &&
            VerifyField<flatbuffers::uoffset_t>(verifier, VT_CHECKMARKSPRITEPATH) &&
            verifier.Verify(checkMarkSpritePath()) &&
+           VerifyField<float>(verifier, VT_ZOOMSCALE) &&
            verifier.EndTable();
   }
 };
@@ -1886,10 +1896,11 @@ struct ToggleBuilder {
   void add_isChecked(bool isChecked) { fbb_.AddElement<uint8_t>(Toggle::VT_ISCHECKED, static_cast<uint8_t>(isChecked), 0); }
   void add_backgroundSpritePath(flatbuffers::Offset<flatbuffers::String> backgroundSpritePath) { fbb_.AddOffset(Toggle::VT_BACKGROUNDSPRITEPATH, backgroundSpritePath); }
   void add_checkMarkSpritePath(flatbuffers::Offset<flatbuffers::String> checkMarkSpritePath) { fbb_.AddOffset(Toggle::VT_CHECKMARKSPRITEPATH, checkMarkSpritePath); }
+  void add_zoomScale(float zoomScale) { fbb_.AddElement<float>(Toggle::VT_ZOOMSCALE, zoomScale, 0.0f); }
   ToggleBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
   ToggleBuilder &operator=(const ToggleBuilder &);
   flatbuffers::Offset<Toggle> Finish() {
-    auto o = flatbuffers::Offset<Toggle>(fbb_.EndTable(start_, 6));
+    auto o = flatbuffers::Offset<Toggle>(fbb_.EndTable(start_, 7));
     return o;
   }
 };
@@ -1900,8 +1911,10 @@ inline flatbuffers::Offset<Toggle> CreateToggle(flatbuffers::FlatBufferBuilder &
     bool enableAutoGrayEffect = false,
     bool isChecked = false,
     flatbuffers::Offset<flatbuffers::String> backgroundSpritePath = 0,
-    flatbuffers::Offset<flatbuffers::String> checkMarkSpritePath = 0) {
+    flatbuffers::Offset<flatbuffers::String> checkMarkSpritePath = 0,
+    float zoomScale = 0.0f) {
   ToggleBuilder builder_(_fbb);
+  builder_.add_zoomScale(zoomScale);
   builder_.add_checkMarkSpritePath(checkMarkSpritePath);
   builder_.add_backgroundSpritePath(backgroundSpritePath);
   builder_.add_node(node);
@@ -1917,8 +1930,62 @@ inline flatbuffers::Offset<Toggle> CreateToggleDirect(flatbuffers::FlatBufferBui
     bool enableAutoGrayEffect = false,
     bool isChecked = false,
     const char *backgroundSpritePath = nullptr,
-    const char *checkMarkSpritePath = nullptr) {
-  return CreateToggle(_fbb, node, interactable, enableAutoGrayEffect, isChecked, backgroundSpritePath ? _fbb.CreateString(backgroundSpritePath) : 0, checkMarkSpritePath ? _fbb.CreateString(checkMarkSpritePath) : 0);
+    const char *checkMarkSpritePath = nullptr,
+    float zoomScale = 0.0f) {
+  return CreateToggle(_fbb, node, interactable, enableAutoGrayEffect, isChecked, backgroundSpritePath ? _fbb.CreateString(backgroundSpritePath) : 0, checkMarkSpritePath ? _fbb.CreateString(checkMarkSpritePath) : 0, zoomScale);
+}
+
+struct ToggleGroup FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum {
+    VT_NODE = 4,
+    VT_ALLOWSWITCHOFF = 6,
+    VT_TOGGLES = 8
+  };
+  const Node *node() const { return GetPointer<const Node *>(VT_NODE); }
+  bool allowSwitchOff() const { return GetField<uint8_t>(VT_ALLOWSWITCHOFF, 0) != 0; }
+  const flatbuffers::Vector<flatbuffers::Offset<Toggle>> *toggles() const { return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<Toggle>> *>(VT_TOGGLES); }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_NODE) &&
+           verifier.VerifyTable(node()) &&
+           VerifyField<uint8_t>(verifier, VT_ALLOWSWITCHOFF) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_TOGGLES) &&
+           verifier.Verify(toggles()) &&
+           verifier.VerifyVectorOfTables(toggles()) &&
+           verifier.EndTable();
+  }
+};
+
+struct ToggleGroupBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_node(flatbuffers::Offset<Node> node) { fbb_.AddOffset(ToggleGroup::VT_NODE, node); }
+  void add_allowSwitchOff(bool allowSwitchOff) { fbb_.AddElement<uint8_t>(ToggleGroup::VT_ALLOWSWITCHOFF, static_cast<uint8_t>(allowSwitchOff), 0); }
+  void add_toggles(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Toggle>>> toggles) { fbb_.AddOffset(ToggleGroup::VT_TOGGLES, toggles); }
+  ToggleGroupBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
+  ToggleGroupBuilder &operator=(const ToggleGroupBuilder &);
+  flatbuffers::Offset<ToggleGroup> Finish() {
+    auto o = flatbuffers::Offset<ToggleGroup>(fbb_.EndTable(start_, 3));
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<ToggleGroup> CreateToggleGroup(flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<Node> node = 0,
+    bool allowSwitchOff = false,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Toggle>>> toggles = 0) {
+  ToggleGroupBuilder builder_(_fbb);
+  builder_.add_toggles(toggles);
+  builder_.add_node(node);
+  builder_.add_allowSwitchOff(allowSwitchOff);
+  return builder_.Finish();
+}
+
+inline flatbuffers::Offset<ToggleGroup> CreateToggleGroupDirect(flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<Node> node = 0,
+    bool allowSwitchOff = false,
+    const std::vector<flatbuffers::Offset<Toggle>> *toggles = nullptr) {
+  return CreateToggleGroup(_fbb, node, allowSwitchOff, toggles ? _fbb.CreateVector<flatbuffers::Offset<Toggle>>(*toggles) : 0);
 }
 
 struct SpineSkeleton FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
@@ -2913,6 +2980,7 @@ inline bool VerifyAnyNode(flatbuffers::Verifier &verifier, const void *union_obj
     case AnyNode_WebView: return verifier.VerifyTable(reinterpret_cast<const WebView *>(union_obj));
     case AnyNode_Slider: return verifier.VerifyTable(reinterpret_cast<const Slider *>(union_obj));
     case AnyNode_Toggle: return verifier.VerifyTable(reinterpret_cast<const Toggle *>(union_obj));
+    case AnyNode_ToggleGroup: return verifier.VerifyTable(reinterpret_cast<const ToggleGroup *>(union_obj));
     default: return false;
   }
 }
