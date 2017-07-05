@@ -1174,16 +1174,20 @@ inline flatbuffers::Offset<RichText> CreateRichTextDirect(flatbuffers::FlatBuffe
 struct Particle FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   enum {
     VT_NODE = 4,
-    VT_PARTICLEFILENAME = 6
+    VT_PARTICLEFILENAME = 6,
+    VT_TEXTUREPATH = 8
   };
   const Node *node() const { return GetPointer<const Node *>(VT_NODE); }
   const flatbuffers::String *particleFilename() const { return GetPointer<const flatbuffers::String *>(VT_PARTICLEFILENAME); }
+  const flatbuffers::String *texturePath() const { return GetPointer<const flatbuffers::String *>(VT_TEXTUREPATH); }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<flatbuffers::uoffset_t>(verifier, VT_NODE) &&
            verifier.VerifyTable(node()) &&
            VerifyField<flatbuffers::uoffset_t>(verifier, VT_PARTICLEFILENAME) &&
            verifier.Verify(particleFilename()) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_TEXTUREPATH) &&
+           verifier.Verify(texturePath()) &&
            verifier.EndTable();
   }
 };
@@ -1193,18 +1197,21 @@ struct ParticleBuilder {
   flatbuffers::uoffset_t start_;
   void add_node(flatbuffers::Offset<Node> node) { fbb_.AddOffset(Particle::VT_NODE, node); }
   void add_particleFilename(flatbuffers::Offset<flatbuffers::String> particleFilename) { fbb_.AddOffset(Particle::VT_PARTICLEFILENAME, particleFilename); }
+  void add_texturePath(flatbuffers::Offset<flatbuffers::String> texturePath) { fbb_.AddOffset(Particle::VT_TEXTUREPATH, texturePath); }
   ParticleBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
   ParticleBuilder &operator=(const ParticleBuilder &);
   flatbuffers::Offset<Particle> Finish() {
-    auto o = flatbuffers::Offset<Particle>(fbb_.EndTable(start_, 2));
+    auto o = flatbuffers::Offset<Particle>(fbb_.EndTable(start_, 3));
     return o;
   }
 };
 
 inline flatbuffers::Offset<Particle> CreateParticle(flatbuffers::FlatBufferBuilder &_fbb,
     flatbuffers::Offset<Node> node = 0,
-    flatbuffers::Offset<flatbuffers::String> particleFilename = 0) {
+    flatbuffers::Offset<flatbuffers::String> particleFilename = 0,
+    flatbuffers::Offset<flatbuffers::String> texturePath = 0) {
   ParticleBuilder builder_(_fbb);
+  builder_.add_texturePath(texturePath);
   builder_.add_particleFilename(particleFilename);
   builder_.add_node(node);
   return builder_.Finish();
@@ -1212,8 +1219,9 @@ inline flatbuffers::Offset<Particle> CreateParticle(flatbuffers::FlatBufferBuild
 
 inline flatbuffers::Offset<Particle> CreateParticleDirect(flatbuffers::FlatBufferBuilder &_fbb,
     flatbuffers::Offset<Node> node = 0,
-    const char *particleFilename = nullptr) {
-  return CreateParticle(_fbb, node, particleFilename ? _fbb.CreateString(particleFilename) : 0);
+    const char *particleFilename = nullptr,
+    const char *texturePath = nullptr) {
+  return CreateParticle(_fbb, node, particleFilename ? _fbb.CreateString(particleFilename) : 0, texturePath ? _fbb.CreateString(texturePath) : 0);
 }
 
 struct TileMap FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {

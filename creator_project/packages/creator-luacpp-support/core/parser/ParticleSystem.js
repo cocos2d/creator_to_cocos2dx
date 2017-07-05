@@ -1,6 +1,6 @@
 const Node = require('./Node');
+const Utils = require('./Utils');
 const state = require('./Global').state;
-const get_particle_system_path_by_uuid = require('./Utils').get_particle_system_path_by_uuid;
 
 class ParticleSystem extends Node {
     constructor(data) {
@@ -14,7 +14,16 @@ class ParticleSystem extends Node {
         this._properties = {node: this._properties};
 
         let component = Node.get_node_component_of_type(this._node_data, 'cc.ParticleSystem');
-        this._properties.particleFilename = state._assetpath + get_particle_system_path_by_uuid(component._file.__uuid__);
+        this._properties.particleFilename = state._assetpath + this.get_particle_system_path_by_uuid(component._file.__uuid__);
+
+        // creator may change the texture
+        if (component._texture)
+            this._properties.texturePath = state._assetpath + this.get_particle_system_path_by_uuid(component._texture.__uuid__);
+    }
+
+    get_particle_system_path_by_uuid(uuid) {
+        let path_info = Utils.get_relative_full_path_by_uuid(uuid);
+        return path_info.relative_path;
     }
 }
 

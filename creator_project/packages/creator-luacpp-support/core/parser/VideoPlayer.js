@@ -23,9 +23,6 @@ class VideoPlayer extends Node {
             // get local path by uuid
             let pathInfo = Utils.get_relative_full_path_by_uuid(component._clip.__uuid__);
             this._properties.url = state._assetpath + pathInfo.relative_path;
-
-            // need to copy resource
-            state._uuid[component._clip.__uuid__] = pathInfo;
         }
         else
             this._properties.url = component._remoteURL;

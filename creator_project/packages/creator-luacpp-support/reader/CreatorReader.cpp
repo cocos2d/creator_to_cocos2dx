@@ -636,6 +636,13 @@ void CreatorReader::parseParticle(cocos2d::ParticleSystemQuad* particle, const b
 {
     const auto& nodeBuffer = particleBuffer->node();
     parseNode(particle, nodeBuffer);
+    
+    const auto& texturePath = particleBuffer->texturePath();
+    if (texturePath)
+    {
+        auto texture = cocos2d::Director::getInstance()->getTextureCache()->addImage(texturePath->c_str());
+        particle->setTexture(texture);
+    }
 }
 
 /*=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-

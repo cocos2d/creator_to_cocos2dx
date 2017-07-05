@@ -10,15 +10,21 @@ const Utils = require('../Utils');
  * @relative_path: relative path to assets folder or creator default asset path
  */
 let get_relative_full_path_by_uuid = function(uuid) {
+    if (uuid in state._uuid)
+        return state._uuid[uuid];
+
     let fullpath = Editor.remote.assetdb.uuidToFspath(uuid);
     let mountInfo = Editor.remote.assetdb.mountInfoByUuid(uuid);
     let root = mountInfo.path;
     let relative_path = fullpath.substring(root.length + 1);
 
-    return {
+    let result = {
         fullpath: fullpath,
         relative_path: relative_path
     };
+    state._uuid[uuid] = result;
+
+    return result;
 }
 
 
@@ -54,7 +60,6 @@ let get_sprite_frame_name_by_uuid = function(uuid) {
             // handle texture path
 
             let path_info = get_relative_full_path_by_uuid(texture_uuid);
-            state._uuid[texture_uuid] = path_info;
 
             // get texture frames information
             let meta = Editor.remote.assetdb._uuid2meta[metauuid].__subMetas__;
@@ -184,8 +189,7 @@ let get_tiledmap_path_by_uuid = function (uuid) {
         // record texture path
         let tmx_texture_info = {};
         contents_json.textures.forEach(function(texture_info) {
-            state._uuid[texture_info.__uuid__] = get_relative_full_path_by_uuid(texture_info.__uuid__);
-            tmx_texture_info = state._uuid[texture_info.__uuid__];
+            tmx_texture_info = get_relative_full_path_by_uuid(texture_info.__uuid__);
         });
 
         // get tmx path
@@ -198,15 +202,6 @@ let get_tiledmap_path_by_uuid = function (uuid) {
 
         return tmx_relative_path;
     }
-}
-
-let get_particle_system_path_by_uuid = function (uuid) {
-    if (uuid in state._uuid)
-        return state._uuid[uuid].relative_path;
-
-    let path_info = get_relative_full_path_by_uuid(uuid);
-    state._uuid[uuid] = path_info;
-    return path_info.relative_path;
 }
 
 let DEBUG = false;
@@ -300,7 +295,6 @@ module.exports = {
     get_font_path_by_uuid: get_font_path_by_uuid,
     get_spine_info_by_uuid: get_spine_info_by_uuid,
     get_tiledmap_path_by_uuid: get_tiledmap_path_by_uuid,
-    get_particle_system_path_by_uuid : get_particle_system_path_by_uuid,
     create_node: create_node,
     log: log,
     remove_child_by_id: remove_child_by_id
