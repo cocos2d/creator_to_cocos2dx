@@ -45,6 +45,7 @@ Supported nodes:
 * `WebView`
 * `Slider`
 * `Toggle`
+* `ToggleGroup`
 
 Supporting JavaScript scripts would be overkill. If you need JavaScript scripting
 support, just use Creator.
