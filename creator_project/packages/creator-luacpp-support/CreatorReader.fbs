@@ -135,6 +135,7 @@ table Particle
 {
     node:Node;
     particleFilename:string;
+    texturePath:string;                       // may change the texture dynamically
 }
 
 
