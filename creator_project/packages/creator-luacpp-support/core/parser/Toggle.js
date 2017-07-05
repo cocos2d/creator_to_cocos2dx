@@ -17,6 +17,7 @@ class Toggle extends Node {
         this.add_property_bool('interactable', '_N$interactable', toggle_component);
         this.add_property_bool('enableAutoGrayEffect', '_N$enableAutoGrayEffect', toggle_component);
         this.add_property_bool('isChecked', '_N$isChecked', toggle_component);
+        this.add_property_int('zoomScale', 'zoomScale', toggle_component);
 
         // Background sprite
         let background_node_id = toggle_component._N$target.__id__;
@@ -31,8 +32,15 @@ class Toggle extends Node {
         let checkmark_node_data = state._json_data[checkmark_id];
         let checkmark_component_id = checkmark_node_data._components[0].__id__;
         let checkmark_component = state._json_data[checkmark_component_id];
-        if (checkmark_component._spriteFrame)
+        if (checkmark_component._spriteFrame) {
             this._properties.checkMarkSpritePath = state._assetpath + Utils.get_sprite_frame_name_by_uuid(checkmark_component._spriteFrame.__uuid__);
+
+            // adjust node content size
+            let current_properties = this._properties;
+            this._properties = this._properties.node;
+            this.add_property_size('contentSize', '_contentSize', checkmark_node_data);
+            this._properties = current_properties;
+        }
 
         // remove Background and CheckMark
         Utils.remove_child_by_id(this, background_node_id);

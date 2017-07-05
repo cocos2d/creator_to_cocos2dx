@@ -131,7 +131,10 @@ protected:
     void parseSlider(cocos2d::ui::Slider* slider, const buffers::Slider* sliderBuffer) const;
     
     cocos2d::ui::CheckBox* createToggle(const buffers::Toggle* toggleBuffer) const;
-    void parseToggle(cocos2d::ui::CheckBox* toggle, const buffers::Toggle* toggleBuffer) const;
+    void parseToggle(cocos2d::ui::CheckBox* checkBox, const buffers::Toggle* toggleBuffer) const;
+    
+    cocos2d::ui::RadioButtonGroup* createToggleGroup(const buffers::ToggleGroup* toggleGroupBuffer) const;
+    void parseToggleGroup(cocos2d::ui::RadioButtonGroup* radioGroup, const buffers::ToggleGroup* toggleGroupBuffer) const;
     
     void setupSpriteFrames();
 

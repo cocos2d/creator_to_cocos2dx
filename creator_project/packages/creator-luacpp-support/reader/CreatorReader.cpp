@@ -285,6 +285,9 @@ cocos2d::Node* CreatorReader::createTree(const buffers::NodeTree* tree) const
         case buffers::AnyNode_Toggle:
             node = createToggle(static_cast<const buffers::Toggle*>(buffer));
             break;
+        case buffers::AnyNode_ToggleGroup:
+            node = createToggleGroup(static_cast<const buffers::ToggleGroup*>(buffer));
+            break;
     }
 
     // recursively add its children
@@ -913,22 +916,76 @@ cocos2d::ui::CheckBox* CreatorReader::createToggle(const buffers::Toggle* toggle
     return checkBox;
 }
 
-void CreatorReader::parseToggle(cocos2d::ui::CheckBox* toggle, const buffers::Toggle* toggleBuffer) const
+void CreatorReader::parseToggle(cocos2d::ui::CheckBox* checkBox, const buffers::Toggle* toggleBuffer) const
 {
     const auto& nodeBuffer = toggleBuffer->node();
-    parseNode(toggle, nodeBuffer);
+    parseNode(checkBox, nodeBuffer);
     
     const auto& isChecked = toggleBuffer->isChecked();
-    toggle->setSelected(isChecked);
+    checkBox->setSelected(isChecked);
+    
+    const auto& zoomScale = toggleBuffer->zoomScale();
+    checkBox->setZoomScale(zoomScale);
+    checkBox->ignoreContentAdaptWithSize(false);
     
     const auto& interactable = toggleBuffer->interactable();
     if (!interactable)
     {
-        toggle->setTouchEnabled(false);
+        checkBox->setTouchEnabled(false);
         
         const auto& enableAutoGrayEffect = toggleBuffer->enableAutoGrayEffect();
         if (enableAutoGrayEffect)
-            toggle->setSelected(false);
+            checkBox->setSelected(false);
+    }
+}
+
+cocos2d::ui::RadioButtonGroup* CreatorReader::createToggleGroup(const buffers::ToggleGroup* toggleGroupBuffer) const
+{
+    auto radioGroup = cocos2d::ui::RadioButtonGroup::create();
+    parseToggleGroup(radioGroup, toggleGroupBuffer);
+    return radioGroup;
+}
+
+void CreatorReader::parseToggleGroup(cocos2d::ui::RadioButtonGroup* radioGroup, const buffers::ToggleGroup* toggleGroupBuffer) const
+{
+    const auto& nodeBuffer = toggleGroupBuffer->node();
+    parseNode(radioGroup, nodeBuffer);
+    
+    const auto& allowSwitchOff = toggleGroupBuffer->allowSwitchOff();
+    if (allowSwitchOff)
+        radioGroup->setAllowedNoSelection(true);
+    
+    const auto& toggles = toggleGroupBuffer->toggles();
+    for (const auto& toggleBuffer : *toggles)
+    {
+        const auto& backgroundSpritePath = toggleBuffer->backgroundSpritePath();
+        const auto& checkMarkSpritePath = toggleBuffer->checkMarkSpritePath();
+        const std::string strBackgroundSpritePath = backgroundSpritePath ? backgroundSpritePath->str() : "";
+        const std::string crossSpritePath = checkMarkSpritePath ? checkMarkSpritePath->str() : "";
+        auto radioButton = cocos2d::ui::RadioButton::create(strBackgroundSpritePath, crossSpritePath);
+        
+        const auto& radioButtonNodeBuffer = toggleBuffer->node();
+        parseNode(radioButton, radioButtonNodeBuffer);
+        
+        const auto& isChecked = toggleBuffer->isChecked();
+        radioButton->setSelected(isChecked);
+        
+        const auto& interactable = toggleBuffer->interactable();
+        if (!interactable)
+        {
+            radioButton->setTouchEnabled(false);
+            
+            const auto& enableAutoGrayEffect = toggleBuffer->enableAutoGrayEffect();
+            if (enableAutoGrayEffect)
+                radioButton->setSelected(false);
+        }
+        
+        const auto& zoomScale = toggleBuffer->zoomScale();
+        radioButton->setZoomScale(zoomScale);
+        radioButton->ignoreContentAdaptWithSize(false);
+        
+        radioGroup->addRadioButton(radioButton);
+        radioGroup->addChild(radioButton);
     }
 }
 
