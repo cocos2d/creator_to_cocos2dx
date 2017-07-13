@@ -27,6 +27,25 @@ let get_relative_full_path_by_uuid = function(uuid) {
     return result;
 }
 
+let get_sprite_frame_json_by_uuid = function(uuid) {
+    let jsonfile = uuidinfos[uuid];
+    if (jsonfile) {
+        let contents = fs.readFileSync(jsonfile);
+        let contents_json = JSON.parse(contents);
+        return contents_json;
+    }
+    else
+        return null;
+}
+
+let is_sprite_frame_from_texture_packer = function(uuid) {
+    let json = get_sprite_frame_json_by_uuid(uuid);
+    if (json) 
+        return json.content.atlas !== '';
+    else
+        return false;
+}
+
 
 /**
  * The sprite frame name will include path information if it is not a texture packer
@@ -40,11 +59,8 @@ let get_sprite_frame_name_by_uuid = function(uuid) {
             return uuid_info.texture_path;
     }
     else {
-        let jsonfile = uuidinfos[uuid];
-        if (jsonfile) {
-            let contents = fs.readFileSync(jsonfile);
-            let contents_json = JSON.parse(contents);
-
+        let contents_json = get_sprite_frame_json_by_uuid(uuid);
+        if (contents_json) {
             let metauuid;
             let texture_uuid = contents_json.content.texture;
             let is_texture_packer = false;
@@ -228,6 +244,7 @@ let create_node = function (node_type, node_idx) {
     const Slider = require('./Slider');
     const Toggle = require('./Toggle');
     const ToggleGroup = require('./ToggleGroup');
+    const PageView = require('./PageView');
 
     let n = null;
     if (node_type === 'cc.Node')
@@ -264,6 +281,8 @@ let create_node = function (node_type, node_idx) {
         n = new Toggle(state._json_data[node_idx]);
     else if (node_type === 'cc.ToggleGroup')
         n = new ToggleGroup(state._json_data[node_idx]);
+    else if (node_type === 'cc.PageView')
+        n = new PageView(state._json_data[node_idx]);
 
     if (n != null) {
         n.parse_properties();
@@ -297,5 +316,7 @@ module.exports = {
     get_tiledmap_path_by_uuid: get_tiledmap_path_by_uuid,
     create_node: create_node,
     log: log,
-    remove_child_by_id: remove_child_by_id
+    remove_child_by_id: remove_child_by_id,
+    get_sprite_frame_json_by_uuid: get_sprite_frame_json_by_uuid,
+    is_sprite_frame_from_texture_packer: is_sprite_frame_from_texture_packer
 }

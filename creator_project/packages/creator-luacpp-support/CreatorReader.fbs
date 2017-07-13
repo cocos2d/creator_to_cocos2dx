@@ -19,7 +19,7 @@ enum LabelOverflowType:byte {None, Clamp, Shrink, ResizeHeight, Toggle}
 
 // New nodes should be added at the end of the union
 // no more than 255 union objects can be added
-union AnyNode {Scene, Sprite, Label, Particle, TileMap, Node, Button, ProgressBar, ScrollView, CreatorScene, EditBox, RichText, SpineSkeleton, VideoPlayer, WebView, Slider, Toggle, ToggleGroup}
+union AnyNode {Scene, Sprite, Label, Particle, TileMap, Node, Button, ProgressBar, ScrollView, CreatorScene, EditBox, RichText, SpineSkeleton, VideoPlayer, WebView, Slider, Toggle, ToggleGroup, PageView}
 
 table SceneGraph
 {
@@ -245,6 +245,42 @@ table ToggleGroup
     node:Node;
     allowSwitchOff:bool;
     toggles:[Toggle];
+}
+
+// Page View
+
+table PageViewIndicator
+{
+    positionAnchor:Vec2;
+    spriteFrame:string;
+    spriteFrameFromTP:bool;                    // indicates whether sprite frame from texture packer
+    space:float;
+    direction:int;
+}
+
+table PageViewPage
+{
+    node:Node;
+    spriteFrame:string;
+    spriteFrameFromTP:bool; 
+    scale9Enabled:bool;
+}
+
+table PageViewBackground
+{
+    spriteFrame:string;
+    spriteFrameFromTP:bool;
+}
+
+table PageView
+{
+    node:Node;
+    inertia:bool;
+    bounceEnabled:bool;
+    direction:ScrollViewDirection;
+    indicator:PageViewIndicator;
+    pages:[PageViewPage];
+    background:PageViewBackground;
 }
 
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-

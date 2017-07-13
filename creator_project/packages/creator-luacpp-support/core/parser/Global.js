@@ -32,4 +32,13 @@ class State {
     }
 }
 
+class SpriteTypes {
+
+}
+SpriteTypes.SIMPLE = 0;
+SpriteTypes.SLICED = 1;
+SpriteTypes.TILED = 2;
+SpriteTypes.FILLED = 3;
+
 module.exports.state = new State();
+module.exports.SpriteTypes = SpriteTypes;

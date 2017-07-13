@@ -27,6 +27,7 @@
 #include "AnimateClip.h"
 #include "RichtextStringVisitor.h"
 
+
 using namespace cocos2d;
 using namespace creator;
 using namespace creator::buffers;
@@ -287,6 +288,9 @@ cocos2d::Node* CreatorReader::createTree(const buffers::NodeTree* tree) const
             break;
         case buffers::AnyNode_ToggleGroup:
             node = createToggleGroup(static_cast<const buffers::ToggleGroup*>(buffer));
+            break;
+        case buffers::AnyNode_PageView:
+            node = createPageView(static_cast<const buffers::PageView*>(buffer));
             break;
     }
 
@@ -993,6 +997,79 @@ void CreatorReader::parseToggleGroup(cocos2d::ui::RadioButtonGroup* radioGroup, 
         
         radioGroup->addRadioButton(radioButton);
         radioGroup->addChild(radioButton);
+    }
+}
+
+cocos2d::ui::PageView* CreatorReader::createPageView(const buffers::PageView* pageViewBuffer) const
+{
+    auto pageview = cocos2d::ui::PageView::create();
+    parsePageView(pageview, pageViewBuffer);
+    return pageview;
+}
+
+void CreatorReader::parsePageView(cocos2d::ui::PageView* pageview, const buffers::PageView* pageViewBuffer) const
+{
+    const auto& nodeBuffer = pageViewBuffer->node();
+    parseNode(pageview, nodeBuffer);
+    
+    const auto& direction = pageViewBuffer->direction();
+    pageview->setDirection(static_cast<cocos2d::ui::ScrollView::Direction>(direction));
+    
+    const auto& inertia = pageViewBuffer->inertia();
+    pageview->setInertiaScrollEnabled(inertia);
+    
+    const auto& bounceEnabled = pageViewBuffer->bounceEnabled();
+    pageview->setBounceEnabled(bounceEnabled);
+    
+    // indicator
+    const auto& indicator = pageViewBuffer->indicator();
+    const auto ICSpriteFrame = indicator->spriteFrame();
+    if (ICSpriteFrame)
+    {
+        // should enable before loading texture
+        pageview->setIndicatorEnabled(true);
+        
+        const auto spriteFrameFromTP = indicator->spriteFrameFromTP();
+        const auto textureType = spriteFrameFromTP ? cocos2d::ui::Widget::TextureResType::PLIST : cocos2d::ui::Widget::TextureResType::LOCAL;
+        pageview->setIndicatorIndexNodesTexture(ICSpriteFrame->str(), textureType);
+        
+        const auto& space = indicator->space();
+        pageview->setIndicatorSpaceBetweenIndexNodes(space);
+        
+        const auto& positionAnchor = indicator->positionAnchor();
+        pageview->setIndicatorPositionAsAnchorPoint(cocos2d::Vec2(positionAnchor->x(), positionAnchor->y()));
+    }
+    
+    // pages
+    const auto& pages = pageViewBuffer->pages();
+    for (const auto& page : *pages)
+    {
+        auto imageView = cocos2d::ui::ImageView::create();
+        
+        const auto& spriteFrame = page->spriteFrame();
+        const auto& spriteFrameFromTP = page->spriteFrameFromTP();
+        const auto textureType = spriteFrameFromTP ? cocos2d::ui::Widget::TextureResType::PLIST : cocos2d::ui::Widget::TextureResType::LOCAL;
+        imageView->loadTexture(spriteFrame->str(), textureType);
+        
+        // should prase node after loading texture
+        const auto& imageViewNodeBuffer = page->node();
+        parseNode(imageView, imageViewNodeBuffer);
+        
+        const auto scale9Enabled = page->scale9Enabled();
+        imageView->setScale9Enabled(scale9Enabled);
+        
+        pageview->addPage(imageView);
+    }
+    
+    // background
+    const auto& background = pageViewBuffer->backgroud();
+    const auto& backgroundSpriteFrame = background->spriteFrame();
+    if (backgroundSpriteFrame)
+    {
+        const auto& spriteFrameFromTP = background->spriteFrameFromTP();
+        const auto textureType = spriteFrameFromTP ? cocos2d::ui::Widget::TextureResType::PLIST : cocos2d::ui::Widget::TextureResType::LOCAL;
+        pageview->setBackGroundImage(backgroundSpriteFrame->str(), textureType);
+        pageview->setBackGroundImageScale9Enabled(true);
     }
 }
 
