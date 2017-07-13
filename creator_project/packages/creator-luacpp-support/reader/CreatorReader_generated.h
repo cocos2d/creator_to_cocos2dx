@@ -48,6 +48,14 @@ struct Toggle;
 
 struct ToggleGroup;
 
+struct PageViewIndicator;
+
+struct PageViewPage;
+
+struct PageViewBackground;
+
+struct PageView;
+
 struct SpineSkeleton;
 
 struct AnimationRef;
@@ -283,12 +291,13 @@ enum AnyNode {
   AnyNode_Slider = 16,
   AnyNode_Toggle = 17,
   AnyNode_ToggleGroup = 18,
+  AnyNode_PageView = 19,
   AnyNode_MIN = AnyNode_NONE,
-  AnyNode_MAX = AnyNode_ToggleGroup
+  AnyNode_MAX = AnyNode_PageView
 };
 
 inline const char **EnumNamesAnyNode() {
-  static const char *names[] = { "NONE", "Scene", "Sprite", "Label", "Particle", "TileMap", "Node", "Button", "ProgressBar", "ScrollView", "CreatorScene", "EditBox", "RichText", "SpineSkeleton", "VideoPlayer", "WebView", "Slider", "Toggle", "ToggleGroup", nullptr };
+  static const char *names[] = { "NONE", "Scene", "Sprite", "Label", "Particle", "TileMap", "Node", "Button", "ProgressBar", "ScrollView", "CreatorScene", "EditBox", "RichText", "SpineSkeleton", "VideoPlayer", "WebView", "Slider", "Toggle", "ToggleGroup", "PageView", nullptr };
   return names;
 }
 
@@ -368,6 +377,10 @@ template<> struct AnyNodeTraits<Toggle> {
 
 template<> struct AnyNodeTraits<ToggleGroup> {
   static const AnyNode enum_value = AnyNode_ToggleGroup;
+};
+
+template<> struct AnyNodeTraits<PageView> {
+  static const AnyNode enum_value = AnyNode_PageView;
 };
 
 inline bool VerifyAnyNode(flatbuffers::Verifier &verifier, const void *union_obj, AnyNode type);
@@ -1996,6 +2009,257 @@ inline flatbuffers::Offset<ToggleGroup> CreateToggleGroupDirect(flatbuffers::Fla
   return CreateToggleGroup(_fbb, node, allowSwitchOff, toggles ? _fbb.CreateVector<flatbuffers::Offset<Toggle>>(*toggles) : 0);
 }
 
+struct PageViewIndicator FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum {
+    VT_POSITIONANCHOR = 4,
+    VT_SPRITEFRAME = 6,
+    VT_SPRITEFRAMEFROMTP = 8,
+    VT_SPACE = 10,
+    VT_DIRECTION = 12
+  };
+  const Vec2 *positionAnchor() const { return GetStruct<const Vec2 *>(VT_POSITIONANCHOR); }
+  const flatbuffers::String *spriteFrame() const { return GetPointer<const flatbuffers::String *>(VT_SPRITEFRAME); }
+  bool spriteFrameFromTP() const { return GetField<uint8_t>(VT_SPRITEFRAMEFROMTP, 0) != 0; }
+  float space() const { return GetField<float>(VT_SPACE, 0.0f); }
+  int32_t direction() const { return GetField<int32_t>(VT_DIRECTION, 0); }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<Vec2>(verifier, VT_POSITIONANCHOR) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_SPRITEFRAME) &&
+           verifier.Verify(spriteFrame()) &&
+           VerifyField<uint8_t>(verifier, VT_SPRITEFRAMEFROMTP) &&
+           VerifyField<float>(verifier, VT_SPACE) &&
+           VerifyField<int32_t>(verifier, VT_DIRECTION) &&
+           verifier.EndTable();
+  }
+};
+
+struct PageViewIndicatorBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_positionAnchor(const Vec2 *positionAnchor) { fbb_.AddStruct(PageViewIndicator::VT_POSITIONANCHOR, positionAnchor); }
+  void add_spriteFrame(flatbuffers::Offset<flatbuffers::String> spriteFrame) { fbb_.AddOffset(PageViewIndicator::VT_SPRITEFRAME, spriteFrame); }
+  void add_spriteFrameFromTP(bool spriteFrameFromTP) { fbb_.AddElement<uint8_t>(PageViewIndicator::VT_SPRITEFRAMEFROMTP, static_cast<uint8_t>(spriteFrameFromTP), 0); }
+  void add_space(float space) { fbb_.AddElement<float>(PageViewIndicator::VT_SPACE, space, 0.0f); }
+  void add_direction(int32_t direction) { fbb_.AddElement<int32_t>(PageViewIndicator::VT_DIRECTION, direction, 0); }
+  PageViewIndicatorBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
+  PageViewIndicatorBuilder &operator=(const PageViewIndicatorBuilder &);
+  flatbuffers::Offset<PageViewIndicator> Finish() {
+    auto o = flatbuffers::Offset<PageViewIndicator>(fbb_.EndTable(start_, 5));
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<PageViewIndicator> CreatePageViewIndicator(flatbuffers::FlatBufferBuilder &_fbb,
+    const Vec2 *positionAnchor = 0,
+    flatbuffers::Offset<flatbuffers::String> spriteFrame = 0,
+    bool spriteFrameFromTP = false,
+    float space = 0.0f,
+    int32_t direction = 0) {
+  PageViewIndicatorBuilder builder_(_fbb);
+  builder_.add_direction(direction);
+  builder_.add_space(space);
+  builder_.add_spriteFrame(spriteFrame);
+  builder_.add_positionAnchor(positionAnchor);
+  builder_.add_spriteFrameFromTP(spriteFrameFromTP);
+  return builder_.Finish();
+}
+
+inline flatbuffers::Offset<PageViewIndicator> CreatePageViewIndicatorDirect(flatbuffers::FlatBufferBuilder &_fbb,
+    const Vec2 *positionAnchor = 0,
+    const char *spriteFrame = nullptr,
+    bool spriteFrameFromTP = false,
+    float space = 0.0f,
+    int32_t direction = 0) {
+  return CreatePageViewIndicator(_fbb, positionAnchor, spriteFrame ? _fbb.CreateString(spriteFrame) : 0, spriteFrameFromTP, space, direction);
+}
+
+struct PageViewPage FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum {
+    VT_NODE = 4,
+    VT_SPRITEFRAME = 6,
+    VT_SPRITEFRAMEFROMTP = 8,
+    VT_SCALE9ENABLED = 10
+  };
+  const Node *node() const { return GetPointer<const Node *>(VT_NODE); }
+  const flatbuffers::String *spriteFrame() const { return GetPointer<const flatbuffers::String *>(VT_SPRITEFRAME); }
+  bool spriteFrameFromTP() const { return GetField<uint8_t>(VT_SPRITEFRAMEFROMTP, 0) != 0; }
+  bool scale9Enabled() const { return GetField<uint8_t>(VT_SCALE9ENABLED, 0) != 0; }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_NODE) &&
+           verifier.VerifyTable(node()) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_SPRITEFRAME) &&
+           verifier.Verify(spriteFrame()) &&
+           VerifyField<uint8_t>(verifier, VT_SPRITEFRAMEFROMTP) &&
+           VerifyField<uint8_t>(verifier, VT_SCALE9ENABLED) &&
+           verifier.EndTable();
+  }
+};
+
+struct PageViewPageBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_node(flatbuffers::Offset<Node> node) { fbb_.AddOffset(PageViewPage::VT_NODE, node); }
+  void add_spriteFrame(flatbuffers::Offset<flatbuffers::String> spriteFrame) { fbb_.AddOffset(PageViewPage::VT_SPRITEFRAME, spriteFrame); }
+  void add_spriteFrameFromTP(bool spriteFrameFromTP) { fbb_.AddElement<uint8_t>(PageViewPage::VT_SPRITEFRAMEFROMTP, static_cast<uint8_t>(spriteFrameFromTP), 0); }
+  void add_scale9Enabled(bool scale9Enabled) { fbb_.AddElement<uint8_t>(PageViewPage::VT_SCALE9ENABLED, static_cast<uint8_t>(scale9Enabled), 0); }
+  PageViewPageBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
+  PageViewPageBuilder &operator=(const PageViewPageBuilder &);
+  flatbuffers::Offset<PageViewPage> Finish() {
+    auto o = flatbuffers::Offset<PageViewPage>(fbb_.EndTable(start_, 4));
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<PageViewPage> CreatePageViewPage(flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<Node> node = 0,
+    flatbuffers::Offset<flatbuffers::String> spriteFrame = 0,
+    bool spriteFrameFromTP = false,
+    bool scale9Enabled = false) {
+  PageViewPageBuilder builder_(_fbb);
+  builder_.add_spriteFrame(spriteFrame);
+  builder_.add_node(node);
+  builder_.add_scale9Enabled(scale9Enabled);
+  builder_.add_spriteFrameFromTP(spriteFrameFromTP);
+  return builder_.Finish();
+}
+
+inline flatbuffers::Offset<PageViewPage> CreatePageViewPageDirect(flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<Node> node = 0,
+    const char *spriteFrame = nullptr,
+    bool spriteFrameFromTP = false,
+    bool scale9Enabled = false) {
+  return CreatePageViewPage(_fbb, node, spriteFrame ? _fbb.CreateString(spriteFrame) : 0, spriteFrameFromTP, scale9Enabled);
+}
+
+struct PageViewBackground FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum {
+    VT_SPRITEFRAME = 4,
+    VT_SPRITEFRAMEFROMTP = 6
+  };
+  const flatbuffers::String *spriteFrame() const { return GetPointer<const flatbuffers::String *>(VT_SPRITEFRAME); }
+  bool spriteFrameFromTP() const { return GetField<uint8_t>(VT_SPRITEFRAMEFROMTP, 0) != 0; }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_SPRITEFRAME) &&
+           verifier.Verify(spriteFrame()) &&
+           VerifyField<uint8_t>(verifier, VT_SPRITEFRAMEFROMTP) &&
+           verifier.EndTable();
+  }
+};
+
+struct PageViewBackgroundBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_spriteFrame(flatbuffers::Offset<flatbuffers::String> spriteFrame) { fbb_.AddOffset(PageViewBackground::VT_SPRITEFRAME, spriteFrame); }
+  void add_spriteFrameFromTP(bool spriteFrameFromTP) { fbb_.AddElement<uint8_t>(PageViewBackground::VT_SPRITEFRAMEFROMTP, static_cast<uint8_t>(spriteFrameFromTP), 0); }
+  PageViewBackgroundBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
+  PageViewBackgroundBuilder &operator=(const PageViewBackgroundBuilder &);
+  flatbuffers::Offset<PageViewBackground> Finish() {
+    auto o = flatbuffers::Offset<PageViewBackground>(fbb_.EndTable(start_, 2));
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<PageViewBackground> CreatePageViewBackground(flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> spriteFrame = 0,
+    bool spriteFrameFromTP = false) {
+  PageViewBackgroundBuilder builder_(_fbb);
+  builder_.add_spriteFrame(spriteFrame);
+  builder_.add_spriteFrameFromTP(spriteFrameFromTP);
+  return builder_.Finish();
+}
+
+inline flatbuffers::Offset<PageViewBackground> CreatePageViewBackgroundDirect(flatbuffers::FlatBufferBuilder &_fbb,
+    const char *spriteFrame = nullptr,
+    bool spriteFrameFromTP = false) {
+  return CreatePageViewBackground(_fbb, spriteFrame ? _fbb.CreateString(spriteFrame) : 0, spriteFrameFromTP);
+}
+
+struct PageView FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum {
+    VT_NODE = 4,
+    VT_INERTIA = 6,
+    VT_BOUNCEENABLED = 8,
+    VT_DIRECTION = 10,
+    VT_INDICATOR = 12,
+    VT_PAGES = 14,
+    VT_BACKGROUD = 16
+  };
+  const Node *node() const { return GetPointer<const Node *>(VT_NODE); }
+  bool inertia() const { return GetField<uint8_t>(VT_INERTIA, 0) != 0; }
+  bool bounceEnabled() const { return GetField<uint8_t>(VT_BOUNCEENABLED, 0) != 0; }
+  ScrollViewDirection direction() const { return static_cast<ScrollViewDirection>(GetField<int8_t>(VT_DIRECTION, 0)); }
+  const PageViewIndicator *indicator() const { return GetPointer<const PageViewIndicator *>(VT_INDICATOR); }
+  const flatbuffers::Vector<flatbuffers::Offset<PageViewPage>> *pages() const { return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<PageViewPage>> *>(VT_PAGES); }
+  const PageViewBackground *backgroud() const { return GetPointer<const PageViewBackground *>(VT_BACKGROUD); }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_NODE) &&
+           verifier.VerifyTable(node()) &&
+           VerifyField<uint8_t>(verifier, VT_INERTIA) &&
+           VerifyField<uint8_t>(verifier, VT_BOUNCEENABLED) &&
+           VerifyField<int8_t>(verifier, VT_DIRECTION) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_INDICATOR) &&
+           verifier.VerifyTable(indicator()) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_PAGES) &&
+           verifier.Verify(pages()) &&
+           verifier.VerifyVectorOfTables(pages()) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_BACKGROUD) &&
+           verifier.VerifyTable(backgroud()) &&
+           verifier.EndTable();
+  }
+};
+
+struct PageViewBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_node(flatbuffers::Offset<Node> node) { fbb_.AddOffset(PageView::VT_NODE, node); }
+  void add_inertia(bool inertia) { fbb_.AddElement<uint8_t>(PageView::VT_INERTIA, static_cast<uint8_t>(inertia), 0); }
+  void add_bounceEnabled(bool bounceEnabled) { fbb_.AddElement<uint8_t>(PageView::VT_BOUNCEENABLED, static_cast<uint8_t>(bounceEnabled), 0); }
+  void add_direction(ScrollViewDirection direction) { fbb_.AddElement<int8_t>(PageView::VT_DIRECTION, static_cast<int8_t>(direction), 0); }
+  void add_indicator(flatbuffers::Offset<PageViewIndicator> indicator) { fbb_.AddOffset(PageView::VT_INDICATOR, indicator); }
+  void add_pages(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<PageViewPage>>> pages) { fbb_.AddOffset(PageView::VT_PAGES, pages); }
+  void add_backgroud(flatbuffers::Offset<PageViewBackground> backgroud) { fbb_.AddOffset(PageView::VT_BACKGROUD, backgroud); }
+  PageViewBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
+  PageViewBuilder &operator=(const PageViewBuilder &);
+  flatbuffers::Offset<PageView> Finish() {
+    auto o = flatbuffers::Offset<PageView>(fbb_.EndTable(start_, 7));
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<PageView> CreatePageView(flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<Node> node = 0,
+    bool inertia = false,
+    bool bounceEnabled = false,
+    ScrollViewDirection direction = ScrollViewDirection_None,
+    flatbuffers::Offset<PageViewIndicator> indicator = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<PageViewPage>>> pages = 0,
+    flatbuffers::Offset<PageViewBackground> backgroud = 0) {
+  PageViewBuilder builder_(_fbb);
+  builder_.add_backgroud(backgroud);
+  builder_.add_pages(pages);
+  builder_.add_indicator(indicator);
+  builder_.add_node(node);
+  builder_.add_direction(direction);
+  builder_.add_bounceEnabled(bounceEnabled);
+  builder_.add_inertia(inertia);
+  return builder_.Finish();
+}
+
+inline flatbuffers::Offset<PageView> CreatePageViewDirect(flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<Node> node = 0,
+    bool inertia = false,
+    bool bounceEnabled = false,
+    ScrollViewDirection direction = ScrollViewDirection_None,
+    flatbuffers::Offset<PageViewIndicator> indicator = 0,
+    const std::vector<flatbuffers::Offset<PageViewPage>> *pages = nullptr,
+    flatbuffers::Offset<PageViewBackground> backgroud = 0) {
+  return CreatePageView(_fbb, node, inertia, bounceEnabled, direction, indicator, pages ? _fbb.CreateVector<flatbuffers::Offset<PageViewPage>>(*pages) : 0, backgroud);
+}
+
 struct SpineSkeleton FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   enum {
     VT_NODE = 4,
@@ -2989,6 +3253,7 @@ inline bool VerifyAnyNode(flatbuffers::Verifier &verifier, const void *union_obj
     case AnyNode_Slider: return verifier.VerifyTable(reinterpret_cast<const Slider *>(union_obj));
     case AnyNode_Toggle: return verifier.VerifyTable(reinterpret_cast<const Toggle *>(union_obj));
     case AnyNode_ToggleGroup: return verifier.VerifyTable(reinterpret_cast<const ToggleGroup *>(union_obj));
+    case AnyNode_PageView: return verifier.VerifyTable(reinterpret_cast<const PageView *>(union_obj));
     default: return false;
   }
 }

@@ -136,6 +136,9 @@ protected:
     cocos2d::ui::RadioButtonGroup* createToggleGroup(const buffers::ToggleGroup* toggleGroupBuffer) const;
     void parseToggleGroup(cocos2d::ui::RadioButtonGroup* radioGroup, const buffers::ToggleGroup* toggleGroupBuffer) const;
     
+    cocos2d::ui::PageView* createPageView(const buffers::PageView* pageViewBuffer) const;
+    void parsePageView(cocos2d::ui::PageView* pageview, const buffers::PageView* pageViewBuffer) const;
+    
     void setupSpriteFrames();
 
 

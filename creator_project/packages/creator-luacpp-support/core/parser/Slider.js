@@ -13,9 +13,6 @@ class Slider extends Node {
         this.parse_node_properties();
         this._properties = {node: this._properties};
 
-        // do nothing with `Background` child, just treat it as a child
-        // only handle `Handle` child
-
         let slider_component = Node.get_node_component_of_type(this._node_data, 'cc.Slider');
         this._properties.percent = slider_component._N$progress * 100;
 
