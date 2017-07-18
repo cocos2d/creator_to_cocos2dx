@@ -46,7 +46,7 @@ Supported nodes:
 * `Slider`
 * `Toggle`
 * `ToggleGroup`
-* `PageView`: background can not work correctly, should modify cocos2d-x PageView codes in future
+* `PageView`
 
 Supporting JavaScript scripts would be overkill. If you need JavaScript scripting
 support, just use Creator.
