@@ -26,6 +26,7 @@
 #include "AnimationClip.h"
 #include "AnimateClip.h"
 #include "RichtextStringVisitor.h"
+#include "ui/PageView.h"
 
 
 using namespace cocos2d;
@@ -1002,7 +1003,7 @@ void CreatorReader::parseToggleGroup(cocos2d::ui::RadioButtonGroup* radioGroup, 
 
 cocos2d::ui::PageView* CreatorReader::createPageView(const buffers::PageView* pageViewBuffer) const
 {
-    auto pageview = cocos2d::ui::PageView::create();
+    auto pageview = CreatorPageView::create();
     parsePageView(pageview, pageViewBuffer);
     return pageview;
 }
