@@ -3,6 +3,7 @@
 
 const std::string RichtextStringVisitor::COLOR_FLAG = "color=";
 const std::string RichtextStringVisitor::SIZE_FLAG = "size=";
+const std::string RichtextStringVisitor::IMG_FLAG = "img";
 
 const std::map<std::string, std::string> RichtextStringVisitor::COLOR_MAP = {
     {"white", "#ffffff"},
@@ -64,10 +65,15 @@ void RichtextStringVisitor::startElement(void *ctx, const char *name, const char
             _outputXML.append("=");
             
             _outputXML.append("\"");
-            std::string attributeValue = convertAttributeValue(attributeName, *atts++);
+            std::string attributeValue = convertAttributeValue(name, attributeName, *atts++);
             _outputXML.append(attributeValue);
             _outputXML.append("\"");
         }
+        // the resource type is a sprite frame name
+        // creator only supports sprite frame for img tag
+        if (name == RichtextStringVisitor::IMG_FLAG)
+            _outputXML.append(" type='1' ");
+        
         _outputXML.append(">");
         
         _addFontEndFlags.push(false);
@@ -126,10 +132,13 @@ std::string RichtextStringVisitor::convertAttributeName(const std::string& tagNa
         return attributeName;
 }
 
-std::string RichtextStringVisitor::convertAttributeValue(const std::string& attributeName, const std::string& attributeValue) const
+std::string RichtextStringVisitor::convertAttributeValue(const std::string& tagName, const std::string& attributeName, const std::string& attributeValue) const
 {
     if (attributeName == "color")
         return convertColorString2Hex(attributeValue);
-    else
-        return attributeValue;
+    
+    if (tagName == RichtextStringVisitor::IMG_FLAG && attributeName == "src")
+        return attributeValue + ".png";
+    
+    return attributeValue;
 }

@@ -19,10 +19,11 @@ private:
     
     std::string convertColorString2Hex(const std::string& colorString) const;
     std::string convertAttributeName(const std::string& tagName, const std::string& attributeName) const;
-    std::string convertAttributeValue(const std::string& attributeName, const std::string& attributeValue) const;
+    std::string convertAttributeValue(const std::string& tagName, const std::string& attributeName, const std::string& attributeValue) const;
     
     const static std::string COLOR_FLAG;
     const static std::string SIZE_FLAG;
+    const static std::string IMG_FLAG;
     const static std::map<std::string, std::string> COLOR_MAP;
     
     std::string _outputXML;
