@@ -37,7 +37,7 @@ Supported nodes:
 * `TiledMap`
 * `Button`
 * `ProgressBar`
-* `RichText`: img tag is not supported
+* `RichText`: need cocos2d-x 3.16+ to support img tag, refer to [this issue](https://github.com/cocos2d/creator_to_cocos2dx/issues/41) for detail information
 * `SpineSkeleton`
 * `Widget`: only supports `AlignOnce`
 * `Animations`: only supports linear animation
