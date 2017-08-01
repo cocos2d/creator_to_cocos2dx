@@ -16,10 +16,11 @@ enum EditBoxReturnType:byte {Default, Done, Send, Search, Go}
 enum EditBoxInputFlag:byte {Password, Sensitive, InitialCapsWord, InitialCapsSentence, InitialCapsAllCharacters, LowercaseAllCharacters}
 enum EditBoxInputMode:byte {Any, EmailAddress, Numeric, PhoneNumber, URL, Decime, SingleLine}
 enum LabelOverflowType:byte {None, Clamp, Shrink, ResizeHeight, Toggle}
+enum MaskType:byte {Rect, Ellipse, ImageStencil}
 
 // New nodes should be added at the end of the union
 // no more than 255 union objects can be added
-union AnyNode {Scene, Sprite, Label, Particle, TileMap, Node, Button, ProgressBar, ScrollView, CreatorScene, EditBox, RichText, SpineSkeleton, VideoPlayer, WebView, Slider, Toggle, ToggleGroup, PageView}
+union AnyNode {Scene, Sprite, Label, Particle, TileMap, Node, Button, ProgressBar, ScrollView, CreatorScene, EditBox, RichText, SpineSkeleton, VideoPlayer, WebView, Slider, Toggle, ToggleGroup, PageView, Mask}
 
 table SceneGraph
 {
@@ -245,6 +246,16 @@ table ToggleGroup
     node:Node;
     allowSwitchOff:bool;
     toggles:[Toggle];
+}
+
+table Mask
+{
+    node:Node;
+    type:MaskType;
+    inverted:bool;
+    segments:int;                              // used for Ellipse type
+    alphaThreshold:float;                      // used for ImageStencil type
+    spriteFrame:string;                        // used for ImageStencil type
 }
 
 // Page View

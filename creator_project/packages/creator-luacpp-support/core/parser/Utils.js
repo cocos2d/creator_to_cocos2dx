@@ -245,6 +245,7 @@ let create_node = function (node_type, node_idx) {
     const Toggle = require('./Toggle');
     const ToggleGroup = require('./ToggleGroup');
     const PageView = require('./PageView');
+    const Mask = require('./Mask');
 
     let n = null;
     if (node_type === 'cc.Node')
@@ -283,6 +284,8 @@ let create_node = function (node_type, node_idx) {
         n = new ToggleGroup(state._json_data[node_idx]);
     else if (node_type === 'cc.PageView')
         n = new PageView(state._json_data[node_idx]);
+    else if (node_type === 'cc.Mask')
+        n = new Mask(state._json_data[node_idx]);
 
     if (n != null) {
         n.parse_properties();

@@ -139,6 +139,9 @@ protected:
     cocos2d::ui::PageView* createPageView(const buffers::PageView* pageViewBuffer) const;
     void parsePageView(cocos2d::ui::PageView* pageview, const buffers::PageView* pageViewBuffer) const;
     
+    cocos2d::ClippingNode* createMask(const buffers::Mask* maskBuffer) const;
+    void parseMask(cocos2d::ClippingNode* mask, const buffers::Mask* maskBuffer) const;
+    
     void setupSpriteFrames();
 
 

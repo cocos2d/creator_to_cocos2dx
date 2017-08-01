@@ -48,6 +48,8 @@ struct Toggle;
 
 struct ToggleGroup;
 
+struct Mask;
+
 struct PageViewIndicator;
 
 struct PageViewPage;
@@ -271,6 +273,21 @@ inline const char **EnumNamesLabelOverflowType() {
 
 inline const char *EnumNameLabelOverflowType(LabelOverflowType e) { return EnumNamesLabelOverflowType()[static_cast<int>(e)]; }
 
+enum MaskType {
+  MaskType_Rect = 0,
+  MaskType_Ellipse = 1,
+  MaskType_ImageStencil = 2,
+  MaskType_MIN = MaskType_Rect,
+  MaskType_MAX = MaskType_ImageStencil
+};
+
+inline const char **EnumNamesMaskType() {
+  static const char *names[] = { "Rect", "Ellipse", "ImageStencil", nullptr };
+  return names;
+}
+
+inline const char *EnumNameMaskType(MaskType e) { return EnumNamesMaskType()[static_cast<int>(e)]; }
+
 enum AnyNode {
   AnyNode_NONE = 0,
   AnyNode_Scene = 1,
@@ -292,12 +309,13 @@ enum AnyNode {
   AnyNode_Toggle = 17,
   AnyNode_ToggleGroup = 18,
   AnyNode_PageView = 19,
+  AnyNode_Mask = 20,
   AnyNode_MIN = AnyNode_NONE,
-  AnyNode_MAX = AnyNode_PageView
+  AnyNode_MAX = AnyNode_Mask
 };
 
 inline const char **EnumNamesAnyNode() {
-  static const char *names[] = { "NONE", "Scene", "Sprite", "Label", "Particle", "TileMap", "Node", "Button", "ProgressBar", "ScrollView", "CreatorScene", "EditBox", "RichText", "SpineSkeleton", "VideoPlayer", "WebView", "Slider", "Toggle", "ToggleGroup", "PageView", nullptr };
+  static const char *names[] = { "NONE", "Scene", "Sprite", "Label", "Particle", "TileMap", "Node", "Button", "ProgressBar", "ScrollView", "CreatorScene", "EditBox", "RichText", "SpineSkeleton", "VideoPlayer", "WebView", "Slider", "Toggle", "ToggleGroup", "PageView", "Mask", nullptr };
   return names;
 }
 
@@ -381,6 +399,10 @@ template<> struct AnyNodeTraits<ToggleGroup> {
 
 template<> struct AnyNodeTraits<PageView> {
   static const AnyNode enum_value = AnyNode_PageView;
+};
+
+template<> struct AnyNodeTraits<Mask> {
+  static const AnyNode enum_value = AnyNode_Mask;
 };
 
 inline bool VerifyAnyNode(flatbuffers::Verifier &verifier, const void *union_obj, AnyNode type);
@@ -2009,6 +2031,79 @@ inline flatbuffers::Offset<ToggleGroup> CreateToggleGroupDirect(flatbuffers::Fla
   return CreateToggleGroup(_fbb, node, allowSwitchOff, toggles ? _fbb.CreateVector<flatbuffers::Offset<Toggle>>(*toggles) : 0);
 }
 
+struct Mask FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum {
+    VT_NODE = 4,
+    VT_TYPE = 6,
+    VT_INVERTED = 8,
+    VT_SEGMENTS = 10,
+    VT_ALPHATHRESHOLD = 12,
+    VT_SPRITEFRAME = 14
+  };
+  const Node *node() const { return GetPointer<const Node *>(VT_NODE); }
+  MaskType type() const { return static_cast<MaskType>(GetField<int8_t>(VT_TYPE, 0)); }
+  bool inverted() const { return GetField<uint8_t>(VT_INVERTED, 0) != 0; }
+  int32_t segments() const { return GetField<int32_t>(VT_SEGMENTS, 0); }
+  float alphaThreshold() const { return GetField<float>(VT_ALPHATHRESHOLD, 0.0f); }
+  const flatbuffers::String *spriteFrame() const { return GetPointer<const flatbuffers::String *>(VT_SPRITEFRAME); }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_NODE) &&
+           verifier.VerifyTable(node()) &&
+           VerifyField<int8_t>(verifier, VT_TYPE) &&
+           VerifyField<uint8_t>(verifier, VT_INVERTED) &&
+           VerifyField<int32_t>(verifier, VT_SEGMENTS) &&
+           VerifyField<float>(verifier, VT_ALPHATHRESHOLD) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_SPRITEFRAME) &&
+           verifier.Verify(spriteFrame()) &&
+           verifier.EndTable();
+  }
+};
+
+struct MaskBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_node(flatbuffers::Offset<Node> node) { fbb_.AddOffset(Mask::VT_NODE, node); }
+  void add_type(MaskType type) { fbb_.AddElement<int8_t>(Mask::VT_TYPE, static_cast<int8_t>(type), 0); }
+  void add_inverted(bool inverted) { fbb_.AddElement<uint8_t>(Mask::VT_INVERTED, static_cast<uint8_t>(inverted), 0); }
+  void add_segments(int32_t segments) { fbb_.AddElement<int32_t>(Mask::VT_SEGMENTS, segments, 0); }
+  void add_alphaThreshold(float alphaThreshold) { fbb_.AddElement<float>(Mask::VT_ALPHATHRESHOLD, alphaThreshold, 0.0f); }
+  void add_spriteFrame(flatbuffers::Offset<flatbuffers::String> spriteFrame) { fbb_.AddOffset(Mask::VT_SPRITEFRAME, spriteFrame); }
+  MaskBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
+  MaskBuilder &operator=(const MaskBuilder &);
+  flatbuffers::Offset<Mask> Finish() {
+    auto o = flatbuffers::Offset<Mask>(fbb_.EndTable(start_, 6));
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<Mask> CreateMask(flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<Node> node = 0,
+    MaskType type = MaskType_Rect,
+    bool inverted = false,
+    int32_t segments = 0,
+    float alphaThreshold = 0.0f,
+    flatbuffers::Offset<flatbuffers::String> spriteFrame = 0) {
+  MaskBuilder builder_(_fbb);
+  builder_.add_spriteFrame(spriteFrame);
+  builder_.add_alphaThreshold(alphaThreshold);
+  builder_.add_segments(segments);
+  builder_.add_node(node);
+  builder_.add_inverted(inverted);
+  builder_.add_type(type);
+  return builder_.Finish();
+}
+
+inline flatbuffers::Offset<Mask> CreateMaskDirect(flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<Node> node = 0,
+    MaskType type = MaskType_Rect,
+    bool inverted = false,
+    int32_t segments = 0,
+    float alphaThreshold = 0.0f,
+    const char *spriteFrame = nullptr) {
+  return CreateMask(_fbb, node, type, inverted, segments, alphaThreshold, spriteFrame ? _fbb.CreateString(spriteFrame) : 0);
+}
+
 struct PageViewIndicator FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   enum {
     VT_POSITIONANCHOR = 4,
@@ -2185,7 +2280,7 @@ struct PageView FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     VT_DIRECTION = 10,
     VT_INDICATOR = 12,
     VT_PAGES = 14,
-    VT_BACKGROUD = 16
+    VT_BACKGROUND = 16
   };
   const Node *node() const { return GetPointer<const Node *>(VT_NODE); }
   bool inertia() const { return GetField<uint8_t>(VT_INERTIA, 0) != 0; }
@@ -2193,7 +2288,7 @@ struct PageView FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   ScrollViewDirection direction() const { return static_cast<ScrollViewDirection>(GetField<int8_t>(VT_DIRECTION, 0)); }
   const PageViewIndicator *indicator() const { return GetPointer<const PageViewIndicator *>(VT_INDICATOR); }
   const flatbuffers::Vector<flatbuffers::Offset<PageViewPage>> *pages() const { return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<PageViewPage>> *>(VT_PAGES); }
-  const PageViewBackground *backgroud() const { return GetPointer<const PageViewBackground *>(VT_BACKGROUD); }
+  const PageViewBackground *background() const { return GetPointer<const PageViewBackground *>(VT_BACKGROUND); }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<flatbuffers::uoffset_t>(verifier, VT_NODE) &&
@@ -2206,8 +2301,8 @@ struct PageView FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
            VerifyField<flatbuffers::uoffset_t>(verifier, VT_PAGES) &&
            verifier.Verify(pages()) &&
            verifier.VerifyVectorOfTables(pages()) &&
-           VerifyField<flatbuffers::uoffset_t>(verifier, VT_BACKGROUD) &&
-           verifier.VerifyTable(backgroud()) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_BACKGROUND) &&
+           verifier.VerifyTable(background()) &&
            verifier.EndTable();
   }
 };
@@ -2221,7 +2316,7 @@ struct PageViewBuilder {
   void add_direction(ScrollViewDirection direction) { fbb_.AddElement<int8_t>(PageView::VT_DIRECTION, static_cast<int8_t>(direction), 0); }
   void add_indicator(flatbuffers::Offset<PageViewIndicator> indicator) { fbb_.AddOffset(PageView::VT_INDICATOR, indicator); }
   void add_pages(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<PageViewPage>>> pages) { fbb_.AddOffset(PageView::VT_PAGES, pages); }
-  void add_backgroud(flatbuffers::Offset<PageViewBackground> backgroud) { fbb_.AddOffset(PageView::VT_BACKGROUD, backgroud); }
+  void add_background(flatbuffers::Offset<PageViewBackground> background) { fbb_.AddOffset(PageView::VT_BACKGROUND, background); }
   PageViewBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
   PageViewBuilder &operator=(const PageViewBuilder &);
   flatbuffers::Offset<PageView> Finish() {
@@ -2237,9 +2332,9 @@ inline flatbuffers::Offset<PageView> CreatePageView(flatbuffers::FlatBufferBuild
     ScrollViewDirection direction = ScrollViewDirection_None,
     flatbuffers::Offset<PageViewIndicator> indicator = 0,
     flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<PageViewPage>>> pages = 0,
-    flatbuffers::Offset<PageViewBackground> backgroud = 0) {
+    flatbuffers::Offset<PageViewBackground> background = 0) {
   PageViewBuilder builder_(_fbb);
-  builder_.add_backgroud(backgroud);
+  builder_.add_background(background);
   builder_.add_pages(pages);
   builder_.add_indicator(indicator);
   builder_.add_node(node);
@@ -2256,8 +2351,8 @@ inline flatbuffers::Offset<PageView> CreatePageViewDirect(flatbuffers::FlatBuffe
     ScrollViewDirection direction = ScrollViewDirection_None,
     flatbuffers::Offset<PageViewIndicator> indicator = 0,
     const std::vector<flatbuffers::Offset<PageViewPage>> *pages = nullptr,
-    flatbuffers::Offset<PageViewBackground> backgroud = 0) {
-  return CreatePageView(_fbb, node, inertia, bounceEnabled, direction, indicator, pages ? _fbb.CreateVector<flatbuffers::Offset<PageViewPage>>(*pages) : 0, backgroud);
+    flatbuffers::Offset<PageViewBackground> background = 0) {
+  return CreatePageView(_fbb, node, inertia, bounceEnabled, direction, indicator, pages ? _fbb.CreateVector<flatbuffers::Offset<PageViewPage>>(*pages) : 0, background);
 }
 
 struct SpineSkeleton FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
@@ -3254,6 +3349,7 @@ inline bool VerifyAnyNode(flatbuffers::Verifier &verifier, const void *union_obj
     case AnyNode_Toggle: return verifier.VerifyTable(reinterpret_cast<const Toggle *>(union_obj));
     case AnyNode_ToggleGroup: return verifier.VerifyTable(reinterpret_cast<const ToggleGroup *>(union_obj));
     case AnyNode_PageView: return verifier.VerifyTable(reinterpret_cast<const PageView *>(union_obj));
+    case AnyNode_Mask: return verifier.VerifyTable(reinterpret_cast<const Mask *>(union_obj));
     default: return false;
   }
 }
