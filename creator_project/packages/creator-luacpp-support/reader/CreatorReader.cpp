@@ -293,6 +293,9 @@ cocos2d::Node* CreatorReader::createTree(const buffers::NodeTree* tree) const
         case buffers::AnyNode_PageView:
             node = createPageView(static_cast<const buffers::PageView*>(buffer));
             break;
+        case buffers::AnyNode_Mask:
+            node = createMask(static_cast<const buffers::Mask*>(buffer));
+            break;
     }
 
     // recursively add its children
@@ -1063,7 +1066,7 @@ void CreatorReader::parsePageView(cocos2d::ui::PageView* pageview, const buffers
     }
     
     // background
-    const auto& background = pageViewBuffer->backgroud();
+    const auto& background = pageViewBuffer->background();
     const auto& backgroundSpriteFrame = background->spriteFrame();
     if (backgroundSpriteFrame)
     {
@@ -1071,6 +1074,59 @@ void CreatorReader::parsePageView(cocos2d::ui::PageView* pageview, const buffers
         const auto textureType = spriteFrameFromTP ? cocos2d::ui::Widget::TextureResType::PLIST : cocos2d::ui::Widget::TextureResType::LOCAL;
         pageview->setBackGroundImage(backgroundSpriteFrame->str(), textureType);
         pageview->setBackGroundImageScale9Enabled(true);
+    }
+}
+
+cocos2d::ClippingNode* CreatorReader::createMask(const buffers::Mask* maskBuffer) const
+{
+    auto mask = cocos2d::ClippingNode::create();
+    parseMask(mask, maskBuffer);
+    return mask;
+}
+
+void CreatorReader::parseMask(cocos2d::ClippingNode* mask, const buffers::Mask* maskBuffer) const
+{
+    const auto& nodeBuffer = maskBuffer->node();
+    parseNode(mask, nodeBuffer);
+    
+    const auto& inverted = maskBuffer->inverted();
+    mask->setInverted(inverted);
+    
+    const auto& type = maskBuffer->type();
+    if (MaskType::MaskType_Rect == type)
+    {
+        const auto size = mask->getContentSize();
+        cocos2d::Vec2 rectangle[4] = {
+            {0, 0},
+            {size.width, 0 },
+            {size.width, size.height},
+            {0, size.height}
+        };
+        auto stencil = cocos2d::DrawNode::create();
+        stencil->drawPolygon(rectangle, 4, cocos2d::Color4F::WHITE, 1, cocos2d::Color4F::WHITE);
+        
+        mask->setStencil(stencil);
+    }
+    else if (MaskType::MaskType_Ellipse == type)
+    {
+        const auto size = mask->getContentSize();
+        const auto r = MIN(size.width, size.height) / 2;
+        const auto& segments = maskBuffer->segments();
+        auto stencil = cocos2d::DrawNode::create();
+        stencil->drawSolidCircle(cocos2d::Vec2(r, r), r, M_PI * 2, segments, cocos2d::Color4F::WHITE);
+        
+        mask->setStencil(stencil);
+    }
+    else
+    {
+        // image stencil type
+        const auto& alphaThreshold = maskBuffer->alphaThreshold();
+        const auto& spriteFrame = maskBuffer->spriteFrame();
+        auto stencil = cocos2d::Sprite::createWithSpriteFrameName(spriteFrame->c_str());
+        stencil->setContentSize(mask->getContentSize());
+        
+        mask->setStencil(stencil);
+        mask->setAlphaThreshold(alphaThreshold);
     }
 }
 

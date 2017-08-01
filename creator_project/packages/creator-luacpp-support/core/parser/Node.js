@@ -35,7 +35,7 @@ class Node {
             'cc.EditBox', 'cc.Label', 'sp.Skeleton', 'cc.Sprite',
             'cc.ParticleSystem', 'cc.TiledMap', 'cc.Canvas', 'cc.RichText',
             'cc.VideoPlayer', 'cc.WebView', 'cc.Slider', 'cc.Toggle', 'cc.ToggleGroup',
-            'cc.PageView'];
+            'cc.PageView', 'cc.Mask'];
         let node_components = components.map(x => x.__type__);
         // special case for object without components
         if (node_components.length == 0)
