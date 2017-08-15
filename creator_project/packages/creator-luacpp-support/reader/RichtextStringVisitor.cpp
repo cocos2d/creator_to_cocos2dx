@@ -1,6 +1,8 @@
 
 #include "RichtextStringVisitor.h"
 
+NS_CCR_BEGIN
+
 const std::string RichtextStringVisitor::COLOR_FLAG = "color=";
 const std::string RichtextStringVisitor::SIZE_FLAG = "size=";
 const std::string RichtextStringVisitor::IMG_FLAG = "img";
@@ -142,3 +144,5 @@ std::string RichtextStringVisitor::convertAttributeValue(const std::string& tagN
     
     return attributeValue;
 }
+
+NS_CCR_END

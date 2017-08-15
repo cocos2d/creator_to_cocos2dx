@@ -17,6 +17,7 @@ enum EditBoxInputFlag:byte {Password, Sensitive, InitialCapsWord, InitialCapsSen
 enum EditBoxInputMode:byte {Any, EmailAddress, Numeric, PhoneNumber, URL, Decime, SingleLine}
 enum LabelOverflowType:byte {None, Clamp, Shrink, ResizeHeight, Toggle}
 enum MaskType:byte {Rect, Ellipse, ImageStencil}
+enum ColliderType:byte {BoxCollider, PolygonCollider, CircleCollider}
 
 // New nodes should be added at the end of the union
 // no more than 255 union objects can be added
@@ -34,6 +35,15 @@ table SceneGraph
 
     // Frames needed for the Scene
     spriteFrames:[SpriteFrame];
+
+    // flabuffer doesn't support array of array
+    // so use a new table to store the values
+    collisionMatrix:[CollisionLine];
+}
+
+table CollisionLine
+{
+    value:[bool];
 }
 
 table NodeTree
@@ -90,6 +100,8 @@ table Node
     skewY:float = 0;
     tag:int = 0;
     anim:AnimationRef;
+    colliders:[Collider];
+    groupIndex:int;
 }
 
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -318,6 +330,15 @@ table AnimationRef
     clips:[AnimationClip];
     playOnLoad:bool;
     defaultClip:string;
+}
+
+table Collider
+{
+    type:ColliderType;
+    offset:Vec2;
+    size:Size;                      // BoxCollider
+    points:[Vec2];                  // PolygonCollider
+    radius:float;                   // CircleCollider
 }
 
 

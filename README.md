@@ -8,6 +8,7 @@
   - [How to generate the needed files](#how-to-generate-the-needed-files)
   - [Using it from C++](#using-it-from-c)
   - [Using it from lua](#using-it-from-lua)
+  - [How to use CollisionManager](#how-to-use-collisionmanager)
   - [Use the plugin in your Cocos Creator project](#use-the-plugin-in-your-cocos-creator-project)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -48,6 +49,7 @@ Supported nodes:
 * `ToggleGroup`
 * `PageView`
 * `Mask`
+* `Collider`
 
 Supporting JavaScript scripts would be overkill. If you need JavaScript scripting
 support, just use Creator.
@@ -108,6 +110,34 @@ creatorReader:setup()
 local scene = creatorReader:getSceneGraph()
 cc.Director:getInstance():replaceScene(scene)
 ```
+
+## How to use CollisionManager
+
+`CollisionManager` is used to manage collisions. Every scene has an instance of `CollisionManager`. You can use it like this to listen collision events:
+
+```c++
+creator::CreatorReader* reader = creator::CreatorReader::createWithFilename("creator/CreatorSprites.ccreator");
+
+// will create the needed spritesheets + design resolution
+reader->setup();
+
+// get the scene graph
+Scene* scene = reader->getSceneGraph();
+
+auto collisionManager = scene->getCollisionManager();
+collisionManager->registerCollitionCallback([=](creator::Contract::CollisionType type,
+                                                             creator::Collider* collider1,
+                                                             creator::Collider* collider2) {
+        if (type == creator::Contract::CollisionType::ENTER)
+            colliderManager->enableDebugDraw(true);
+        
+        if (type == creator::Contract::CollisionType::EXIT)
+            colliderManager->enableDebugDraw(false);
+        
+}, "");
+```
+
+More features of `CollisionManager` can refer to [the header file](https://github.com/cocos2d/creator_to_cocos2dx/tree/master/creator_project/packages/creator-luacpp-support/reader/Collider/ColliderManager.h).
 
 ## Use the plugin in your Cocos Creator project
 

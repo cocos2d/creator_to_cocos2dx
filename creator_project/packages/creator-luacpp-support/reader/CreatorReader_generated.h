@@ -10,6 +10,8 @@ namespace buffers {
 
 struct SceneGraph;
 
+struct CollisionLine;
+
 struct NodeTree;
 
 struct SpriteFrame;
@@ -61,6 +63,8 @@ struct PageView;
 struct SpineSkeleton;
 
 struct AnimationRef;
+
+struct Collider;
 
 struct AnimationClip;
 
@@ -287,6 +291,21 @@ inline const char **EnumNamesMaskType() {
 }
 
 inline const char *EnumNameMaskType(MaskType e) { return EnumNamesMaskType()[static_cast<int>(e)]; }
+
+enum ColliderType {
+  ColliderType_BoxCollider = 0,
+  ColliderType_PolygonCollider = 1,
+  ColliderType_CircleCollider = 2,
+  ColliderType_MIN = ColliderType_BoxCollider,
+  ColliderType_MAX = ColliderType_CircleCollider
+};
+
+inline const char **EnumNamesColliderType() {
+  static const char *names[] = { "BoxCollider", "PolygonCollider", "CircleCollider", nullptr };
+  return names;
+}
+
+inline const char *EnumNameColliderType(ColliderType e) { return EnumNamesColliderType()[static_cast<int>(e)]; }
 
 enum AnyNode {
   AnyNode_NONE = 0,
@@ -541,7 +560,8 @@ struct SceneGraph FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     VT_DESIGNRESOLUTION = 8,
     VT_RESOLUTIONFITWIDTH = 10,
     VT_RESOLUTIONFITHEIGHT = 12,
-    VT_SPRITEFRAMES = 14
+    VT_SPRITEFRAMES = 14,
+    VT_COLLISIONMATRIX = 16
   };
   const flatbuffers::String *version() const { return GetPointer<const flatbuffers::String *>(VT_VERSION); }
   const NodeTree *root() const { return GetPointer<const NodeTree *>(VT_ROOT); }
@@ -549,6 +569,7 @@ struct SceneGraph FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   bool resolutionFitWidth() const { return GetField<uint8_t>(VT_RESOLUTIONFITWIDTH, 0) != 0; }
   bool resolutionFitHeight() const { return GetField<uint8_t>(VT_RESOLUTIONFITHEIGHT, 0) != 0; }
   const flatbuffers::Vector<flatbuffers::Offset<SpriteFrame>> *spriteFrames() const { return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<SpriteFrame>> *>(VT_SPRITEFRAMES); }
+  const flatbuffers::Vector<flatbuffers::Offset<CollisionLine>> *collisionMatrix() const { return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<CollisionLine>> *>(VT_COLLISIONMATRIX); }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<flatbuffers::uoffset_t>(verifier, VT_VERSION) &&
@@ -561,6 +582,9 @@ struct SceneGraph FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
            VerifyField<flatbuffers::uoffset_t>(verifier, VT_SPRITEFRAMES) &&
            verifier.Verify(spriteFrames()) &&
            verifier.VerifyVectorOfTables(spriteFrames()) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_COLLISIONMATRIX) &&
+           verifier.Verify(collisionMatrix()) &&
+           verifier.VerifyVectorOfTables(collisionMatrix()) &&
            verifier.EndTable();
   }
 };
@@ -574,10 +598,11 @@ struct SceneGraphBuilder {
   void add_resolutionFitWidth(bool resolutionFitWidth) { fbb_.AddElement<uint8_t>(SceneGraph::VT_RESOLUTIONFITWIDTH, static_cast<uint8_t>(resolutionFitWidth), 0); }
   void add_resolutionFitHeight(bool resolutionFitHeight) { fbb_.AddElement<uint8_t>(SceneGraph::VT_RESOLUTIONFITHEIGHT, static_cast<uint8_t>(resolutionFitHeight), 0); }
   void add_spriteFrames(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<SpriteFrame>>> spriteFrames) { fbb_.AddOffset(SceneGraph::VT_SPRITEFRAMES, spriteFrames); }
+  void add_collisionMatrix(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<CollisionLine>>> collisionMatrix) { fbb_.AddOffset(SceneGraph::VT_COLLISIONMATRIX, collisionMatrix); }
   SceneGraphBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
   SceneGraphBuilder &operator=(const SceneGraphBuilder &);
   flatbuffers::Offset<SceneGraph> Finish() {
-    auto o = flatbuffers::Offset<SceneGraph>(fbb_.EndTable(start_, 6));
+    auto o = flatbuffers::Offset<SceneGraph>(fbb_.EndTable(start_, 7));
     return o;
   }
 };
@@ -588,8 +613,10 @@ inline flatbuffers::Offset<SceneGraph> CreateSceneGraph(flatbuffers::FlatBufferB
     const Size *designResolution = 0,
     bool resolutionFitWidth = false,
     bool resolutionFitHeight = false,
-    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<SpriteFrame>>> spriteFrames = 0) {
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<SpriteFrame>>> spriteFrames = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<CollisionLine>>> collisionMatrix = 0) {
   SceneGraphBuilder builder_(_fbb);
+  builder_.add_collisionMatrix(collisionMatrix);
   builder_.add_spriteFrames(spriteFrames);
   builder_.add_designResolution(designResolution);
   builder_.add_root(root);
@@ -605,8 +632,46 @@ inline flatbuffers::Offset<SceneGraph> CreateSceneGraphDirect(flatbuffers::FlatB
     const Size *designResolution = 0,
     bool resolutionFitWidth = false,
     bool resolutionFitHeight = false,
-    const std::vector<flatbuffers::Offset<SpriteFrame>> *spriteFrames = nullptr) {
-  return CreateSceneGraph(_fbb, version ? _fbb.CreateString(version) : 0, root, designResolution, resolutionFitWidth, resolutionFitHeight, spriteFrames ? _fbb.CreateVector<flatbuffers::Offset<SpriteFrame>>(*spriteFrames) : 0);
+    const std::vector<flatbuffers::Offset<SpriteFrame>> *spriteFrames = nullptr,
+    const std::vector<flatbuffers::Offset<CollisionLine>> *collisionMatrix = nullptr) {
+  return CreateSceneGraph(_fbb, version ? _fbb.CreateString(version) : 0, root, designResolution, resolutionFitWidth, resolutionFitHeight, spriteFrames ? _fbb.CreateVector<flatbuffers::Offset<SpriteFrame>>(*spriteFrames) : 0, collisionMatrix ? _fbb.CreateVector<flatbuffers::Offset<CollisionLine>>(*collisionMatrix) : 0);
+}
+
+struct CollisionLine FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum {
+    VT_VALUE = 4
+  };
+  const flatbuffers::Vector<uint8_t> *value() const { return GetPointer<const flatbuffers::Vector<uint8_t> *>(VT_VALUE); }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_VALUE) &&
+           verifier.Verify(value()) &&
+           verifier.EndTable();
+  }
+};
+
+struct CollisionLineBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_value(flatbuffers::Offset<flatbuffers::Vector<uint8_t>> value) { fbb_.AddOffset(CollisionLine::VT_VALUE, value); }
+  CollisionLineBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
+  CollisionLineBuilder &operator=(const CollisionLineBuilder &);
+  flatbuffers::Offset<CollisionLine> Finish() {
+    auto o = flatbuffers::Offset<CollisionLine>(fbb_.EndTable(start_, 1));
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<CollisionLine> CreateCollisionLine(flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::Vector<uint8_t>> value = 0) {
+  CollisionLineBuilder builder_(_fbb);
+  builder_.add_value(value);
+  return builder_.Finish();
+}
+
+inline flatbuffers::Offset<CollisionLine> CreateCollisionLineDirect(flatbuffers::FlatBufferBuilder &_fbb,
+    const std::vector<uint8_t> *value = nullptr) {
+  return CreateCollisionLine(_fbb, value ? _fbb.CreateVector<uint8_t>(*value) : 0);
 }
 
 struct NodeTree FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
@@ -799,7 +864,9 @@ struct Node FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     VT_SKEWX = 34,
     VT_SKEWY = 36,
     VT_TAG = 38,
-    VT_ANIM = 40
+    VT_ANIM = 40,
+    VT_COLLIDERS = 42,
+    VT_GROUPINDEX = 44
   };
   const Size *contentSize() const { return GetStruct<const Size *>(VT_CONTENTSIZE); }
   bool enabled() const { return GetField<uint8_t>(VT_ENABLED, 1) != 0; }
@@ -820,6 +887,8 @@ struct Node FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   float skewY() const { return GetField<float>(VT_SKEWY, 0.0f); }
   int32_t tag() const { return GetField<int32_t>(VT_TAG, 0); }
   const AnimationRef *anim() const { return GetPointer<const AnimationRef *>(VT_ANIM); }
+  const flatbuffers::Vector<flatbuffers::Offset<Collider>> *colliders() const { return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<Collider>> *>(VT_COLLIDERS); }
+  int32_t groupIndex() const { return GetField<int32_t>(VT_GROUPINDEX, 0); }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<Size>(verifier, VT_CONTENTSIZE) &&
@@ -843,6 +912,10 @@ struct Node FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
            VerifyField<int32_t>(verifier, VT_TAG) &&
            VerifyField<flatbuffers::uoffset_t>(verifier, VT_ANIM) &&
            verifier.VerifyTable(anim()) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_COLLIDERS) &&
+           verifier.Verify(colliders()) &&
+           verifier.VerifyVectorOfTables(colliders()) &&
+           VerifyField<int32_t>(verifier, VT_GROUPINDEX) &&
            verifier.EndTable();
   }
 };
@@ -869,10 +942,12 @@ struct NodeBuilder {
   void add_skewY(float skewY) { fbb_.AddElement<float>(Node::VT_SKEWY, skewY, 0.0f); }
   void add_tag(int32_t tag) { fbb_.AddElement<int32_t>(Node::VT_TAG, tag, 0); }
   void add_anim(flatbuffers::Offset<AnimationRef> anim) { fbb_.AddOffset(Node::VT_ANIM, anim); }
+  void add_colliders(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Collider>>> colliders) { fbb_.AddOffset(Node::VT_COLLIDERS, colliders); }
+  void add_groupIndex(int32_t groupIndex) { fbb_.AddElement<int32_t>(Node::VT_GROUPINDEX, groupIndex, 0); }
   NodeBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
   NodeBuilder &operator=(const NodeBuilder &);
   flatbuffers::Offset<Node> Finish() {
-    auto o = flatbuffers::Offset<Node>(fbb_.EndTable(start_, 19));
+    auto o = flatbuffers::Offset<Node>(fbb_.EndTable(start_, 21));
     return o;
   }
 };
@@ -896,8 +971,12 @@ inline flatbuffers::Offset<Node> CreateNode(flatbuffers::FlatBufferBuilder &_fbb
     float skewX = 0.0f,
     float skewY = 0.0f,
     int32_t tag = 0,
-    flatbuffers::Offset<AnimationRef> anim = 0) {
+    flatbuffers::Offset<AnimationRef> anim = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Collider>>> colliders = 0,
+    int32_t groupIndex = 0) {
   NodeBuilder builder_(_fbb);
+  builder_.add_groupIndex(groupIndex);
+  builder_.add_colliders(colliders);
   builder_.add_anim(anim);
   builder_.add_tag(tag);
   builder_.add_skewY(skewY);
@@ -939,8 +1018,10 @@ inline flatbuffers::Offset<Node> CreateNodeDirect(flatbuffers::FlatBufferBuilder
     float skewX = 0.0f,
     float skewY = 0.0f,
     int32_t tag = 0,
-    flatbuffers::Offset<AnimationRef> anim = 0) {
-  return CreateNode(_fbb, contentSize, enabled, name ? _fbb.CreateString(name) : 0, anchorPoint, cascadeOpacityEnabled, color, globalZOrder, localZOrder, opacity, opacityModifyRGB, position, rotationSkewX, rotationSkewY, scaleX, scaleY, skewX, skewY, tag, anim);
+    flatbuffers::Offset<AnimationRef> anim = 0,
+    const std::vector<flatbuffers::Offset<Collider>> *colliders = nullptr,
+    int32_t groupIndex = 0) {
+  return CreateNode(_fbb, contentSize, enabled, name ? _fbb.CreateString(name) : 0, anchorPoint, cascadeOpacityEnabled, color, globalZOrder, localZOrder, opacity, opacityModifyRGB, position, rotationSkewX, rotationSkewY, scaleX, scaleY, skewX, skewY, tag, anim, colliders ? _fbb.CreateVector<flatbuffers::Offset<Collider>>(*colliders) : 0, groupIndex);
 }
 
 struct Sprite FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
@@ -2510,6 +2591,71 @@ inline flatbuffers::Offset<AnimationRef> CreateAnimationRefDirect(flatbuffers::F
     bool playOnLoad = false,
     const char *defaultClip = nullptr) {
   return CreateAnimationRef(_fbb, clips ? _fbb.CreateVector<flatbuffers::Offset<AnimationClip>>(*clips) : 0, playOnLoad, defaultClip ? _fbb.CreateString(defaultClip) : 0);
+}
+
+struct Collider FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum {
+    VT_TYPE = 4,
+    VT_OFFSET = 6,
+    VT_SIZE = 8,
+    VT_POINTS = 10,
+    VT_RADIUS = 12
+  };
+  ColliderType type() const { return static_cast<ColliderType>(GetField<int8_t>(VT_TYPE, 0)); }
+  const Vec2 *offset() const { return GetStruct<const Vec2 *>(VT_OFFSET); }
+  const Size *size() const { return GetStruct<const Size *>(VT_SIZE); }
+  const flatbuffers::Vector<const Vec2 *> *points() const { return GetPointer<const flatbuffers::Vector<const Vec2 *> *>(VT_POINTS); }
+  float radius() const { return GetField<float>(VT_RADIUS, 0.0f); }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<int8_t>(verifier, VT_TYPE) &&
+           VerifyField<Vec2>(verifier, VT_OFFSET) &&
+           VerifyField<Size>(verifier, VT_SIZE) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_POINTS) &&
+           verifier.Verify(points()) &&
+           VerifyField<float>(verifier, VT_RADIUS) &&
+           verifier.EndTable();
+  }
+};
+
+struct ColliderBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_type(ColliderType type) { fbb_.AddElement<int8_t>(Collider::VT_TYPE, static_cast<int8_t>(type), 0); }
+  void add_offset(const Vec2 *offset) { fbb_.AddStruct(Collider::VT_OFFSET, offset); }
+  void add_size(const Size *size) { fbb_.AddStruct(Collider::VT_SIZE, size); }
+  void add_points(flatbuffers::Offset<flatbuffers::Vector<const Vec2 *>> points) { fbb_.AddOffset(Collider::VT_POINTS, points); }
+  void add_radius(float radius) { fbb_.AddElement<float>(Collider::VT_RADIUS, radius, 0.0f); }
+  ColliderBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
+  ColliderBuilder &operator=(const ColliderBuilder &);
+  flatbuffers::Offset<Collider> Finish() {
+    auto o = flatbuffers::Offset<Collider>(fbb_.EndTable(start_, 5));
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<Collider> CreateCollider(flatbuffers::FlatBufferBuilder &_fbb,
+    ColliderType type = ColliderType_BoxCollider,
+    const Vec2 *offset = 0,
+    const Size *size = 0,
+    flatbuffers::Offset<flatbuffers::Vector<const Vec2 *>> points = 0,
+    float radius = 0.0f) {
+  ColliderBuilder builder_(_fbb);
+  builder_.add_radius(radius);
+  builder_.add_points(points);
+  builder_.add_size(size);
+  builder_.add_offset(offset);
+  builder_.add_type(type);
+  return builder_.Finish();
+}
+
+inline flatbuffers::Offset<Collider> CreateColliderDirect(flatbuffers::FlatBufferBuilder &_fbb,
+    ColliderType type = ColliderType_BoxCollider,
+    const Vec2 *offset = 0,
+    const Size *size = 0,
+    const std::vector<const Vec2 *> *points = nullptr,
+    float radius = 0.0f) {
+  return CreateCollider(_fbb, type, offset, size, points ? _fbb.CreateVector<const Vec2 *>(*points) : 0, radius);
 }
 
 struct AnimationClip FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {

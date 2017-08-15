@@ -21,23 +21,12 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
  ****************************************************************************/
-
 #pragma once
 
 #include "cocos2d.h"
 
+#include "Macros.h"
 #include "AnimationClipProperties.h"
-
-#ifdef __cplusplus
-#define NS_CCR_BEGIN                     namespace creator {
-#define NS_CCR_END                       }
-#define USING_NS_CCR                     using namespace creator
-#else
-#define NS_CC_BEGIN
-#define NS_CC_END
-#define USING_NS_CC
-#define NS_CC
-#endif
 
 NS_CCR_BEGIN
 

@@ -1,5 +1,5 @@
 /****************************************************************************
- Copyright (c) 2013-2017 Chukong Technologies Inc.
+ Copyright (c) 2017 Chukong Technologies Inc.
  
  http://www.cocos2d-x.org
  
@@ -24,11 +24,12 @@
 #pragma once
 
 #ifdef __cplusplus
-extern "C" {
+#define NS_CCR_BEGIN                     namespace creator {
+#define NS_CCR_END                       }
+#define USING_NS_CCR                     using namespace creator
+#else
+#define NS_CC_BEGIN
+#define NS_CC_END
+#define USING_NS_CC
+#define NS_CC
 #endif
-#include "tolua++.h"
-#ifdef __cplusplus
-}
-#endif
-
-TOLUA_API int register_all_creator_reader_manual(lua_State* L);

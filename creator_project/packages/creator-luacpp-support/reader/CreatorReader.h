@@ -21,27 +21,18 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
  ****************************************************************************/
-
 #pragma once
 
 #include "cocos2d.h"
+#include <spine/spine-cocos2dx.h>
+
 #include "ui/CocosGUI.h"
 #include "AnimationClip.h"
 #include "AnimationManager.h"
-#include <spine/spine-cocos2dx.h>
-
+#include "Macros.h"
 #include "CreatorReader_generated.h"
+#include "Collider/ColliderManager.h"
 
-#ifdef __cplusplus
-#define NS_CCR_BEGIN                     namespace creator {
-#define NS_CCR_END                       }
-#define USING_NS_CCR                     using namespace creator
-#else
-#define NS_CC_BEGIN
-#define NS_CC_END
-#define USING_NS_CC
-#define NS_CC
-#endif
 
 NS_CCR_BEGIN
 
@@ -61,7 +52,12 @@ public:
      @return The `AnimationManager` of the scene
      */
     AnimationManager* getAnimationManager() const;
-
+    
+    /**
+     Return the CollisionManager. It is added as a child of the Scene to make collision take effect.
+     @return The `AnimationManager` of the scene
+     */
+    ColliderManager* getColliderManager() const;
 
     /**
      Returns the FlatBuffers Schema version.
@@ -88,6 +84,7 @@ protected:
     cocos2d::Node* createNode(const buffers::Node* nodeBuffer) const;
     void parseNode(cocos2d::Node* node, const buffers::Node* nodeBuffer) const;
     void parseNodeAnimation(cocos2d::Node* node, const buffers::Node* nodeBuffer) const;
+    void parseColliders(cocos2d::Node* node, const buffers::Node* nodeBuffer) const;
 
     cocos2d::Sprite* createSprite(const buffers::Sprite* spriteBuffer) const;
     void parseSprite(cocos2d::Sprite* sprite, const buffers::Sprite* spriteBuffer) const;
@@ -143,6 +140,7 @@ protected:
     void parseMask(cocos2d::ClippingNode* mask, const buffers::Mask* maskBuffer) const;
     
     void setupSpriteFrames();
+    void setupCollisionMatrix();
 
 
     /** Creator uses parent's anchorpoint for child positioning.
@@ -156,6 +154,7 @@ protected:
     std::string _version;
     
     AnimationManager *_animationManager;
+    ColliderManager *_collisionManager;
 };
 
 NS_CCR_END
