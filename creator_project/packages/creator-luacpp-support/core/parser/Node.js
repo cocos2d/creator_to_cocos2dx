@@ -1,5 +1,6 @@
 const state = require('./Global').state;
 const Utils = require('./Utils');
+const Collider = require('./Collider');
 const fs = require('fs');
 
 class Node {
@@ -27,6 +28,21 @@ class Node {
             }
         }
         return null;
+    }
+
+    static get_node_components_of_type(node, t) {
+        let components = Node.get_node_components(node);
+
+        let result = [];
+        if (components != null) {
+            for (let i = 0, len = components.length; i < len; ++i) {
+                let c = components[i];
+                if (c.__type__ === t)
+                    result.push(c);
+            }
+        }
+
+        return result;
     }
 
     static guess_type_from_components(components) {
@@ -142,8 +158,10 @@ class Node {
         this.add_property_int('skewX', '_skewX', data);
         this.add_property_int('skewY', '_skewY', data);
         this.add_property_int('tag', '_tag', data);
+        this.add_property_int('groupIndex', 'groupIndex', data);
 
         this.parse_clip();
+        this.parse_colliders();
     }
 
     parse_child(node_idx) {
@@ -157,6 +175,19 @@ class Node {
                 if (n != null)
                     this.add_child(n);
             }
+        }
+    }
+
+    parse_colliders() {
+        let collider_components = Node.get_node_components_of_type(this._node_data, 'cc.BoxCollider');
+        collider_components =  collider_components.concat(Node.get_node_components_of_type(this._node_data, 'cc.CircleCollider'));
+        collider_components = collider_components.concat(Node.get_node_components_of_type(this._node_data, 'cc.PolygonCollider'));
+
+        this._properties.colliders = [];
+        for (let i = 0, len = collider_components.length; i < len; ++i) {
+            let collider_component = collider_components[i];
+            let collider_info = Collider.parse(collider_component);
+            this._properties.colliders.push(collider_info);
         }
     }
 

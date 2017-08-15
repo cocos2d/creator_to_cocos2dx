@@ -27,6 +27,7 @@
 #include "AnimateClip.h"
 #include "RichtextStringVisitor.h"
 #include "ui/PageView.h"
+#include "Collider/Collider.h"
 
 
 using namespace cocos2d;
@@ -94,12 +95,15 @@ CreatorReader::CreatorReader()
 {
     _animationManager = AnimationManager::create();
     _animationManager->retain();
+    
+    _collisionManager = new ColliderManager();
 }
 
 CreatorReader::~CreatorReader()
 {
-    CC_SAFE_RELEASE(_scene);
-    _animationManager->release();
+    CC_SAFE_RELEASE_NULL(_scene);
+    CC_SAFE_RELEASE_NULL(_collisionManager);
+    CC_SAFE_RELEASE_NULL(_animationManager);
 }
 
 CreatorReader* CreatorReader::createWithFilename(const std::string& filename)
@@ -160,6 +164,7 @@ void CreatorReader::setup()
     }
 
     setupSpriteFrames();
+    setupCollisionMatrix();
 }
 
 void CreatorReader::setupSpriteFrames()
@@ -198,6 +203,25 @@ void CreatorReader::setupSpriteFrames()
     }
 }
 
+void CreatorReader::setupCollisionMatrix()
+{
+    const void* buffer = _data.getBytes();
+    const auto& sceneGraph = GetSceneGraph(buffer);
+    const auto& collisionMatrixBuffer = sceneGraph->collisionMatrix();
+    
+    std::vector<std::vector<bool>> collisionMatrix;
+    for (const auto& matrixLineBuffer : *collisionMatrixBuffer)
+    {
+        std::vector<bool> line;
+        for (const auto& value : *(matrixLineBuffer->value()))
+            line.push_back(value);
+        
+        collisionMatrix.push_back(line);
+    }
+    
+    _collisionManager->setCollistionMatrix(collisionMatrix);
+}
+
 cocos2d::Scene* CreatorReader::getSceneGraph() const
 {
     const void* buffer = _data.getBytes();
@@ -209,6 +233,9 @@ cocos2d::Scene* CreatorReader::getSceneGraph() const
     cocos2d::Node* node = createTree(nodeTree);
     
     _animationManager->playOnLoad();
+    
+    node->addChild(_collisionManager);
+    _collisionManager->start();
 
     return static_cast<cocos2d::Scene*>(node);
 }
@@ -216,6 +243,11 @@ cocos2d::Scene* CreatorReader::getSceneGraph() const
 AnimationManager* CreatorReader::getAnimationManager() const
 {
     return _animationManager;
+}
+
+ColliderManager* CreatorReader::getColliderManager() const
+{
+    return _collisionManager;
 }
 
 std::string CreatorReader::getVersion() const
@@ -378,6 +410,8 @@ void CreatorReader::parseNode(cocos2d::Node* node, const buffers::Node* nodeBuff
 
     // animation?
     parseNodeAnimation(node, nodeBuffer);
+    
+    parseColliders(node, nodeBuffer);
 }
 
 void CreatorReader::parseNodeAnimation(cocos2d::Node* node, const buffers::Node* nodeBuffer) const
@@ -470,6 +504,43 @@ void CreatorReader::parseNodeAnimation(cocos2d::Node* node, const buffers::Node*
         // record animation information -> {node: AnimationInfo}
         _animationManager->addAnimation(std::move(animationInfo));
     }
+}
+
+void CreatorReader::parseColliders(cocos2d::Node* node, const buffers::Node* nodeBuffer) const
+{
+    const auto& collidersBuffer = nodeBuffer->colliders();
+    const auto& groupIndex = nodeBuffer->groupIndex();
+    
+    Collider *collider = nullptr;
+    for (const auto& colliderBuffer : *collidersBuffer)
+    {
+        const auto& type = colliderBuffer->type();
+        const auto& offsetBuffer = colliderBuffer->offset();
+        cocos2d::Vec2 offset(offsetBuffer->x(), offsetBuffer->y());
+        
+        if (type == buffers::ColliderType::ColliderType_CircleCollider)
+            collider = new CircleCollider(node, groupIndex, offset, colliderBuffer->radius());
+        else if (type == buffers::ColliderType::ColliderType_BoxCollider)
+        {
+            const auto& sizeBuffer = colliderBuffer->size();
+            cocos2d::Size size(sizeBuffer->w(), sizeBuffer->h());
+            collider = new BoxCollider(node, groupIndex, offset, size);
+        }
+        else if (type == buffers::ColliderType::ColliderType_PolygonCollider)
+        {
+            const auto& pointsBuffer = colliderBuffer->points();
+            std::vector<cocos2d::Vec2> points;
+            for (const auto& pointBuffer : *pointsBuffer)
+                points.push_back(cocos2d::Vec2(pointBuffer->x(), pointBuffer->y()));
+            
+            collider = new PolygonCollider(node, groupIndex, offset, points);
+        }
+        else
+            assert(false);
+    }
+    
+    if (collider)
+        _collisionManager->addCollider(collider);
 }
 
 cocos2d::Sprite* CreatorReader::createSprite(const buffers::Sprite* spriteBuffer) const

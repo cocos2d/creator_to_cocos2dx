@@ -21,25 +21,14 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
  ****************************************************************************/
-
 #pragma once
 
-#ifdef __cplusplus
-#define NS_CCR_BEGIN                     namespace creator {
-#define NS_CCR_END                       }
-#define USING_NS_CCR                     using namespace creator
-#else
-#define NS_CC_BEGIN
-#define NS_CC_END
-#define USING_NS_CC
-#define NS_CC
-#endif
 
 #include <vector>
 #include <tuple>
 
+#include "Macros.h"
 #include "AnimationClip.h"
-
 
 NS_CCR_BEGIN
 

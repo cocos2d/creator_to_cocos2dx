@@ -23,38 +23,38 @@
  ****************************************************************************/
 #pragma once
 
-#include <string>
-#include <stack>
-#include "cocos2d.h"
-
+#include "math/Vec2.h"
 #include "Macros.h"
 
 NS_CCR_BEGIN
 
-class RichtextStringVisitor : public cocos2d::SAXDelegator
+class Intersection
 {
 public:
-    RichtextStringVisitor();
-    
-    virtual void startElement(void *ctx, const char *name, const char **atts) override;
-    virtual void endElement(void *ctx, const char *name) override;
-    virtual void textHandler(void *ctx, const char *s, size_t len) override;
-    
-    std::string getOutput() const;
-    
+    /** Test whether two polygons interset.
+     * @param p1 points of first polygon
+     * @param p2 points of second polygon
+     * @return True if two polygon intersect
+     *         False else
+     */
+    static bool polygonPolygon(const std::vector<cocos2d::Vec2>& polygon1, const std::vector<cocos2d::Vec2>& polygon2);
+    /** Test whether two circles intersect.
+     * @param pos1 first circle's position
+     * @param r1 first circle's radius
+     * @param pos2 second circle's position
+     * @param r2 second circle's radius
+     */
+    static bool circleCircle(const cocos2d::Vec2& pos1, float r1, const cocos2d::Vec2& pos2, float r2);
+    /** Test whether a polygon intersects with a circle.
+     * @param p points of the polygon
+     * @param pos the circle's position
+     * @param r the circle's radius
+     */
+    static bool polygonCircle(const std::vector<cocos2d::Vec2>& polygon, const cocos2d::Vec2& pos, float r);
 private:
-    
-    std::string convertColorString2Hex(const std::string& colorString) const;
-    std::string convertAttributeName(const std::string& tagName, const std::string& attributeName) const;
-    std::string convertAttributeValue(const std::string& tagName, const std::string& attributeName, const std::string& attributeValue) const;
-    
-    const static std::string COLOR_FLAG;
-    const static std::string SIZE_FLAG;
-    const static std::string IMG_FLAG;
-    const static std::map<std::string, std::string> COLOR_MAP;
-    
-    std::string _outputXML;
-    std::stack<bool> _addFontEndFlags;
+    static bool linePolygon(const cocos2d::Vec2& A, const cocos2d::Vec2& B, const std::vector<cocos2d::Vec2>& polygon);
+    static bool pointInPolygon(const cocos2d::Vec2& pos, const std::vector<cocos2d::Vec2>& p);
+    static float pointLineDistance(const cocos2d::Vec2& point, const cocos2d::Vec2& start, const cocos2d::Vec2& end, bool isSegment);
 };
 
 NS_CCR_END

@@ -23,6 +23,7 @@ class FireParser {
     to_json_setup() {
         this.to_json_setup_design_resolution();
         this.to_json_setup_sprite_frames();
+        this.to_json_setup_collision_matrix();
     }
 
     to_json_setup_design_resolution() {
@@ -66,6 +67,15 @@ class FireParser {
         }
 
         this._json_output.spriteFrames = sprite_frames;
+    }
+
+    to_json_setup_collision_matrix() {
+        let collisionMatrix = Editor.remote.Profile.load('profile://project/project.json').data['collision-matrix'];
+        this._json_output.collisionMatrix = [];
+        for (let i = 0, len = collisionMatrix.length; i < len; ++i) {
+            let collisionLine = {value: collisionMatrix[i]};
+            this._json_output.collisionMatrix.push(collisionLine);
+        }
     }
 
     create_file(filename) {
