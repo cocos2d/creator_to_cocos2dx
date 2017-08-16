@@ -16,27 +16,11 @@ class ScrollView extends Node {
          * +--> View
          *     +--> Content    <-- this is what we want
          */
-        let view_node = null;
         let content_node = null;
-
-        // find the "view" node
-        this._node_data._children.forEach(function(child_idx) {
-            let node_idx = child_idx.__id__;
-            let node = state._json_data[node_idx];
-
-            if (node._name === 'view')
-                view_node = node;
-        });
-
-        // then find the "content" node
+        let view_node = Node.get_node_component_of_type(this._node_data, 'cc.ScrollView');
         if (view_node) {
-            view_node._children.forEach(function(child_idx) {
-                let node_idx = child_idx.__id__;
-                let node = state._json_data[node_idx];
-
-                if (node._name === 'content')
-                    content_node = node;
-            });
+            let content_node_index = view_node.content.__id__;
+            content_node = state._json_data[content_node_index];
         }
 
         if (content_node)
@@ -55,14 +39,16 @@ class ScrollView extends Node {
 
         // data from sprite component
         let compent_spr = Node.get_node_component_of_type(this._node_data, 'cc.Sprite');
-        let sprite_frame_uuid = compent_spr._spriteFrame.__uuid__;
-        this._properties.backgroundImage = Utils.get_sprite_frame_name_by_uuid(sprite_frame_uuid);
+        if (compent_spr) {
+            let sprite_frame_uuid = compent_spr._spriteFrame.__uuid__;
+            this._properties.backgroundImage = Utils.get_sprite_frame_name_by_uuid(sprite_frame_uuid);
 
-        // Sliced?
-        if (compent_spr._type === ScrollView.SLICED)
-            this._properties.backgroundImageScale9Enabled = true;
-        else
-            this._properties.backgroundImageScale9Enabled = false;
+            // Sliced?
+            if (compent_spr._type === ScrollView.SLICED)
+                this._properties.backgroundImageScale9Enabled = true;
+            else
+                this._properties.backgroundImageScale9Enabled = false;
+        }
         
         // data from scroll view component
         let component_sv = Node.get_node_component_of_type(this._node_data, 'cc.ScrollView');
@@ -99,10 +85,11 @@ class ScrollView extends Node {
     adjust_child_parameters(child) {
         // FIXME: adjust child position since innerContainer doesn't honor
         // position and anchorPoit.
-        let pos = child._properties.node.position;
+        let properties = child._properties.node ? child._properties.node : child._properties;
+        let pos = properties.position;
         let x = pos.x;
         let y = pos.y;
-        child._properties.node.position = {
+        properties.position = {
             x: x + this._content_size.width * this._content_ap.x,
             y: y + this._content_size.height * this._content_ap.y
         };
