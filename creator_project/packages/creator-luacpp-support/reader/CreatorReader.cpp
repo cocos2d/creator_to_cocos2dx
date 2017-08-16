@@ -139,29 +139,23 @@ void CreatorReader::setup()
 {
     const void* buffer = _data.getBytes();
     auto sceneGraph = GetSceneGraph(buffer);
-
+    
     const auto& designResolution = sceneGraph->designResolution();
     const auto& fitWidth = sceneGraph->resolutionFitWidth();
     const auto& fitHeight = sceneGraph->resolutionFitHeight();
-
+    
     auto director = cocos2d::Director::getInstance();
     auto glview = director->getOpenGLView();
-    const auto& frameSize = glview->getFrameSize();
-
-    if (fitWidth && fitHeight) {
-        glview->setDesignResolutionSize(designResolution->w(), designResolution->h(), ResolutionPolicy::EXACT_FIT);
-    } else if (fitHeight) {
-        const float w = frameSize.width / (frameSize.height / designResolution->h());
-        const float h = frameSize.height / (frameSize.height / designResolution->h());
-        glview->setDesignResolutionSize(w, h, ResolutionPolicy::NO_BORDER);
-    } else if (fitWidth) {
-        const float w = frameSize.width / (frameSize.width / designResolution->w());
-        const float h = frameSize.height / (frameSize.width / designResolution->w());
-        glview->setDesignResolutionSize(w, h, ResolutionPolicy::NO_BORDER);
-    }else {
+    
+    if (fitWidth && fitHeight)
+        glview->setDesignResolutionSize(designResolution->w(), designResolution->h(), ResolutionPolicy::SHOW_ALL);
+    else if (fitHeight)
+        glview->setDesignResolutionSize(designResolution->w(), designResolution->h(), ResolutionPolicy::FIXED_HEIGHT);
+    else if (fitWidth)
+        glview->setDesignResolutionSize(designResolution->w(), designResolution->h(), ResolutionPolicy::FIXED_WIDTH);
+    else
         if (designResolution)
             glview->setDesignResolutionSize(designResolution->w(), designResolution->h(), ResolutionPolicy::NO_BORDER);
-    }
 
     setupSpriteFrames();
     setupCollisionMatrix();
@@ -236,6 +230,16 @@ cocos2d::Scene* CreatorReader::getSceneGraph() const
     
     node->addChild(_collisionManager);
     _collisionManager->start();
+
+    // add just position because creator will make the scene in center
+    const auto& originalDesignResolution = sceneGraph->designResolution();
+    if (originalDesignResolution)
+    {
+        const auto& realDesignResolution = Director::getInstance()->getOpenGLView()->getDesignResolutionSize();
+        const auto& pos = node->getPosition();
+        node->setPosition(pos.x + (realDesignResolution.width - originalDesignResolution->w())/2,
+                          pos.y + (realDesignResolution.height - originalDesignResolution->h())/2);
+    }
 
     return static_cast<cocos2d::Scene*>(node);
 }
