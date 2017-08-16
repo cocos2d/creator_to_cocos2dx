@@ -754,10 +754,14 @@ void CreatorReader::parseScrollView(cocos2d::ui::ScrollView* scrollView, const b
     const auto& direction = scrollViewBuffer->direction();
     const auto& bounceEnabled = scrollViewBuffer->bounceEnabled();
     const auto& innerContainerSize = scrollViewBuffer->innerContainerSize();
+    
+    if (backgroundImage)
+    {
+        scrollView->setBackGroundImage(backgroundImage->str(), cocos2d::ui::Widget::TextureResType::PLIST);
+        scrollView->setBackGroundImageScale9Enabled(backgroundImageScale9Enabled);
+        scrollView->setBackGroundImageColor(cocos2d::Color3B(backgroundImageColor->r(), backgroundImageColor->g(), backgroundImageColor->b()));
+    }
 
-    scrollView->setBackGroundImage(backgroundImage->str(), cocos2d::ui::Widget::TextureResType::PLIST);
-    scrollView->setBackGroundImageScale9Enabled(backgroundImageScale9Enabled);
-    scrollView->setBackGroundImageColor(cocos2d::Color3B(backgroundImageColor->r(), backgroundImageColor->g(), backgroundImageColor->b()));
     scrollView->setDirection(static_cast<cocos2d::ui::ScrollView::Direction>(direction));
     scrollView->setBounceEnabled(bounceEnabled);
     scrollView->setInnerContainerSize(cocos2d::Size(innerContainerSize->w(), innerContainerSize->h()));
@@ -810,9 +814,10 @@ cocos2d::ui::EditBox* CreatorReader::createEditBox(const buffers::EditBox* editB
 {
     const auto& contentSize = editBoxBuffer->node()->contentSize();
     const auto& spriteFrameName = editBoxBuffer->backgroundImage();
+    
     auto editBox = ui::EditBox::create(cocos2d::Size(contentSize->w(), contentSize->h()),
-                                       spriteFrameName->str(),
-                                       cocos2d::ui::Widget::TextureResType::PLIST);
+                                                         spriteFrameName->str(),
+                                                         cocos2d::ui::Widget::TextureResType::PLIST);
     parseEditBox(editBox, editBoxBuffer);
     return editBox;
 }
