@@ -68,6 +68,43 @@ You will find:
 * all needed source codes are generated into `NATIVE_PROJECT_ROOT/Classes/reader(it is NATIVE_PROJECT_ROOT/frameworks/runtime-src/Classes/reader for lua project)`
 * all needed resources are generated into `NATIVE_PROJECT_ROOT/Resources/creator(it is NATIVE_PROJECT_ROOT/frameworks/runtime-src/Resources/creator for lua project)`
 
+## Header search path
+
+Should add `reader` into header search path except iOS/Mac. If developing for Android, can just use existing `Android.mk`, for example, use the `Android.mk` into your game's `Android.mk` like this:
+
+```
+LOCAL_PATH := $(call my-dir)
+
+include $(CLEAR_VARS)
+
+LOCAL_MODULE := MyGame_shared
+
+LOCAL_MODULE_FILENAME := libMyGame
+
+LOCAL_SRC_FILES := hellocpp/main.cpp \
+                   ../../Classes/AppDelegate.cpp \
+                   ../../Classes/HelloWorldScene.cpp
+
+LOCAL_C_INCLUDES := $(LOCAL_PATH)/../../Classes
+
+# _COCOS_HEADER_ANDROID_BEGIN
+# _COCOS_HEADER_ANDROID_END
+
+
+LOCAL_STATIC_LIBRARIES := cocos2dx_static
+LOCAL_STATIC_LIBRARIES += creator_reader   # add dependence
+
+# _COCOS_LIB_ANDROID_BEGIN
+# _COCOS_LIB_ANDROID_END
+
+include $(BUILD_SHARED_LIBRARY)
+
+$(call import-module,.)
+$(call import-module, ./../../Classes/reader)  # import module path
+```
+
+__If developing with Lua, then need to add `CreatorReaderBinding.cpp` into [plugin's Android.mk](https://github.com/cocos2d/creator_to_cocos2dx/blob/master/creator_project/packages/creator-luacpp-support/reader/Android.mk)__.
+
 ## Using it from C++
 
 ```c++
@@ -137,7 +174,7 @@ collisionManager->registerCollitionCallback([=](creator::Contract::CollisionType
 }, "");
 ```
 
-More features of `CollisionManager` can refer to [the header file](https://github.com/cocos2d/creator_to_cocos2dx/tree/master/creator_project/packages/creator-luacpp-support/reader/Collider/ColliderManager.h).
+More features of `CollisionManager` can refer to [the header file](https://github.com/cocos2d/creator_to_cocos2dx/tree/master/creator_project/packages/creator-luacpp-support/reader/collider/ColliderManager.h).
 
 ## Use the plugin in your Cocos Creator project
 
