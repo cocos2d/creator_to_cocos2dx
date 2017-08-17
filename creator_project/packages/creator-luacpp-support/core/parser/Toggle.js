@@ -28,14 +28,13 @@ class Toggle extends Node {
             this._properties.backgroundSpritePath = state._assetpath + Utils.get_sprite_frame_name_by_uuid(background_component._spriteFrame.__uuid__);
         
         // CheckMark
-        let checkmark_id = background_node_data._children[0].__id__;
-        let checkmark_node_data = state._json_data[checkmark_id];
-        let checkmark_component_id = checkmark_node_data._components[0].__id__;
+        let checkmark_component_id = toggle_component.checkMark.__id__;
         let checkmark_component = state._json_data[checkmark_component_id];
         if (checkmark_component._spriteFrame) {
             this._properties.checkMarkSpritePath = state._assetpath + Utils.get_sprite_frame_name_by_uuid(checkmark_component._spriteFrame.__uuid__);
 
             // adjust node content size
+            let checkmark_node_data = state._json_data[checkmark_component.node.__id__];
             let current_properties = this._properties;
             this._properties = this._properties.node;
             this.add_property_size('contentSize', '_contentSize', checkmark_node_data);
