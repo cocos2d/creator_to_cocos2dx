@@ -98,7 +98,7 @@ void AnimationManager::runAnimationClip(cocos2d::Node *target, AnimationClip* an
     });
     
     animate->startAnimate();
-    _cachedAnimates.push_back({target, animationClip->getName(), animate});
+    _cachedAnimates.push_back(std::make_tuple(target, animationClip->getName(), animate));
 }
 
 void AnimationManager::removeAnimateClip(cocos2d::Node *target, const std::string &animationClipName)

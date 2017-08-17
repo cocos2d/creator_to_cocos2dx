@@ -23,6 +23,9 @@
  ****************************************************************************/
 #include "ColliderManager.h"
 
+#include "base/CCDirector.h"
+#include "base/CCScheduler.h"
+
 NS_CCR_BEGIN
 
 ColliderManager::ColliderManager()

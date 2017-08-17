@@ -26,7 +26,9 @@
 #include <map>
 #include <functional>
 
-#include "../Macros.h"
+#include "2d/CCDrawNode.h"
+
+#include "Macros.h"
 #include "Contract.h"
 #include "Collider.h"
 

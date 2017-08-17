@@ -27,11 +27,11 @@
 #include <spine/spine-cocos2dx.h>
 
 #include "ui/CocosGUI.h"
-#include "AnimationClip.h"
-#include "AnimationManager.h"
+#include "animation/AnimationClip.h"
+#include "animation/AnimationManager.h"
 #include "Macros.h"
 #include "CreatorReader_generated.h"
-#include "Collider/ColliderManager.h"
+#include "collider/ColliderManager.h"
 
 
 NS_CCR_BEGIN
