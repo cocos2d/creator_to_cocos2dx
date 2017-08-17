@@ -99,7 +99,7 @@ void CircleCollider::update()
     _worldPosition = cocos2d::PointApplyTransform(_offset, transform);
     
     // world radius
-    transform.col[3][0] = transform.col[3][1] = transform.col[3][2] = 0;
+    transform.m[12] = transform.m[13] = transform.m[14] = 0;
     cocos2d::Vec2 tempVec2(_radius, 0);
     cocos2d::Vec2 tempP = cocos2d::PointApplyTransform(tempVec2, transform);
     _worldRadius = std::sqrt(tempP.x * tempP.x + tempP.y * tempP.y);
