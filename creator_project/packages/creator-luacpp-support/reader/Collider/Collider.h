@@ -25,7 +25,7 @@
 
 #include "2d/CCNode.h"
 
-#include "../Macros.h"
+#include "Macros.h"
 
 NS_CCR_BEGIN
 

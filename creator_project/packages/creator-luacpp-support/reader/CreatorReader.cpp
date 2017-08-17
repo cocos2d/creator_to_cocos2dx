@@ -23,11 +23,11 @@
  ****************************************************************************/
 
 #include "CreatorReader.h"
-#include "AnimationClip.h"
-#include "AnimateClip.h"
-#include "RichtextStringVisitor.h"
+#include "animation/AnimationClip.h"
+#include "animation/AnimateClip.h"
+#include "ui/RichtextStringVisitor.h"
 #include "ui/PageView.h"
-#include "Collider/Collider.h"
+#include "collider/Collider.h"
 
 
 using namespace cocos2d;

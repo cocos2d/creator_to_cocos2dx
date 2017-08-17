@@ -26,7 +26,7 @@
 #include "cocos2d.h"
 #include "ui/CocosGUI.h"
 
-#include "../Macros.h"
+#include "Macros.h"
 
 NS_CCR_BEGIN
 
