@@ -155,6 +155,10 @@ protected:
     
     AnimationManager *_animationManager;
     ColliderManager *_collisionManager;
+    
+    // creator will make scene at the center of screen when apply design solution strategy, cocos2d-x doesn't do it like this
+    // this value record the diff
+    cocos2d::Vec2 _positionDiffDesignResolution;
 };
 
 NS_CCR_END

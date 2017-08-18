@@ -92,6 +92,7 @@ namespace {
 CreatorReader::CreatorReader()
 : _scene(nullptr)
 , _version("")
+, _positionDiffDesignResolution(0, 0)
 {
     _animationManager = AnimationManager::create();
     _animationManager->retain();
@@ -159,6 +160,13 @@ void CreatorReader::setup()
 
     setupSpriteFrames();
     setupCollisionMatrix();
+    
+    if (designResolution)
+    {
+        const auto& realDesignResolution = Director::getInstance()->getOpenGLView()->getDesignResolutionSize();
+        _positionDiffDesignResolution = cocos2d::Vec2((realDesignResolution.width - designResolution->w())/2,
+                                                      (realDesignResolution.height - designResolution->h())/2);
+    }
 }
 
 void CreatorReader::setupSpriteFrames()
@@ -234,12 +242,7 @@ cocos2d::Scene* CreatorReader::getSceneGraph() const
     // add just position because creator will make the scene in center
     const auto& originalDesignResolution = sceneGraph->designResolution();
     if (originalDesignResolution)
-    {
-        const auto& realDesignResolution = Director::getInstance()->getOpenGLView()->getDesignResolutionSize();
-        const auto& pos = node->getPosition();
-        node->setPosition(pos.x + (realDesignResolution.width - originalDesignResolution->w())/2,
-                          pos.y + (realDesignResolution.height - originalDesignResolution->h())/2);
-    }
+        node->setPosition(node->getPosition() + _positionDiffDesignResolution);
 
     return static_cast<cocos2d::Scene*>(node);
 }
@@ -521,6 +524,8 @@ void CreatorReader::parseColliders(cocos2d::Node* node, const buffers::Node* nod
         const auto& type = colliderBuffer->type();
         const auto& offsetBuffer = colliderBuffer->offset();
         cocos2d::Vec2 offset(offsetBuffer->x(), offsetBuffer->y());
+        // node's position is adjusted, offset should adjust too
+        offset = offset - _positionDiffDesignResolution;
         
         if (type == buffers::ColliderType::ColliderType_CircleCollider)
             collider = new CircleCollider(node, groupIndex, offset, colliderBuffer->radius());
