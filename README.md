@@ -50,6 +50,7 @@ Supported nodes:
 * `PageView`
 * `Mask`
 * `Collider`
+* `Prefab`
 
 Supporting JavaScript scripts would be overkill. If you need JavaScript scripting
 support, just use Creator.
