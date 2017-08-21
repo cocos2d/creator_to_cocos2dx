@@ -15,7 +15,7 @@ class Sprite extends Node {
 
         let component = Node.get_node_component_of_type(this._node_data, 'cc.Sprite');
 
-        if (component._spriteFrame) {
+        if (component && component._spriteFrame) {
             let sprite_frame_uuid = component._spriteFrame.__uuid__;
             
             name = get_sprite_frame_name_by_uuid(sprite_frame_uuid);

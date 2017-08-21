@@ -226,7 +226,7 @@ log = function(s) {
         Utils.log(s);
 }
 
-let create_node = function (node_type, node_idx) {
+let create_node = function (node_type, node_data) {
     const Node = require('./Node');
     const Button = require('./Button');
     const Canvas = require('./Canvas');
@@ -246,53 +246,56 @@ let create_node = function (node_type, node_idx) {
     const ToggleGroup = require('./ToggleGroup');
     const PageView = require('./PageView');
     const Mask = require('./Mask');
+    const Prefab = require('./Prefab');
 
     let n = null;
     if (node_type === 'cc.Node')
-        n = new Node(state._json_data[node_idx]);
+        n = new Node(node_data);
     else if (node_type === 'cc.Sprite')
-        n = new Sprite(state._json_data[node_idx]);
+        n = new Sprite(node_data);
     else if (node_type === 'cc.Canvas')
-        n = new Canvas(state._json_data[node_idx]);
+        n = new Canvas(node_data);
     else if (node_type === 'cc.Label')
-        n = new Label(state._json_data[node_idx]);
+        n = new Label(node_data);
     else if (node_type === 'cc.RichText')
-        n = new RichText(state._json_data[node_idx]);
+        n = new RichText(node_data);
     else if (node_type === 'cc.Button')
-        n = new Button(state._json_data[node_idx]);
+        n = new Button(node_data);
     else if (node_type === 'cc.ProgressBar')
-        n = new ProgressBar(state._json_data[node_idx]);
+        n = new ProgressBar(node_data);
     else if (node_type === 'cc.ScrollView')
-        n = new ScrollView(state._json_data[node_idx]);
+        n = new ScrollView(node_data);
     else if (node_type === 'cc.EditBox')
-        n = new EditBox(state._json_data[node_idx]);
+        n = new EditBox(node_data);
     else if (node_type === 'cc.TiledMap')
-        n = new TiledMap(state._json_data[node_idx]);
+        n = new TiledMap(node_data);
     else if (node_type === 'cc.ParticleSystem')
-        n = new ParticleSystem(state._json_data[node_idx]);
+        n = new ParticleSystem(node_data);
     else if (node_type === 'sp.Skeleton')
-        n = new SpineSkeleton(state._json_data[node_idx]);
+        n = new SpineSkeleton(node_data);
     else if (node_type === 'cc.VideoPlayer')
-        n = new VideoPlayer(state._json_data[node_idx]);
+        n = new VideoPlayer(node_data);
     else if (node_type === 'cc.WebView')
-        n = new WebView(state._json_data[node_idx]);
+        n = new WebView(node_data);
     else if (node_type === 'cc.Slider')
-        n = new Slider(state._json_data[node_idx]);
+        n = new Slider(node_data);
     else if (node_type === 'cc.Toggle')
-        n = new Toggle(state._json_data[node_idx]);
+        n = new Toggle(node_data);
     else if (node_type === 'cc.ToggleGroup')
-        n = new ToggleGroup(state._json_data[node_idx]);
+        n = new ToggleGroup(node_data);
     else if (node_type === 'cc.PageView')
-        n = new PageView(state._json_data[node_idx]);
+        n = new PageView(node_data);
     else if (node_type === 'cc.Mask')
-        n = new Mask(state._json_data[node_idx]);
-
-    if (n != null) {
-        n.parse_properties();
-        return n;
+        n = new Mask(node_data);
+    else if (node_type === 'cc.Prefab') {
+        let real_type = Prefab.guess_type_of_prefab_root(node_data);
+        n = create_node(real_type, node_data);
     }
-    else
-        return null;
+
+    if (n != null && node_type != 'cc.Prefab')
+        n.parse_properties();
+       
+    return n;
 }
 
 /**
@@ -321,5 +324,5 @@ module.exports = {
     log: log,
     remove_child_by_id: remove_child_by_id,
     get_sprite_frame_json_by_uuid: get_sprite_frame_json_by_uuid,
-    is_sprite_frame_from_texture_packer: is_sprite_frame_from_texture_packer
+    is_sprite_frame_from_texture_packer: is_sprite_frame_from_texture_packer,
 }

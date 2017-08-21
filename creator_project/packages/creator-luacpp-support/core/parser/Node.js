@@ -1,6 +1,6 @@
 const state = require('./Global').state;
-const Utils = require('./Utils');
 const Collider = require('./Collider');
+let Utils = require('./Utils');
 const fs = require('fs');
 
 class Node {
@@ -52,11 +52,15 @@ class Node {
             'cc.ParticleSystem', 'cc.TiledMap', 'cc.Canvas', 'cc.RichText',
             'cc.VideoPlayer', 'cc.WebView', 'cc.Slider', 'cc.Toggle', 'cc.ToggleGroup',
             'cc.PageView', 'cc.Mask'];
+    
+        if (!components)
+            return 'cc.Node';
+    
         let node_components = components.map(x => x.__type__);
         // special case for object without components
         if (node_components.length == 0)
             return 'cc.Node';
-
+    
         for (let i = 0, len = supported_components.length; i < len; ++i) {
             let supported = supported_components[i];
             if (node_components.includes(supported)) {
@@ -67,6 +71,18 @@ class Node {
         Utils.log('Unknown components ' + node_components);
         Utils.log('treat all unknown components as cc.Node')
         return 'cc.Node';
+    }
+    
+    static guess_type(node_data) {
+        let components = Node.get_node_components(node_data);
+        if (components)
+            return Node.guess_type_from_components(components);
+    
+        // prefab don't have componets, should guess type from prefab node data
+        if (node_data._prefab)
+            return 'cc.Prefab';
+    
+        return null;
     }
 
     constructor(data) {
@@ -131,11 +147,25 @@ class Node {
     parse_properties() {
         // 1st: parse self
         this.parse_node_properties();
+
+        // should parse prefab before parse children
+        // because parse_prefab() may change this._node_data
+        let is_prefab = this.parse_prefab();
+
+        this.parse_clip();
+        this.parse_colliders();
         
         // 2nd: parse children
-        this._node_data._children.forEach(function(item) {
-            this.parse_child(item.__id__);
-        }.bind(this));
+        // parse_prefab() will parse children
+        if (!is_prefab)
+            this.parse_children();
+    }
+
+    parse_children() {
+        if (this._node_data._children)
+            this._node_data._children.forEach(function(item) {
+                this.parse_child(item.__id__);
+            }.bind(this));
     }
 
     parse_node_properties() {
@@ -159,18 +189,18 @@ class Node {
         this.add_property_int('skewY', '_skewY', data);
         this.add_property_int('tag', '_tag', data);
         this.add_property_int('groupIndex', 'groupIndex', data);
-
-        this.parse_clip();
-        this.parse_colliders();
     }
 
     parse_child(node_idx) {
         let node = state._json_data[node_idx];
         if (node.__type__ === 'cc.Node') {
-            let components = Node.get_node_components(node);
-            let node_type = Node.guess_type_from_components(components);
+            let node_type = Node.guess_type(node);
             if (node_type != null) {
-                let n = Utils.create_node(node_type, node_idx);
+                let n = Utils.create_node(node_type, node);
+                // state._json_data may be changed when parsing Prefab, need to reset it
+                if (node_type === 'cc.Prefab')
+                    state.reset_json_data();
+                
                 this.adjust_child_parameters(n);
                 if (n != null)
                     this.add_child(n);
@@ -189,6 +219,24 @@ class Node {
             let collider_info = Collider.parse(collider_component);
             this._properties.colliders.push(collider_info);
         }
+    }
+
+    parse_prefab() {
+        if (this._node_data._prefab) {
+            const Prefab = require('./Prefab');
+
+            let prefab_node_data = state._json_data[this._node_data._prefab.__id__];
+
+            // only parse prefab that is need to synchronize, or will cause endless loop
+            // because prefab file also has prefab information
+            if (!prefab_node_data.sync)
+                return false;
+
+            Prefab.parse(prefab_node_data, this);
+            return true;
+        }
+        else
+            return false;
     }
 
     parse_clip() {
