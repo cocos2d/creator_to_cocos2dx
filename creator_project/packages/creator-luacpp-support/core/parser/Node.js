@@ -147,18 +147,9 @@ class Node {
     parse_properties() {
         // 1st: parse self
         this.parse_node_properties();
-
-        // should parse prefab before parse children
-        // because parse_prefab() may change this._node_data
-        let is_prefab = this.parse_prefab();
-
-        this.parse_clip();
-        this.parse_colliders();
         
         // 2nd: parse children
-        // parse_prefab() will parse children
-        if (!is_prefab)
-            this.parse_children();
+        this.parse_children();  
     }
 
     parse_children() {
@@ -189,6 +180,9 @@ class Node {
         this.add_property_int('skewY', '_skewY', data);
         this.add_property_int('tag', '_tag', data);
         this.add_property_int('groupIndex', 'groupIndex', data);
+
+        this.parse_clip();
+        this.parse_colliders();
     }
 
     parse_child(node_idx) {
@@ -197,10 +191,6 @@ class Node {
             let node_type = Node.guess_type(node);
             if (node_type != null) {
                 let n = Utils.create_node(node_type, node);
-                // state._json_data may be changed when parsing Prefab, need to reset it
-                if (node_type === 'cc.Prefab')
-                    state.reset_json_data();
-                
                 this.adjust_child_parameters(n);
                 if (n != null)
                     this.add_child(n);
@@ -219,24 +209,6 @@ class Node {
             let collider_info = Collider.parse(collider_component);
             this._properties.colliders.push(collider_info);
         }
-    }
-
-    parse_prefab() {
-        if (this._node_data._prefab) {
-            const Prefab = require('./Prefab');
-
-            let prefab_node_data = state._json_data[this._node_data._prefab.__id__];
-
-            // only parse prefab that is need to synchronize, or will cause endless loop
-            // because prefab file also has prefab information
-            if (!prefab_node_data.sync)
-                return false;
-
-            Prefab.parse(prefab_node_data, this);
-            return true;
-        }
-        else
-            return false;
     }
 
     parse_clip() {

@@ -1,66 +1,69 @@
 const state = require('./Global').state;
 const fs = require('fs');
+const Node = require('./Node');
 
-class Prefab {
-    // return nodes of Prefab
-    static parse(data, scene_node) {
-        let prefab_json = Prefab.get_json_of_prefab(data);
-
-        let root_node_index = prefab_json[0].data.__id__;
-        let old_node_data = scene_node._node_data;
-        scene_node._node_data = prefab_json[root_node_index];
-
-        // parse child, should change state._json_data to prefab's json data
-        // it will be reset in Node.parse_child();
-        state.set_json_data(prefab_json);
-
-        // adjust some properties
-        // _objFlags;
-        // _parent;
-        // _id;
-        // _prefab;
-        // _name;
-        // _active;
-        // _position;
-        // _rotationX;
-        // _rotationY;
-        // _localZOrder;
-        // _globalZOrder;
-        scene_node.parse_node_properties();
-        scene_node.add_property_size('contentSize', '_contentSize', old_node_data);
-        scene_node.add_property_bool('enabled', '_active', old_node_data);
-        scene_node.add_property_str('name', '_name', old_node_data);
-        scene_node.add_property_int('globalZOrder', '_globalZOrder', old_node_data);
-        scene_node.add_property_int('localZOrder', '_localZOrder', old_node_data);
-        scene_node.add_property_vec2('position', '_position', old_node_data);
-        scene_node.add_property_int('rotationSkewX', '_rotationX', old_node_data);
-        scene_node.add_property_int('rotationSkewY', '_rotationY', old_node_data);
-
-        scene_node.parse_children();
+/**
+ * Prefab is not a real Node type. The real type will be changed by parsing prefab files.
+ */
+class Prefab extends Node {
+    constructor(data) {
+        super(data);
+        // real type will be changed later
+        this._jsonNode.object_type = 'Prefab';
     }
 
-    static guess_type_of_prefab_root(node_data) {
-        const Node = require('./Node');
+    parse_properties() {
+        super.parse_properties();
+        
+        // parse content in prefab file
 
-        let prefab = node_data._prefab;
-        if (!prefab)
-            return null;
+        let prefab = this._node_data._prefab;
 
         // get root node of prefab
         let prefab_node_data = state._json_data[prefab.__id__];
-        let prefab_json = Prefab.get_json_of_prefab(prefab_node_data);
+        let prefab_json = this._get_json_of_prefab(prefab_node_data);
         let root_node_index = prefab_json[0].data.__id__;
         let root_node_data = prefab_json[root_node_index];
 
+        // get type of root node, should modify state._json_data to prefab file content
+        // when parsing prefab files
         let old_state_json_data = state._json_data;
         state._json_data = prefab_json;
         let components = Node.get_node_components(root_node_data)
-        state._json_data = old_state_json_data;
+        let type = Node.guess_type_from_components(components);
 
-        return Node.guess_type_from_components(components);
+        // create corresponding object for root node
+        const Utils = require('./Utils');
+        let prefab_root_node_obj = Utils.create_node(type, root_node_data);
+
+        // modify the object_type to real type
+        this._jsonNode.object_type = prefab_root_node_obj._jsonNode.object_type;
+
+        // reset this._properties and adjust some properties
+        let original_properties = this._properties;
+        this._properties = prefab_root_node_obj._properties;
+        this._adjust_properties(original_properties, 'contentSize');
+        this._adjust_properties(original_properties, 'enabled');
+        this._adjust_properties(original_properties, 'name');
+        this._adjust_properties(original_properties, 'globalZOrder');
+        this._adjust_properties(original_properties, 'localZOrder');
+        this._adjust_properties(original_properties, 'position');
+        this._adjust_properties(original_properties, 'rotationSkewX');
+        this._adjust_properties(original_properties, 'rotationSkewY');
+
+        this._node_data = root_node_data;
+        super.parse_children();
+
+        // reset state._json_data
+        state._json_data = old_state_json_data;
     }
 
-    static get_json_of_prefab(prefab_node) {
+    _adjust_properties(original_properties, name) {
+        let node_properties = this._properties.node;
+        node_properties[name] = original_properties[name];
+    }
+
+    _get_json_of_prefab(prefab_node) {
         let prefab_file_path = Editor.remote.assetdb.uuidToFspath(prefab_node.asset.__uuid__);
         let contents = fs.readFileSync(prefab_file_path);
         return JSON.parse(contents);

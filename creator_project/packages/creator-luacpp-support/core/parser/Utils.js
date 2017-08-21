@@ -287,12 +287,10 @@ let create_node = function (node_type, node_data) {
         n = new PageView(node_data);
     else if (node_type === 'cc.Mask')
         n = new Mask(node_data);
-    else if (node_type === 'cc.Prefab') {
-        let real_type = Prefab.guess_type_of_prefab_root(node_data);
-        n = create_node(real_type, node_data);
-    }
+    else if (node_type === 'cc.Prefab') 
+        n = new Prefab(node_data);
 
-    if (n != null && node_type != 'cc.Prefab')
+    if (n != null)
         n.parse_properties();
        
     return n;

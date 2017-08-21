@@ -15,8 +15,6 @@ class State {
         // the .fire file being parsed
         this._json_data = [];
 
-        this._prev_json_data = null;
-
         // record all sprite frames
         // key is uuid, value is the information of the sprite frame
         this._sprite_frames = {};
@@ -31,18 +29,6 @@ class State {
         // clips
         // key is the uuid, value is the animation
         this._clips = {};
-    }
-
-    set_json_data(data) {
-        this._prev_json_data = this._json_data;
-        this._json_data = data;
-    }
-
-    reset_json_data() {
-        if (this._prev_json_data) {
-            this._json_data = this._prev_json_data;
-            this._prev_json_data = null;
-        }
     }
 }
 
