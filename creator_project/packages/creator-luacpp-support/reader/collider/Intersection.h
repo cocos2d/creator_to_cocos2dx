@@ -23,6 +23,7 @@
  ****************************************************************************/
 #pragma once
 
+#include <vector>
 #include "math/Vec2.h"
 #include "Macros.h"
 
