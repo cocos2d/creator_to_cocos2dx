@@ -55,6 +55,12 @@ Supported nodes:
 Supporting JavaScript scripts would be overkill. If you need JavaScript scripting
 support, just use Creator.
 
+## Sample project
+
+Can fetch [this branch](https://github.com/minggo/cocos2d-x/tree/creator-cpp-support-test-v315) and run `cpp-empty-test`. The branch basec on v3.15, don't forget to update external libraries.
+
+Currently support on Mac, iOS and Android, will add more platform support quickly. Can just  modify project file to add cpp files in `reader` to support other platforms.
+
 
 ## How to generate the needed files
 

@@ -239,11 +239,6 @@ cocos2d::Scene* CreatorReader::getSceneGraph() const
     node->addChild(_collisionManager);
     _collisionManager->start();
 
-    // add just position because creator will make the scene in center
-    const auto& originalDesignResolution = sceneGraph->designResolution();
-    if (originalDesignResolution)
-        node->setPosition(node->getPosition() + _positionDiffDesignResolution);
-
     return static_cast<cocos2d::Scene*>(node);
 }
 
@@ -401,7 +396,7 @@ void CreatorReader::parseNode(cocos2d::Node* node, const buffers::Node* nodeBuff
     const auto& opacityModifyRGB = nodeBuffer->opacityModifyRGB();
     node->setOpacityModifyRGB(opacityModifyRGB);
     const auto position = nodeBuffer->position();
-    if (position) node->setPosition(position->x(), position->y());
+    if (position) node->setPosition(cocos2d::Vec2(position->x(), position->y()) + _positionDiffDesignResolution);
     node->setRotationSkewX(nodeBuffer->rotationSkewX());
     node->setRotationSkewY(nodeBuffer->rotationSkewY());
     node->setScaleX(nodeBuffer->scaleX());
@@ -524,8 +519,6 @@ void CreatorReader::parseColliders(cocos2d::Node* node, const buffers::Node* nod
         const auto& type = colliderBuffer->type();
         const auto& offsetBuffer = colliderBuffer->offset();
         cocos2d::Vec2 offset(offsetBuffer->x(), offsetBuffer->y());
-        // node's position is adjusted, offset should adjust too
-        offset = offset - _positionDiffDesignResolution;
         
         if (type == buffers::ColliderType::ColliderType_CircleCollider)
             collider = new CircleCollider(node, groupIndex, offset, colliderBuffer->radius());

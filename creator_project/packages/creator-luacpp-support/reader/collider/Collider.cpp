@@ -202,7 +202,7 @@ void PolygonCollider::update()
     const auto& transform = getNodeToWorldTransformAR();
     
     _worldPoints = _points;
-    for (int i = 0, len = _worldPoints.size(); i < len; ++i)
+    for (size_t i = 0, len = _worldPoints.size(); i < len; ++i)
     {
         tempVec2.x = _points[i].x + _offset.x;
         tempVec2.y = _points[i].y + _offset.y;
