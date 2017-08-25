@@ -5,6 +5,7 @@
 - [Creator support for Cocos2d-x](#creator-support-for-cocos2d-x)
   - [Requirements](#requirements)
   - [Limitations](#limitations)
+  - [Sample Project](#sample-project)
   - [How to generate the needed files](#how-to-generate-the-needed-files)
   - [Using it from C++](#using-it-from-c)
   - [Using it from lua](#using-it-from-lua)
@@ -57,9 +58,9 @@ support, just use Creator.
 
 ## Sample project
 
-Can fetch [this branch](https://github.com/minggo/cocos2d-x/tree/creator-cpp-support-test-v315) and run `cpp-empty-test`. The branch basec on v3.15, don't forget to update external libraries.
+Can fetch [this branch](https://github.com/minggo/cocos2d-x/tree/creator-cpp-support-test-v315) and run `cpp-empty-test`. The branch based on v3.15, don't forget to update external libraries.
 
-Currently support on Mac, iOS and Android, will add more platform support quickly. Can just  modify project file to add cpp files in `reader` to support other platforms.
+Currently support on Mac, iOS and Android, will support more platforms quickly. Can just  modify project file to add cpp files in `reader` to support other platforms.
 
 
 ## How to generate the needed files
