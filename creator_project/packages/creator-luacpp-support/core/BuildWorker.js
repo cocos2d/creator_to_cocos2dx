@@ -79,7 +79,10 @@ class BuildWorker extends WorkerBase {
         let isLuaProject = Utils.isLuaProject(projectRoot);
         if (isLuaProject) {
             resdst = Path.join(projectRoot, 'res');
+
             classes = Path.join(projectRoot, 'frameworks/runtime-src/Classes');
+            if (!Fs.existsSync(classes))
+                classes = Path.join(projectRoot, 'project/Classes'); // cocos2d-x internal lua tests
         } 
         else {
             resdst = Path.join(projectRoot, 'Resources');

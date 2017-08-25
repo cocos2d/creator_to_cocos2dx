@@ -41,8 +41,17 @@ class Utils {
 
     // lua project includes config.json
     static isLuaProject(dir) {
-        let config = Path.join(dir, 'config.json');
-        return Fs.existsSync(config);
+        // project created by console
+        let cocos2dx_path = Path.join(dir, 'frameworks/cocos2d-x');
+        if (Fs.existsSync(cocos2dx_path))
+            return true;
+
+        // cocos2d-x internal lua tests
+        let app_delegate_path = Path.join(dir, 'project/Classes/AppDelegate.cpp');
+        if (Fs.existsSync(app_delegate_path))
+            return true;
+
+        return false;
     }
 
     static getRelativePath(fullpath, uuid) {
