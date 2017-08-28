@@ -78,7 +78,7 @@ You will find:
 
 ## Header search path
 
-Should add `reader` into header search path except iOS/Mac. If developing for Android, can just use existing `Android.mk`, for example, use the `Android.mk` into your game's `Android.mk` like this:
+Should add `reader` into header search path. If developing for Android, can just use existing `Android.mk`, for example, use the `Android.mk` into your game's `Android.mk` like this:
 
 ```
 LOCAL_PATH := $(call my-dir)
