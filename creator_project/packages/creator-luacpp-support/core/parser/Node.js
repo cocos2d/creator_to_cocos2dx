@@ -51,7 +51,7 @@ class Node {
             'cc.EditBox', 'cc.Label', 'sp.Skeleton', 'cc.Sprite',
             'cc.ParticleSystem', 'cc.TiledMap', 'cc.Canvas', 'cc.RichText',
             'cc.VideoPlayer', 'cc.WebView', 'cc.Slider', 'cc.Toggle', 'cc.ToggleGroup',
-            'cc.PageView', 'cc.Mask'];
+            'cc.PageView', 'cc.Mask', 'dragonBones.ArmatureDisplay'];
     
         if (!components)
             return 'cc.Node';

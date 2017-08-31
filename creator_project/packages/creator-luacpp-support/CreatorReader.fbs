@@ -21,7 +21,8 @@ enum ColliderType:byte {BoxCollider, PolygonCollider, CircleCollider}
 
 // New nodes should be added at the end of the union
 // no more than 255 union objects can be added
-union AnyNode {Scene, Sprite, Label, Particle, TileMap, Node, Button, ProgressBar, ScrollView, CreatorScene, EditBox, RichText, SpineSkeleton, VideoPlayer, WebView, Slider, Toggle, ToggleGroup, PageView, Mask}
+union AnyNode {Scene, Sprite, Label, Particle, TileMap, Node, Button, ProgressBar, ScrollView, CreatorScene, 
+               EditBox, RichText, SpineSkeleton, VideoPlayer, WebView, Slider, Toggle, ToggleGroup, PageView, Mask, DragonBones}
 
 table SceneGraph
 {
@@ -339,6 +340,17 @@ table Collider
     size:Size;                      // BoxCollider
     points:[Vec2];                  // PolygonCollider
     radius:float;                   // CircleCollider
+}
+
+table DragonBones
+{
+    node:Node;
+    boneDataPath:string;           // dragon bone json file path
+    textureDataPath:string;
+    armature:string;
+    animation:string;
+    timeScale:float;
+    playTimes:int;
 }
 
 
