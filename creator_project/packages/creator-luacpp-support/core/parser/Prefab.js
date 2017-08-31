@@ -59,7 +59,8 @@ class Prefab extends Node {
     }
 
     _adjust_properties(original_properties, name) {
-        let node_properties = this._properties.node;
+        // if root node is an empty Node, then its Node properties is `this._properties`
+        let node_properties = this._properties.node || this._properties;
         node_properties[name] = original_properties[name];
     }
 
