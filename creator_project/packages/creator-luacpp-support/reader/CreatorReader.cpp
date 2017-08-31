@@ -1257,8 +1257,14 @@ dragonBones::CCArmatureDisplay* CreatorReader::createArmatureDisplay(const buffe
     if (boneDataPath && atlasDataPath)
     {
         auto& factory = dragonBones::CCFactory::factory;
-        factory.loadDragonBonesData(boneDataPath->str());
-        factory.loadTextureAtlasData(atlasDataPath->str());
+        const auto& boneDataName = dragonBonesBuffer->boneDataName();
+        
+        // DragonBones can not reload Bone data in debug mode, may cause asset crash.
+        if (factory.getDragonBonesData(boneDataName->str()) == nullptr)
+        {
+            factory.loadDragonBonesData(boneDataPath->str());
+            factory.loadTextureAtlasData(atlasDataPath->str());
+        }
         
         const auto& armatureName = dragonBonesBuffer->armature();
         auto display = factory.buildArmatureDisplay(armatureName->str());

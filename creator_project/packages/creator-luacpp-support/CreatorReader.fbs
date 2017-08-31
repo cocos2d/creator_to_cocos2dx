@@ -346,6 +346,7 @@ table DragonBones
 {
     node:Node;
     boneDataPath:string;           // dragon bone json file path
+    boneDataName:string;
     textureDataPath:string;
     armature:string;
     animation:string;

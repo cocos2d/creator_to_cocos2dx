@@ -20,11 +20,16 @@ class DragonBones extends Node {
         this.add_property_int('timeScale', '_N$timeScale', dragonbones_armature_display);
         this.add_property_int('playTimes', 'playTimes', dragonbones_armature_display);
 
-        // bones data path
+        // bones data path and bone data name
         let bone_asset = dragonbones_armature_display._N$dragonAsset;
         if (bone_asset) {
             let bone_data_path_info = Utils.get_relative_full_path_by_uuid(bone_asset.__uuid__);
             this._properties.boneDataPath = state._assetpath + bone_data_path_info.relative_path;
+
+            // bone data name
+            let bone_data = fs.readFileSync(bone_data_path_info.fullpath);
+            let bone_data_json = JSON.parse(bone_data);
+            this._properties.boneDataName = bone_data_json.name;
         }
         
         // texture data path and texture path
