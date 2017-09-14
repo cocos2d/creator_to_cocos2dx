@@ -21,7 +21,7 @@ Editor.Panel.extend({
     template: template,
 
     ready() {
-        let opts = Editor.argv.panelArgv;
+        let opts = Editor.require('packages://creator-luacpp-support/package.json');       
         let profileProject = this.profiles.project;
 
         let vm;
