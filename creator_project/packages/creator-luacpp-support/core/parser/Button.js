@@ -1,4 +1,5 @@
 const Node = require('./Node');
+const Utils = require('../Utils');
 const get_sprite_frame_name_by_uuid = require('./Utils').get_sprite_frame_name_by_uuid;
 
 class Button extends Node {
@@ -24,7 +25,7 @@ class Button extends Node {
         let transition = but_component.transition;
         this._properties.transition = transition;
         if (transition == 1) // COLOR transition
-            Util.log('Button COLOR transition is not supported');
+            Utils.log('Button COLOR transition is not supported');
         if (transition == 3) // SCALE transition
             this._properties.zoomScale = but_component.zoomScale;
         if (transition == 2) {
