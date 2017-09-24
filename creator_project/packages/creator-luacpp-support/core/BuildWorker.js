@@ -9,7 +9,7 @@ const Utils = require('./Utils');
 const Constants = require('./Constants');
 const Fs = require('fire-fs');
 const Del = require('del')
-const parse_fire = require('./ConvertFireToJson');
+const parse_fire = require('./parser/ConvertFireToJson');
 
 const {WorkerBase, registerWorker} = require('./WorkerBase');
 
@@ -31,6 +31,7 @@ class BuildWorker extends WorkerBase {
                 this._copyResources(copyReourceInfos);
                 Editor.Ipc.sendToAll('creator-luacpp-support:state-changed', 'finish', 100);
                 this._callback();
+                Utils.log('[creator-luacpp-support] build end');
             }.bind(this));
         }.bind(this));
     }
@@ -78,7 +79,10 @@ class BuildWorker extends WorkerBase {
         let isLuaProject = Utils.isLuaProject(projectRoot);
         if (isLuaProject) {
             resdst = Path.join(projectRoot, 'res');
+
             classes = Path.join(projectRoot, 'frameworks/runtime-src/Classes');
+            if (!Fs.existsSync(classes))
+                classes = Path.join(projectRoot, 'project/Classes'); // cocos2d-x internal lua tests
         } 
         else {
             resdst = Path.join(projectRoot, 'Resources');
@@ -100,8 +104,13 @@ class BuildWorker extends WorkerBase {
         Fs.copySync(Constants.READER_PATH, classes);
         if (!isLuaProject)
         {
-            Fs.unlink(Path.join(classes, 'CreatorReaderBinding.h'));
-            Fs.unlink(Path.join(classes, 'CreatorReaderBinding.cpp'));
+            let bindingHeaderPath = Path.join(classes, 'CreatorReaderBinding.h');
+            if (Fs.existsSync(bindingHeaderPath))
+                Fs.unlink(bindingHeaderPath);
+
+            let bindingSourcePath = Path.join(classes, 'CreatorReaderBinding.cpp');
+            if (Fs.existsSync(bindingSourcePath))
+                Fs.unlink(bindingSourcePath);
         }
 
         Object.keys(copyReourceInfos).forEach(function(uuid) {

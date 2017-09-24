@@ -15,11 +15,14 @@ enum ScrollViewDirection:byte {None, Vertical, Horizontal, Both}
 enum EditBoxReturnType:byte {Default, Done, Send, Search, Go}
 enum EditBoxInputFlag:byte {Password, Sensitive, InitialCapsWord, InitialCapsSentence, InitialCapsAllCharacters, LowercaseAllCharacters}
 enum EditBoxInputMode:byte {Any, EmailAddress, Numeric, PhoneNumber, URL, Decime, SingleLine}
-enum LabelOverflowType:byte {None, Clamp, Shrink, ResizeHeight}
+enum LabelOverflowType:byte {None, Clamp, Shrink, ResizeHeight, Toggle}
+enum MaskType:byte {Rect, Ellipse, ImageStencil}
+enum ColliderType:byte {BoxCollider, PolygonCollider, CircleCollider}
 
 // New nodes should be added at the end of the union
 // no more than 255 union objects can be added
-union AnyNode {Scene, Sprite, Label, Particle, TileMap, Node, Button, ProgressBar, ScrollView, CreatorScene, EditBox, RichText, SpineSkeleton}
+union AnyNode {Scene, Sprite, Label, Particle, TileMap, Node, Button, ProgressBar, ScrollView, CreatorScene, 
+               EditBox, RichText, SpineSkeleton, VideoPlayer, WebView, Slider, Toggle, ToggleGroup, PageView, Mask, DragonBones}
 
 table SceneGraph
 {
@@ -33,6 +36,15 @@ table SceneGraph
 
     // Frames needed for the Scene
     spriteFrames:[SpriteFrame];
+
+    // flabuffer doesn't support array of array
+    // so use a new table to store the values
+    collisionMatrix:[CollisionLine];
+}
+
+table CollisionLine
+{
+    value:[bool];
 }
 
 table NodeTree
@@ -89,6 +101,8 @@ table Node
     skewY:float = 0;
     tag:int = 0;
     anim:AnimationRef;
+    colliders:[Collider];
+    groupIndex:int;
 }
 
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -135,6 +149,7 @@ table Particle
 {
     node:Node;
     particleFilename:string;
+    texturePath:string;                       // may change the texture dynamically
 }
 
 
@@ -201,6 +216,97 @@ table EditBox
     text:string;
 }
 
+table VideoPlayer
+{
+    node:Node;
+    isLocal:bool;
+    url:string;
+    fullScreen:bool;
+    keepAspect:bool;
+}
+
+table WebView
+{
+    node:Node;
+    url:string;
+}
+
+table Slider
+{
+    node:Node;
+    percent:int;
+    barTexturePath:string;
+    barSize:Size;                                // size of bar sprite
+    normalTexturePath:string;
+    pressedTexturePath:string;
+    disabledTexturePath:string;
+    ballSize:Size;                              // size of ball, used to scale normal/pressed/disabled sprite 
+}
+
+table Toggle
+{
+    node:Node;
+    interactable:bool;
+    enableAutoGrayEffect:bool;
+    isChecked:bool;
+    backgroundSpritePath:string;
+    checkMarkSpritePath:string;
+    zoomScale:float;
+}
+
+table ToggleGroup
+{
+    node:Node;
+    allowSwitchOff:bool;
+    toggles:[Toggle];
+}
+
+table Mask
+{
+    node:Node;
+    type:MaskType;
+    inverted:bool;
+    segments:int;                              // used for Ellipse type
+    alphaThreshold:float;                      // used for ImageStencil type
+    spriteFrame:string;                        // used for ImageStencil type
+}
+
+// Page View
+
+table PageViewIndicator
+{
+    positionAnchor:Vec2;
+    spriteFrame:string;
+    spriteFrameFromTP:bool;                    // indicates whether sprite frame from texture packer
+    space:float;
+    direction:int;
+}
+
+table PageViewPage
+{
+    node:Node;
+    spriteFrame:string;
+    spriteFrameFromTP:bool; 
+    scale9Enabled:bool;
+}
+
+table PageViewBackground
+{
+    spriteFrame:string;
+    spriteFrameFromTP:bool;
+}
+
+table PageView
+{
+    node:Node;
+    inertia:bool;
+    bounceEnabled:bool;
+    direction:ScrollViewDirection;
+    indicator:PageViewIndicator;
+    pages:[PageViewPage];
+    background:PageViewBackground;
+}
+
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 // Misc Nodes and extensions
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -225,6 +331,27 @@ table AnimationRef
     clips:[AnimationClip];
     playOnLoad:bool;
     defaultClip:string;
+}
+
+table Collider
+{
+    type:ColliderType;
+    offset:Vec2;
+    size:Size;                      // BoxCollider
+    points:[Vec2];                  // PolygonCollider
+    radius:float;                   // CircleCollider
+}
+
+table DragonBones
+{
+    node:Node;
+    boneDataPath:string;           // dragon bone json file path
+    boneDataName:string;
+    textureDataPath:string;
+    armature:string;
+    animation:string;
+    timeScale:float;
+    playTimes:int;
 }
 
 
