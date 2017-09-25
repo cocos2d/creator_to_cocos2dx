@@ -103,7 +103,7 @@ class FireParser {
                 this.to_json_setup();
                 let jsonNode = scene_obj.to_json(0, 0);
                 this._json_output.root = jsonNode;
-                let dump = JSON.stringify(this._json_output, null, '\t');
+                let dump = JSON.stringify(this._json_output, null, '\t').replace(/\\\\/g,'/');
                 fs.writeSync(this._json_file, dump);
                 fs.close(this._json_file);
             }
