@@ -90,19 +90,15 @@ namespace {
 // CreatorReader main class
 //
 CreatorReader::CreatorReader()
-: _scene(nullptr)
-, _version("")
+: _version("")
 , _positionDiffDesignResolution(0, 0)
 {
-    _animationManager = AnimationManager::create();
-    _animationManager->retain();
-    
+    _animationManager = new AnimationManager();
     _collisionManager = new ColliderManager();
 }
 
 CreatorReader::~CreatorReader()
 {
-    CC_SAFE_RELEASE_NULL(_scene);
     CC_SAFE_RELEASE_NULL(_collisionManager);
     CC_SAFE_RELEASE_NULL(_animationManager);
 }
@@ -233,13 +229,6 @@ cocos2d::Scene* CreatorReader::getSceneGraph() const
     CCLOG("NodeTree: %p", nodeTree);
 
     cocos2d::Node* node = createTree(nodeTree);
-
-    // make scene at the center of screen
-    // should not just node's position because it is a Scene, and it will cause issue that click position is not correct(it is a bug of cocos2d-x)
-    // and should not change camera's position
-    for (auto& child : node->getChildren())
-        if (dynamic_cast<Camera*>(child) == nullptr)
-            child->setPosition(child->getPosition() + _positionDiffDesignResolution);
     
     _animationManager->playOnLoad();
     
@@ -338,11 +327,9 @@ cocos2d::Node* CreatorReader::createTree(const buffers::NodeTree* tree) const
         case buffers::AnyNode_Mask:
             node = createMask(static_cast<const buffers::Mask*>(buffer));
             break;
-#if (USE_DRAGON_BONES == 1)
         case buffers::AnyNode_DragonBones:
             node = createArmatureDisplay(static_cast<const buffers::DragonBones*>(buffer));
             break;
-#endif
     }
 
     // recursively add its children
@@ -361,6 +348,7 @@ cocos2d::Node* CreatorReader::createTree(const buffers::NodeTree* tree) const
                 button->setTitleLabel(label);
             }
         }
+    
     }
 
     return node;
@@ -409,7 +397,7 @@ void CreatorReader::parseNode(cocos2d::Node* node, const buffers::Node* nodeBuff
     const auto& opacityModifyRGB = nodeBuffer->opacityModifyRGB();
     node->setOpacityModifyRGB(opacityModifyRGB);
     const auto position = nodeBuffer->position();
-    if (position) node->setPosition(cocos2d::Vec2(position->x(), position->y()));
+    if (position) node->setPosition(cocos2d::Vec2(position->x(), position->y()) + _positionDiffDesignResolution);
     node->setRotationSkewX(nodeBuffer->rotationSkewX());
     node->setRotationSkewY(nodeBuffer->rotationSkewY());
     node->setScaleX(nodeBuffer->scaleX());
@@ -1265,7 +1253,6 @@ void CreatorReader::parseSpineSkeleton(spine::SkeletonAnimation* spine, const bu
     spine->setDebugBonesEnabled(debugBones);
 }
 
-#if (USE_DRAGON_BONES == 1)
 dragonBones::CCArmatureDisplay* CreatorReader::createArmatureDisplay(const buffers::DragonBones* dragonBonesBuffer) const
 {
     const auto& boneDataPath = dragonBonesBuffer->boneDataPath();
@@ -1305,7 +1292,6 @@ void CreatorReader::parseArmatureDisplay(dragonBones::CCArmatureDisplay* armatur
         armatureDisplay->getAnimation().play(animationName->str());
     }
 }
-#endif // (USE_DRAGON_BONES == 1)
 
 
 //
