@@ -91,20 +91,21 @@ class BuildWorker extends WorkerBase {
         // move all resources into 'creator' folder
         resdst = Path.join(resdst, Constants.RESOURCE_FOLDER_NAME);
         // remove all .cpp/.h files into 'reader'
-        classes = Path.join(classes, 'reader');
+        //classes = Path.join(classes, 'reader');
+        let codeFilesDist = Path.join(classes, 'reader')
 
         // remove previous reader and resources first
         Del.sync(resdst, {force: true});
-        Del.sync(classes, {force: true});
+        Del.sync(codeFilesDist, {force: true});
 
         // copy .ccreator
         this._copyTo(Constants.CCREATOR_PATH, resdst, ['.ccreator'], true);
         // copy reader
         // should exclude binding codes for c++ project
-        Fs.copySync(Constants.READER_PATH, classes);
+        Fs.copySync(Constants.READER_PATH, codeFilesDist);
         if (!isLuaProject)
         {
-            let bindingCodesPath = Path.join(classes, 'reader/lua-binidngs');
+            let bindingCodesPath = Path.join(classes, 'reader/lua-bindings');
             Del.sync(bindingCodesPath, {force: true});
         }
 
