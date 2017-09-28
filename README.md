@@ -103,6 +103,7 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)/../../Classes
 
 
 LOCAL_STATIC_LIBRARIES := cocos2dx_static
+# LOCAL_STATIC_LIBRARIES += creator_reader_lua  # for lua project 
 LOCAL_STATIC_LIBRARIES += creator_reader   # add dependence
 
 # _COCOS_LIB_ANDROID_BEGIN
@@ -143,11 +144,11 @@ void some_function()
 Register creator binding codes in c++
 
 ```c++
-#include "reader/CreatorReaderBinding.h"
+#include "reader/lua-bindings/creator_reader_bindings.hpp"
 
 ...
 
-register_all_creator_reader_manual(L);
+register_creator_reader_manual(L);
 ```
 
 Use in lua
@@ -159,9 +160,9 @@ local scene = creatorReader:getSceneGraph()
 cc.Director:getInstance():replaceScene(scene)
 ```
 
-## How to use CollisionManager
+## How to use ColliderManager
 
-`CollisionManager` is used to manage collisions. Every scene has an instance of `CollisionManager`. You can use it like this to listen collision events:
+`ColliderManager ` is used to manage collisions. Every scene has an instance of `ColliderManager `. You can use it like this to listen collision events:
 
 ```c++
 creator::CreatorReader* reader = creator::CreatorReader::createWithFilename("creator/CreatorSprites.ccreator");
@@ -172,8 +173,8 @@ reader->setup();
 // get the scene graph
 Scene* scene = reader->getSceneGraph();
 
-auto collisionManager = scene->getCollisionManager();
-collisionManager->registerCollitionCallback([=](creator::Contract::CollisionType type,
+auto colliderManager = scene->getColliderManager();
+colliderManager->registerCollitionCallback([=](creator::Contract::CollisionType type,
                                                              creator::Collider* collider1,
                                                              creator::Collider* collider2) {
         if (type == creator::Contract::CollisionType::ENTER)
@@ -185,7 +186,7 @@ collisionManager->registerCollitionCallback([=](creator::Contract::CollisionType
 }, "");
 ```
 
-More features of `CollisionManager` can refer to [the header file](https://github.com/cocos2d/creator_to_cocos2dx/tree/master/creator_project/packages/creator-luacpp-support/reader/collider/ColliderManager.h).
+More features of `colliderManager` can refer to [the header file](https://github.com/cocos2d/creator_to_cocos2dx/tree/master/creator_project/packages/creator-luacpp-support/reader/collider/ColliderManager.h).
 
 ## Use the plugin in your Cocos Creator project
 
