@@ -52,13 +52,16 @@ Supported nodes:
 * `Mask`
 * `Collider`
 * `Prefab`
+* `DragonBones`
 
 Supporting JavaScript scripts would be overkill. If you need JavaScript scripting
 support, just use Creator.
 
 ## Sample project
 
-Can fetch [this branch](https://github.com/minggo/cocos2d-x/tree/creator-cpp-support-test-v315) and run `cpp-empty-test`. The branch based on v3.15, don't forget to update external libraries.
+Can fetch [this branch](https://github.com/minggo/cocos2d-x/tree/creator-cpp-support-test-v315) and run `cpp-empty-test` or `lua-empty-test`. The branch based on v3.15, don't forget to update external libraries.
+
+__dragonbones__ is not supported for lua currently, will add dragonbones quickly.
 
 Currently support on Mac, iOS and Android, will support more platforms quickly. Can just  modify project file to add cpp files in `reader` to support other platforms.
 
