@@ -104,13 +104,8 @@ class BuildWorker extends WorkerBase {
         Fs.copySync(Constants.READER_PATH, classes);
         if (!isLuaProject)
         {
-            let bindingHeaderPath = Path.join(classes, 'CreatorReaderBinding.h');
-            if (Fs.existsSync(bindingHeaderPath))
-                Fs.unlink(bindingHeaderPath);
-
-            let bindingSourcePath = Path.join(classes, 'CreatorReaderBinding.cpp');
-            if (Fs.existsSync(bindingSourcePath))
-                Fs.unlink(bindingSourcePath);
+            let bindingCodesPath = Path.join(classes, 'reader/lua-binidngs');
+            Del.sync(bindingCodesPath, {force: true});
         }
 
         Object.keys(copyReourceInfos).forEach(function(uuid) {
