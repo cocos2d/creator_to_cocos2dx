@@ -143,6 +143,8 @@ AnimateClip::AnimateClip()
 : _clip(nullptr)
 , _elapsed(0)
 , _rootTarget(nullptr)
+, _needStop(true)
+, _durationToStop(0.f)
 {
 }
 
@@ -189,9 +191,15 @@ bool AnimateClip::initWithAnimationClip(cocos2d::Node* rootTarget, AnimationClip
     if (_clip)
     {
         _clip->retain();
-        _duration = _clip->getDuration();
+        
+        auto wrapMode = clip->getWrapMode();
+        if (wrapMode == AnimationClip::WrapMode::Loop || wrapMode == AnimationClip::WrapMode::LoopReverse)
+            _needStop = false;
+        
+        _durationToStop = _clip->getDuration();
+        if (wrapMode == AnimationClip::WrapMode::PingPong || wrapMode == AnimationClip::WrapMode::PingPongReverse)
+            _durationToStop = _clip->getDuration() * 2;
     }
-    
 
     return clip != nullptr;
 }
@@ -199,17 +207,18 @@ bool AnimateClip::initWithAnimationClip(cocos2d::Node* rootTarget, AnimationClip
 void AnimateClip::update(float dt) {
     _elapsed += dt;
     
-    const auto& animPropertiesVec = _clip->getAnimPropertiesVec();
-    
-    for (const auto& animProperties : animPropertiesVec)
-        doUpdate(animProperties);
-
-    if (_elapsed >= _duration)
+    if (_needStop && _elapsed >= _durationToStop)
     {
         stopAnimate();
         if (_endCallback)
             _endCallback();
+        
+        return;
     }
+    
+    const auto& animProperties = _clip->getAnimProperties();
+    for (const auto& animProperties : animProperties)
+        doUpdate(animProperties);
 }
 
 void AnimateClip::doUpdate(const AnimProperties& animProperties) const
@@ -217,55 +226,57 @@ void AnimateClip::doUpdate(const AnimProperties& animProperties) const
     auto target = getTarget(animProperties.path);
     if (target)
     {
+        auto elapsed = computeElapse();
+        
         // update position
         cocos2d::Vec2 nextPos;
-        if (getNextValue(animProperties.animPosition, _elapsed, nextPos))
+        if (getNextValue(animProperties.animPosition, elapsed, nextPos))
             target->setPosition(nextPos);
 
         // update color
         cocos2d::Color3B nextColor;
-        if (getNextValue(animProperties.animColor, _elapsed, nextColor))
+        if (getNextValue(animProperties.animColor, elapsed, nextColor))
             target->setColor(nextColor);
 
         // update scaleX
         float nextValue;
-        if (getNextValue(animProperties.animScaleX, _elapsed, nextValue))
+        if (getNextValue(animProperties.animScaleX, elapsed, nextValue))
             target->setScaleX(nextValue);
 
         // update scaleY
-        if (getNextValue(animProperties.animScaleY, _elapsed, nextValue))
+        if (getNextValue(animProperties.animScaleY, elapsed, nextValue))
             target->setScaleY(nextValue);
 
         // rotation
-        if (getNextValue(animProperties.animRotation, _elapsed, nextValue))
+        if (getNextValue(animProperties.animRotation, elapsed, nextValue))
             target->setRotation(nextValue);
 
         // SkewX
-        if (getNextValue(animProperties.animSkewX, _elapsed, nextValue))
+        if (getNextValue(animProperties.animSkewX, elapsed, nextValue))
             target->setSkewX(nextValue);
 
         // SkewY
-        if (getNextValue(animProperties.animSkewY, _elapsed, nextValue))
+        if (getNextValue(animProperties.animSkewY, elapsed, nextValue))
             target->setSkewY(nextValue);
 
         // Opacity
-        if (getNextValue(animProperties.animOpacity, _elapsed, nextValue))
+        if (getNextValue(animProperties.animOpacity, elapsed, nextValue))
             target->setOpacity(nextValue);
 
         // anchor x
-        if (getNextValue(animProperties.animAnchorX, _elapsed, nextValue))
+        if (getNextValue(animProperties.animAnchorX, elapsed, nextValue))
             target->setAnchorPoint(cocos2d::Vec2(nextValue, target->getAnchorPoint().y));
 
         // anchor y
-        if (getNextValue(animProperties.animAnchorY, _elapsed, nextValue))
+        if (getNextValue(animProperties.animAnchorY, elapsed, nextValue))
             target->setAnchorPoint(cocos2d::Vec2(target->getAnchorPoint().x, nextValue));
 
         // positoin x
-        if (getNextValue(animProperties.animPositionX, _elapsed, nextValue))
+        if (getNextValue(animProperties.animPositionX, elapsed, nextValue))
             target->setPositionX(nextValue);
         
         // position y
-        if (getNextValue(animProperties.animPositionY, _elapsed, nextValue))
+        if (getNextValue(animProperties.animPositionY, elapsed, nextValue))
             target->setPositionY(nextValue);
     }
 }
@@ -281,4 +292,25 @@ cocos2d::Node* AnimateClip::getTarget(const std::string &path) const
         return true;
     });
     return ret;
+}
+
+float AnimateClip::computeElapse() const
+{
+    auto elapsed = _elapsed;
+    auto duration = _clip->getDuration();
+    
+    // if wrap mode is pingpong or pingpongreverse, then _elapsed may be bigger than duration
+    while (elapsed >= duration)
+        elapsed = elapsed - duration;
+    
+    const auto wrapMode = _clip->getWrapMode();
+    bool oddRound = (static_cast<int>(_elapsed / duration) % 2) == 0;
+    if (wrapMode == AnimationClip::WrapMode::Reverse  // reverse mode
+        || (wrapMode == AnimationClip::WrapMode::PingPong && !oddRound) // pingpong mode and it is the second round
+        || (wrapMode == AnimationClip::WrapMode::PingPongReverse && oddRound) // pingpongreverse mode and it is the first round
+        || (wrapMode == AnimationClip::WrapMode::LoopReverse && oddRound)
+        )
+        elapsed = duration - elapsed;
+    
+    return elapsed;
 }

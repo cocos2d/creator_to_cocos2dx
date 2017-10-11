@@ -452,6 +452,9 @@ void CreatorReader::parseNodeAnimation(cocos2d::Node* node, const buffers::Node*
             const auto& name = fbAnimationClip->name();
             animClip->setName(name->str());
             
+            const auto& wrapMode = fbAnimationClip->wrapMode();
+            animClip->setWrapMode(static_cast<AnimationClip::WrapMode>(wrapMode));
+            
             // is it defalut animation clip?
             if (hasDefaultAnimclip && name->str() == animRef->defaultClip()->str())
                 animationInfo.defaultClip = animClip;
