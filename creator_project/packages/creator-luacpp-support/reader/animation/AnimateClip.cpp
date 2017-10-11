@@ -59,76 +59,45 @@ namespace  {
         return (elapsed - p1.frame) / (p2.frame - p1.frame);
     }
     
-    void assignVec2(const cocos2d::Vec2 &src, cocos2d::Vec2& dst)
+    void assignValue(float src, float& dst)
     {
-        dst.x = src.x;
-        dst.y = src.y;
+        dst = src;
     }
     
-    bool getNextPos(const std::vector<creator::AnimPropPosition> &properties, float elapsed, cocos2d::Vec2 &out)
-    {
-        int index = getValidIndex(properties, elapsed);
-        if (index == -1)
-            return false;
-        
-        if (index == -2)
-        {
-            assignVec2(properties.front().value, out);
-            return true;
-        }
-        
-        if (index == properties.size() -1)
-        {
-            assignVec2(properties.back().value, out);
-            return true;
-        }
-        
-        const auto& prop = properties[index];
-        const auto& nextProp = properties[index+1];
-        float percent = getPercent(prop, nextProp, elapsed);
-        out.x = prop.value.x + percent * (nextProp.value.x - prop.value.x);
-        out.y = prop.value.y + percent * (nextProp.value.y - prop.value.y);
-        
-        return true;
-    }
-    
-    void assignColor(const cocos2d::Color3B& src, cocos2d::Color3B& dst)
+    void assignValue(const cocos2d::Color3B& src, cocos2d::Color3B& dst)
     {
         dst.r = src.r;
         dst.g = src.g;
         dst.b = src.b;
     }
     
-    bool getNextColor(const std::vector<creator::AnimPropColor> &properties, float elapsed, cocos2d::Color3B &out)
+    void assignValue(const cocos2d::Vec2& src, cocos2d::Vec2& dst)
     {
-        int index = getValidIndex(properties, elapsed);
-        if (index == -1)
-            return false;
-        
-        if (index == -2)
-        {
-            assignColor(properties.front().value, out);
-            return true;
-        }
-        
-        if (index == properties.size() -1)
-        {
-            assignColor(properties.back().value, out);
-            return true;
-        }
-        
-        const auto& prop = properties[index];
-        const auto& nextProp = properties[index+1];
-        float percent = getPercent(prop, nextProp, elapsed);
-        out.r = prop.value.r + percent * (nextProp.value.r - prop.value.r);
-        out.g = prop.value.g + percent * (nextProp.value.g - prop.value.g);
-        out.b = prop.value.b + percent * (nextProp.value.b - prop.value.b);
-        
-        return true;
+        dst.x = src.x;
+        dst.y = src.y;
     }
     
-    template<typename P>
-    bool getNextValue(const P & properties, float elapsed, float &out)
+    template<typename T>
+    void computeNextValue(T start, T end, float percent, T &out)
+    {
+        out = start + percent * (end - start);
+    }
+    
+    void computeNextValue(const cocos2d::Color3B& start, const cocos2d::Color3B& end, float percent, cocos2d::Color3B& out)
+    {
+        computeNextValue(start.r, end.r, percent, out.r);
+        computeNextValue(start.g, end.g, percent, out.g);
+        computeNextValue(start.b, end.b, percent, out.b);
+    }
+    
+    void computeNextValue(const cocos2d::Vec2& start, const cocos2d::Vec2& end, float percent, cocos2d::Vec2& out)
+    {
+        computeNextValue(start.x, end.x, percent, out.x);
+        computeNextValue(start.y, end.y, percent, out.y);
+    }
+    
+    template<typename P, typename T>
+    bool getNextValue(const P & properties, float elapsed, T &out)
     {
         int index = getValidIndex(properties, elapsed);
         if (index == -1)
@@ -136,20 +105,20 @@ namespace  {
         
         if (index == -2)
         {
-            out = properties.front().value;
+            assignValue(properties.front().value, out);
             return true;
         }
         
         if (index == properties.size() -1)
         {
-            out = properties.back().value;
+            assignValue(properties.back().value, out);
             return true;
         }
         
         const auto& prop = properties[index];
         const auto& nextProp = properties[index+1];
         float percent = getPercent(prop, nextProp, elapsed);
-        out = prop.value + percent * (nextProp.value - prop.value);
+        computeNextValue(prop.value, nextProp.value, percent, out);
         
         return true;
     }
@@ -250,12 +219,12 @@ void AnimateClip::doUpdate(const AnimProperties& animProperties) const
     {
         // update position
         cocos2d::Vec2 nextPos;
-        if (getNextPos(animProperties.animPosition, _elapsed, nextPos))
+        if (getNextValue(animProperties.animPosition, _elapsed, nextPos))
             target->setPosition(nextPos);
 
         // update color
         cocos2d::Color3B nextColor;
-        if (getNextColor(animProperties.animColor, _elapsed, nextColor))
+        if (getNextValue(animProperties.animColor, _elapsed, nextColor))
             target->setColor(nextColor);
 
         // update scaleX
