@@ -237,8 +237,8 @@ void AnimateClip::update(float dt) {
         return;
     }
     
-    const auto& animProperties = _clip->getAnimProperties();
-    for (const auto& animProperties : animProperties)
+    const auto& allAnimProperties = _clip->getAnimProperties();
+    for (const auto& animProperties : allAnimProperties)
         doUpdate(animProperties);
 }
 
