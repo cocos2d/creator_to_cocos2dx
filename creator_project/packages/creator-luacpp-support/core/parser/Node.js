@@ -220,13 +220,35 @@ class Node {
             };
 
             function parseCurveDataProps(props) {
+                // curve property may
+                // - doesn't exist
+                // - string
+                // - an array of data
+                function parseCurveProperty(from, to) {
+                    let curve = from.curve;
+                    if (curve) {
+                        let curve_type = typeof(curve);
+                        if (curve_type === 'string')
+                            to.curveType = curve;
+                        else {
+                            // array of data
+                            to.curveData = curve.slice();
+                        }
+                    }
+                }
+
                 function addProp(from, from_key, to, to_key) {
                     if (from[from_key]) {
-                        to[to_key] = from[from_key];
-                        // FIXME: doesn't support 'curve' field now
-                        to[to_key].forEach(function(prop){
-                            delete prop.curve;
-                        })
+                        to[to_key] = [];
+                        from[from_key].forEach(function(prop) {
+                            let value = {
+                                frame: prop.frame,
+                                value: prop.value,
+                            };
+
+                            parseCurveProperty(prop, value);
+                            to[to_key].push(value);
+                        });
                     }
                 }
 
@@ -243,25 +265,29 @@ class Node {
                 addProp(props, 'opacity', result, 'opacity');
                 
 
-                // position.value -> {x:, y:}
+                // position -> {x:, y:, curveType?, curveData?}
                 if (props.position) {
                     result.position = [];
                     props.position.forEach(function(pos) {
-                        result.position.push({
+                        let value = {
                             frame: pos.frame,
                             value: {x: pos.value[0], y: pos.value[1]}
-                        });
+                        };
+                        parseCurveProperty(pos, value);
+                        result.position.push(value);
                     });
                 }
 
-                // color: delete color.__type__
+                // color
                 if (props.color) {
                     result.color = [];
                     props.color.forEach(function(clr){
-                        result.color.push({
+                        let value = {
                             frame: clr.frame,
                             value: {r:clr.value.r, g:clr.value.g, b:clr.value.g, a:clr.value.a}
-                        });
+                        };
+                        parseCurveProperty(clr, value);
+                        result.color.push(value);
                     });
                 }
 
