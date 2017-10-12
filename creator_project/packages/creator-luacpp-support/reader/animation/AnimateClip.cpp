@@ -26,8 +26,14 @@
 #include "AnimateClip.h"
 #include "AnimationClip.h"
 #include "AnimationClipProperties.h"
+#include "Easing.h"
+#include "Bezier.h"
+
+#include <functional>
 
 namespace  {
+    
+    creator::AnimationClip* g_clip = nullptr;
     
     // -1: invalid index
     // -2: haven't reached first frame, so it should be the same as first frame
@@ -56,7 +62,19 @@ namespace  {
     template<typename P>
     float getPercent(const P& p1, const P& p2, float elapsed)
     {
-        return (elapsed - p1.frame) / (p2.frame - p1.frame);
+        const auto& curveType = p1.curveType;
+        const auto& curveData = p1.curveData;
+        auto ratio = (elapsed - p1.frame) / (p2.frame - p1.frame);
+        
+        if (!curveType.empty())
+        {
+            const auto& easingFunc = creator::Easing::getFunction(curveType);
+            ratio = easingFunc(ratio);
+        }
+        if (curveData.size() > 0)
+            ratio = creator::Bazier::computeBezier(curveData, ratio);
+        
+        return ratio;
     }
     
     void assignValue(float src, float& dst)
@@ -199,6 +217,9 @@ bool AnimateClip::initWithAnimationClip(cocos2d::Node* rootTarget, AnimationClip
         _durationToStop = _clip->getDuration();
         if (wrapMode == AnimationClip::WrapMode::PingPong || wrapMode == AnimationClip::WrapMode::PingPongReverse)
             _durationToStop = _clip->getDuration() * 2;
+        
+        // assign it to be used in anonymous namespace
+        g_clip = _clip;
     }
 
     return clip != nullptr;
