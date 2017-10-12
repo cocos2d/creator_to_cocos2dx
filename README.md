@@ -42,7 +42,7 @@ Supported nodes:
 * `RichText`: need cocos2d-x 3.16+ to support img tag, refer to [this issue](https://github.com/cocos2d/creator_to_cocos2dx/issues/41) for detail information
 * `SpineSkeleton`
 * `Widget`: only supports `AlignOnce`
-* `Animations`: only supports linear animation
+* `Animations`
 * `VideoPlayer`: iOS should add `MediaPlayer.framework` to the project
 * `WebView`
 * `Slider`
@@ -61,7 +61,7 @@ support, just use Creator.
 
 Can fetch [this branch](https://github.com/minggo/cocos2d-x/tree/creator-cpp-support-test-v315) and run `cpp-empty-test` or `lua-empty-test`. The branch based on v3.15, don't forget to update external libraries.
 
-Currently support on Mac, iOS and Android, will support more platforms quickly. Can just modify project file to add cpp files in `reader` to support other platforms.
+Currently support on Mac, iOS Android, Windows.
 
 
 ## How to generate the needed files
