@@ -79,7 +79,20 @@ You will find:
 
 ## Header search path
 
-Should add `reader` into header search path. If developing for Android, can just use existing `Android.mk`, for example, use the `Android.mk` into your game's `Android.mk` like this:
+For cpp projects, should just add `reader` into header search path. For lua projects, should add these header path:
+
+* reader
+* reader/collider
+* reader/animation
+* reader/dragonbones/cocos2dx
+* reader/dragonbones/armature
+* reader/dragonbones/animation
+* reader/dragonbones/events
+* reader/dragonbones/factories
+* reader/dragonbones/core
+* reader/dragonbones/geom
+
+If developing for Android, can just use existing `Android.mk`, for example, use the `Android.mk` into your game's `Android.mk` like this:
 
 ```
 LOCAL_PATH := $(call my-dir)
