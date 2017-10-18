@@ -39,7 +39,10 @@ Supported nodes:
 * `TiledMap`
 * `Button`
 * `ProgressBar`
-* `RichText`: need cocos2d-x 3.16+ to support img tag, refer to [this issue](https://github.com/cocos2d/creator_to_cocos2dx/issues/41) for detail information
+* `RichText`: 
+   * Need cocos2d-x 3.16+ to support img tag, refer to [this issue](https://github.com/cocos2d/creator_to_cocos2dx/issues/41) for detail information. 
+   * Doesn't support `line height`because cocos2d-x's `RichText` doesn't support this features.
+   * Doesn't support `horizontal alignment`because cocos2d-x's `RichText` doesn't support this features. Though cocos2d-x v3.16+ supports this feature, but it is hard for plugin to danymicly supporting it according cocos2d-x's version.
 * `SpineSkeleton`
 * `Widget`: only supports `AlignOnce`
 * `Animations`
