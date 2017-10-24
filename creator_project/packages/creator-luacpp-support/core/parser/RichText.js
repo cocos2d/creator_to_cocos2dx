@@ -1,6 +1,7 @@
 const Node = require('./Node');
 const Label = require('./Label');
 const Utils = require('./Utils');
+const state = require('./Global').state;
 
 class RichText extends Node {
     constructor(data) {
@@ -51,7 +52,7 @@ class RichText extends Node {
         this._properties.lineHeight = component._N$lineHeight;
         let f = component._N$font;
         if (f)
-            this._properties.fontFilename = Utils.get_font_path_by_uuid(f.__uuid__);
+            this._properties.fontFilename = state._assetpath + Utils.get_font_path_by_uuid(f.__uuid__);
         else
             this._properties.fontFilename = 'Arial';
 
