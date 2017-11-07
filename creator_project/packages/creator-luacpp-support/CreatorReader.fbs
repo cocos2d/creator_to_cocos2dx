@@ -132,6 +132,7 @@ table Label
     fontType:FontType;
     overflowType:LabelOverflowType;
     enableWrap:bool;
+    outline:LabelOutline;
 }
 
 table RichText
@@ -563,6 +564,12 @@ struct ColorRGBA
     g:ubyte;
     b:ubyte;
     a:ubyte;
+}
+
+table LabelOutline
+{
+    color:ColorRGBA;
+    width:float;
 }
 
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-

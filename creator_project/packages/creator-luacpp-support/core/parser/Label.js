@@ -21,6 +21,22 @@ class Label extends Node {
         this._properties.fontSize = component._fontSize;
         this._properties.labelText = component._N$string;
 
+        // outline
+        let outline_component = Node.get_node_component_of_type(this._node_data, 'cc.LabelOutline');
+        if (outline_component) {
+            let color = outline_component._color;
+            let outline_info = {
+                color: {
+                    r: color.r,
+                    g: color.g,
+                    b: color.b,
+                    a: color.a
+                },
+                width: outline_component._width
+            }
+            this._properties.outline = outline_info;
+        }
+
         // alignments
         this._properties.horizontalAlignment = Label.H_ALIGNMENTS[component._N$horizontalAlign];
         this._properties.verticalAlignment = Label.V_ALIGNMENTS[component._N$verticalAlign];
