@@ -56,6 +56,7 @@ Supported nodes:
 * `Collider`
 * `Prefab`
 * `DragonBones`
+* `MotionStreak`
 
 Supporting JavaScript scripts would be overkill. If you need JavaScript scripting
 support, just use Creator.
