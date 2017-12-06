@@ -88,34 +88,41 @@ class BuildWorker extends WorkerBase {
             resdst = Path.join(projectRoot, 'Resources');
             classes = Path.join(projectRoot, 'Classes');
         }
-        // move all resources into 'creator' folder
-        resdst = Path.join(resdst, Constants.RESOURCE_FOLDER_NAME);
-        // remove all .cpp/.h files into 'reader'
-        //classes = Path.join(classes, 'reader');
-        let codeFilesDist = Path.join(classes, 'reader')
 
-        // remove previous reader and resources first
-        Del.sync(resdst, {force: true});
-        Del.sync(codeFilesDist, {force: true});
-
-        // copy .ccreator
-        this._copyTo(Constants.CCREATOR_PATH, resdst, ['.ccreator'], true);
-        // copy reader
-        // should exclude binding codes for c++ project
-        Fs.copySync(Constants.READER_PATH, codeFilesDist);
-        if (!isLuaProject)
+        // copy resources
         {
-            let bindingCodesPath = Path.join(classes, 'reader/lua-bindings');
-            Del.sync(bindingCodesPath, {force: true});
+            // copy .ccreator
+            resdst = Path.join(resdst, Constants.RESOURCE_FOLDER_NAME);
+            Del.sync(resdst, {force: true});
+            this._copyTo(Constants.CCREATOR_PATH, resdst, ['.ccreator'], true);
+
+            // copy other resources
+            Object.keys(copyReourceInfos).forEach(function(uuid) {
+                let pathInfo = copyReourceInfos[uuid];
+                let src = pathInfo.fullpath;
+                let dst = Path.join(resdst, pathInfo.relative_path);
+                Fs.ensureDirSync(Path.dirname(dst));
+                Fs.copySync(src, dst);
+            });
         }
 
-        Object.keys(copyReourceInfos).forEach(function(uuid) {
-            let pathInfo = copyReourceInfos[uuid];
-            let src = pathInfo.fullpath;
-            let dst = Path.join(resdst, pathInfo.relative_path);
-            Fs.ensureDirSync(Path.dirname(dst));
-            Fs.copySync(src, dst);
-        });
+        let state = Editor.remote.Profile.load('profile://project/creator-luacpp-support.json', Constants.PROFILE_DEFAULTS);
+        if (state.data.exportResourceOnly)
+            return;
+
+        // copy reader
+        {
+            let codeFilesDist = Path.join(classes, 'reader')
+            Del.sync(codeFilesDist, {force: true});
+            Fs.copySync(Constants.READER_PATH, codeFilesDist);
+
+            // should exclude binding codes for c++ project
+            if (!isLuaProject)
+            {
+                let bindingCodesPath = Path.join(classes, 'reader/lua-bindings');
+                Del.sync(bindingCodesPath, {force: true});
+            }
+        }
     }
 
    // copy all files with ext in src to dst

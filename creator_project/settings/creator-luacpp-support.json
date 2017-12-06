@@ -1,5 +1,6 @@
 {
   "autoBuild": false,
+  "exportResourceOnly": false,
   "path": "/Users/minggo/SourceCode/cocos2d-x/tests/lua-empty-test",
   "setup": false
 }
