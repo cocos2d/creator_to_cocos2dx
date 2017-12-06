@@ -204,5 +204,4 @@ colliderManager->registerCollitionCallback([=](creator::Contract::CollisionType 
 More features of `colliderManager` can refer to [the header file](https://github.com/cocos2d/creator_to_cocos2dx/tree/master/creator_project/packages/creator-luacpp-support/reader/collider/ColliderManager.h).
 
 ## Use the plugin in your Cocos Creator project
-
-Currently, the plugin is not completed enough, so we don't put it into Cocos Creator plugin store. But you can copy `creator_project/packages/creator_luacpp_support` into `Cocos Creator project/packages`, then you will see the plugin in __Project -> LuaCPP Support__. 
+You can install the released version from Creator, or you can copy `creator_project/packages/creator_luacpp_support` into `Cocos Creator project/packages`, then you will see the plugin in __Project -> LuaCPP Support__. 
