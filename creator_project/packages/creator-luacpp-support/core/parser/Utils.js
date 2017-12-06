@@ -248,6 +248,7 @@ let create_node = function (node_type, node_data) {
     const Mask = require('./Mask');
     const Prefab = require('./Prefab');
     const DragonBones = require('./DragonBones');
+    const MotionStreak = require('./MotionStreak');
 
     let n = null;
     if (node_type === 'cc.Node')
@@ -292,6 +293,8 @@ let create_node = function (node_type, node_data) {
         n = new Prefab(node_data);
     else if (node_type === 'dragonBones.ArmatureDisplay')
         n = new DragonBones(node_data);
+    else if (node_type === 'cc.MotionStreak')
+        n = new MotionStreak(node_data);
 
     if (n != null)
         n.parse_properties();
