@@ -93,7 +93,7 @@ class Node {
             object_type: 'Node',
             children: []
         }
-        this._properties = {}
+        this._properties = {};
     }
 
     add_property_str(newkey, value, data) {
@@ -149,7 +149,18 @@ class Node {
         this.parse_node_properties();
         
         // 2nd: parse children
-        this.parse_children();  
+        this.parse_children();
+    }
+
+    /** A Node may have `cc.Sprite` and `cc.MotionStreak` components, and a Node's
+     * type is determined by its component. Then what is the type of the Node? To
+     * resolve the issue, we handle `cc.MotionStreak` component here.
+     */
+    handle_motion_streak(father) {
+        if (Node.get_node_component_of_type(this._node_data, 'cc.MotionStreak') != null) {
+            let n = Utils.create_node('cc.MotionStreak', this._node_data);
+            father.add_child(n);
+        }
     }
 
     parse_children() {
@@ -192,8 +203,10 @@ class Node {
             if (node_type != null) {
                 let n = Utils.create_node(node_type, node);
                 this.adjust_child_parameters(n);
-                if (n != null)
+                if (n != null) {
                     this.add_child(n);
+                    n.handle_motion_streak(this);
+                }
             }
         }
     }

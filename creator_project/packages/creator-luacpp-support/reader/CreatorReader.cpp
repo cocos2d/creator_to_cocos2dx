@@ -374,6 +374,9 @@ cocos2d::Node* CreatorReader::createTree(const buffers::NodeTree* tree) const
         case buffers::AnyNode_DragonBones:
             node = createArmatureDisplay(static_cast<const buffers::DragonBones*>(buffer));
             break;
+        case buffers::AnyNode_MotionStreak:
+            node = createMotionStreak(static_cast<const buffers::MotionStreak*>(buffer));
+            break;
     }
 
     // recursively add its children
@@ -1282,6 +1285,70 @@ void CreatorReader::parseMask(cocos2d::ClippingNode* mask, const buffers::Mask* 
         mask->setStencil(stencil);
         mask->setAlphaThreshold(alphaThreshold);
     }
+}
+
+cocos2d::MotionStreak* CreatorReader::createMotionStreak(const buffers::MotionStreak* motionStreakBuffer) const
+{
+    const auto& timeToFade = motionStreakBuffer->timeToFade();
+    const auto& minSeg = motionStreakBuffer->minSeg();
+    const auto& strokeWidth = motionStreakBuffer->strokeWidth();
+    
+    const auto& color = motionStreakBuffer->strokeColor();
+    const cocos2d::Color3B strokeColor(color->r(), color->g(), color->b());
+    
+    const auto& imagePath = motionStreakBuffer->texturePath();
+    
+    auto motionStreak = cocos2d::MotionStreak::create(timeToFade, minSeg, strokeWidth, strokeColor, imagePath->c_str());
+    parseMotionStreak(motionStreak, motionStreakBuffer);
+    
+    return motionStreak;
+}
+
+void CreatorReader::parseMotionStreak(cocos2d::MotionStreak* motionStreak, const buffers::MotionStreak* motionStreakBuffer) const
+{
+    const auto& nodeBuffer = motionStreakBuffer->node();
+    
+    // can not reuse parseNode because MotionStreak::setOpacity will cause assert error
+    // parseNode(motionStreak, nodeBuffer);
+    {
+        auto node = motionStreak;
+        const auto& globalZOrder = nodeBuffer->globalZOrder();
+        node->setGlobalZOrder(globalZOrder);
+        const auto& localZOrder = nodeBuffer->localZOrder();
+        node->setLocalZOrder(localZOrder);
+        const auto& name = nodeBuffer->name();
+        if (name) node->setName(name->str());
+        const auto& anchorPoint = nodeBuffer->anchorPoint();
+        if (anchorPoint) node->setAnchorPoint(cocos2d::Vec2(anchorPoint->x(), anchorPoint->y()));
+        const auto& color = nodeBuffer->color();
+        if (color) node->setColor(cocos2d::Color3B(color->r(), color->g(), color->b()));
+        const auto& cascadeOpacityEnabled = nodeBuffer->cascadeOpacityEnabled();
+        node->setCascadeOpacityEnabled(cascadeOpacityEnabled);
+        const auto& opacityModifyRGB = nodeBuffer->opacityModifyRGB();
+        node->setOpacityModifyRGB(opacityModifyRGB);
+        const auto position = nodeBuffer->position();
+        if (position) node->setPosition(cocos2d::Vec2(position->x(), position->y()));
+        node->setRotationSkewX(nodeBuffer->rotationSkewX());
+        node->setRotationSkewY(nodeBuffer->rotationSkewY());
+        node->setScaleX(nodeBuffer->scaleX());
+        node->setScaleY(nodeBuffer->scaleY());
+        node->setSkewX(nodeBuffer->skewX());
+        node->setSkewY(nodeBuffer->skewY());
+        const auto& tag = nodeBuffer->tag();
+        node->setTag(tag);
+        const auto contentSize = nodeBuffer->contentSize();
+        if (contentSize) node->setContentSize(cocos2d::Size(contentSize->w(), contentSize->h()));
+        const auto enabled = nodeBuffer->enabled();
+        node->setVisible(enabled);
+        
+        // animation?
+        parseNodeAnimation(node, nodeBuffer);
+        
+        parseColliders(node, nodeBuffer);
+    }
+    
+    const auto& fastMode = motionStreakBuffer->fastMode();
+    motionStreak->setFastMode(fastMode);
 }
 
 /*=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
