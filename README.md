@@ -65,7 +65,7 @@ support, just use Creator.
 
 Can fetch [this branch](https://github.com/minggo/cocos2d-x/tree/creator-cpp-support-test-v315) and run `cpp-empty-test` or `lua-empty-test`. The branch based on v3.15, don't forget to update external libraries.
 
-Currently support on Mac, iOS Android, Windows.
+Currently support on Mac, iOS, Android and Windows.
 
 
 ## How to generate the needed files
