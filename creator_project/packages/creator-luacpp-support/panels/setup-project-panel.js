@@ -82,6 +82,12 @@ Editor.Panel.extend({
                     Editor.Panel.close('creator-luacpp-support');
                 },
 
+                _onChangeExportResourceOnly(event) {
+                    event.stopPropagation();
+                    this.profileProject.data.exportResourceOnly = event.target.value;
+                    this.profileProject.save();
+                },
+
                 _onChangeAutoBuild(event) {
                     event.stopPropagation();
                     this.profileProject.data.autoBuild = event.target.value;

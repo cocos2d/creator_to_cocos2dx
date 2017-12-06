@@ -24,7 +24,8 @@
             "project": {
                 "setup": false,
                 "path": "",
-                "autoBuild": false
+                "autoBuild": false,
+                "exportResourceOnly": false
             }
         }
     }

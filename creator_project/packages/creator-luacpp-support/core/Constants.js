@@ -39,7 +39,8 @@ Constants.RESOURCE_FOLDER_NAME = 'creator';
 Constants.PROFILE_DEFAULTS = {
     setup: false,
     path: '',
-    autoBuild: false
+    autoBuild: false,
+    exportResourceOnly: false
 };
 
 module.exports = Constants;
