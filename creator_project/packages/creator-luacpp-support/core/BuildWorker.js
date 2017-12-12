@@ -15,6 +15,8 @@ const {WorkerBase, registerWorker} = require('./WorkerBase');
 
 class BuildWorker extends WorkerBase {
     run(state, callback) {
+        Utils.recordBuild();
+
         Editor.Ipc.sendToAll('creator-luacpp-support:state-changed', 'start', 0);
         Utils.log('[creator-luacpp-support] build start');
 

@@ -8,6 +8,8 @@ const Path = require('path');
 const Fs = require('fire-fs');
 const Constants = require('./Constants');
 
+let analytics = undefined;
+
 class Utils {
     static log(data) {
         const logFunc = Editor ? Editor.log : console.log;
@@ -93,6 +95,47 @@ class Utils {
 
     static replaceExt(path, ext) {
         return (path.substr(0, path.lastIndexOf(".")) + ext);
+    }
+
+    static recordBuild() {
+        Utils.initAnalytics(function(analytics){
+            analytics.CAEvent.onEvent({ eventName: 'build' });
+        });
+    }
+
+    static initAnalytics(callback) {
+        if (Utils._isAnalyticsInitialized()) {
+            callback(analytics);
+            return;
+        }
+
+        var src = "https://analytics.cocos.com/assets/js/cocosAnalytics.min.js";
+        var script = document.createElement('script');
+        script.onload = function () {
+            document.head.removeChild(script);
+
+            analytics = cocosAnalytics;
+            if (typeof(analytics) !== 'undefined') {
+                analytics.init({
+                    appID: '630639001',
+                    appSecret: 'a2d8adf595006f7a6af5f9b7e66a31d7',
+                    channel: 'creator',
+                    version: Constants.VERDION
+                });
+                analytics.CAAccount.loginStart();
+
+                callback(analytics);
+            }
+        };
+        script.onerror = function () {
+            document.head.removeChild(script);
+        };
+        script.src = src;
+        document.head.appendChild(script);
+    }
+
+    static _isAnalyticsInitialized() {
+        return typeof(analytics) !== 'undefined';
     }
 }
 
