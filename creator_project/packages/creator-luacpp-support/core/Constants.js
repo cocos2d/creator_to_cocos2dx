@@ -36,6 +36,8 @@ Constants.READER_PATH = Path.join(Constants.PACKAGE_PATH, 'reader');
 // the folder that all resources are copied to
 Constants.RESOURCE_FOLDER_NAME = 'creator';
 
+Constants.VERDION = '0.4.0';
+
 Constants.PROFILE_DEFAULTS = {
     setup: false,
     path: '',
