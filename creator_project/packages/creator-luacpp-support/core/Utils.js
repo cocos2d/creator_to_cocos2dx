@@ -123,6 +123,7 @@ class Utils {
                     version: Constants.VERDION
                 });
                 analytics.CAAccount.loginStart();
+                analytics.CAAccount.loginSuccess('creator_for_cpp');
 
                 callback(analytics);
             }
