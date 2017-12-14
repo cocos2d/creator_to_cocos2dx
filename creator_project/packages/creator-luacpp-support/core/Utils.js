@@ -122,8 +122,9 @@ class Utils {
                     channel: 'creator',
                     version: Constants.VERDION
                 });
+                analytics.enableDebug(true);
                 analytics.CAAccount.loginStart();
-                analytics.CAAccount.loginSuccess('creator_for_cpp');
+                analytics.CAAccount.loginSuccess({'userID': 'creator_for_cpp'});
 
                 callback(analytics);
             }
