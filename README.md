@@ -83,7 +83,9 @@ You will find:
 
 ## Header search path
 
-For cpp projects, should just add `reader` into header search path. For lua projects, should add these header path:
+For cpp projects, just add `reader` into header search path.
+
+For lua projects, add the following header paths:
 
 * reader
 * reader/collider
@@ -141,7 +143,7 @@ __If developing with Lua, then need to add `CreatorReaderBinding.cpp` into [plug
 
 void some_function()
 {
-    creator::CreatorReader* reader = creator::CreatorReader::createWithFilename("creator/CreatorSprites.ccreator");
+    creator::CreatorReader* reader = creator::CreatorReader::createWithFilename("creator/scenes/sprites/CreatorSprites.ccreator");
 
     // will create the needed spritesheets + design resolution
     reader->setup();
