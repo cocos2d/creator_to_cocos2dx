@@ -251,50 +251,33 @@ let create_node = function (node_type, node_data) {
     const MotionStreak = require('./MotionStreak');
 
     let n = null;
-    if (node_type === 'cc.Node')
-        n = new Node(node_data);
-    else if (node_type === 'cc.Sprite')
-        n = new Sprite(node_data);
-    else if (node_type === 'cc.Canvas')
-        n = new Canvas(node_data);
-    else if (node_type === 'cc.Label')
-        n = new Label(node_data);
-    else if (node_type === 'cc.RichText')
-        n = new RichText(node_data);
-    else if (node_type === 'cc.Button')
-        n = new Button(node_data);
-    else if (node_type === 'cc.ProgressBar')
-        n = new ProgressBar(node_data);
-    else if (node_type === 'cc.ScrollView')
-        n = new ScrollView(node_data);
-    else if (node_type === 'cc.EditBox')
-        n = new EditBox(node_data);
-    else if (node_type === 'cc.TiledMap')
-        n = new TiledMap(node_data);
-    else if (node_type === 'cc.ParticleSystem')
-        n = new ParticleSystem(node_data);
-    else if (node_type === 'sp.Skeleton')
-        n = new SpineSkeleton(node_data);
-    else if (node_type === 'cc.VideoPlayer')
-        n = new VideoPlayer(node_data);
-    else if (node_type === 'cc.WebView')
-        n = new WebView(node_data);
-    else if (node_type === 'cc.Slider')
-        n = new Slider(node_data);
-    else if (node_type === 'cc.Toggle')
-        n = new Toggle(node_data);
-    else if (node_type === 'cc.ToggleGroup')
-        n = new ToggleGroup(node_data);
-    else if (node_type === 'cc.PageView')
-        n = new PageView(node_data);
-    else if (node_type === 'cc.Mask')
-        n = new Mask(node_data);
-    else if (node_type === 'cc.Prefab') 
-        n = new Prefab(node_data);
-    else if (node_type === 'dragonBones.ArmatureDisplay')
-        n = new DragonBones(node_data);
-    else if (node_type === 'cc.MotionStreak')
-        n = new MotionStreak(node_data);
+
+    const classMap = {
+        'cc.Node': Node,
+        'cc.Sprite': Sprite,
+        'cc.Canvas': Canvas,
+        'cc.Label': Label,
+        'cc.RichText': RichText,
+        'cc.Button': Button,
+        'cc.ProgressBar': ProgressBar,
+        'cc.ScrollView': ScrollView,
+        'cc.EditBox': EditBox,
+        'cc.TiledMap': TiledMap,
+        'cc.ParticleSystem': ParticleSystem,
+        'sp.Skeleton': SpineSkeleton,
+        'cc.VideoPlayer': VideoPlayer,
+        'cc.WebView': WebView,
+        'cc.Slider': Slider,
+        'cc.Toggle': Toggle,
+        'cc.ToggleGroup': ToggleGroup,
+        'cc.PageView': PageView,
+        'cc.Mask': Mask,
+        'cc.Prefab': Prefab,
+        'dragonBones.ArmatureDisplay': DragonBones,
+        'cc.MotionStreak': MotionStreak,
+    };
+
+    n = new classMap[node_type](node_data);
 
     if (n != null)
         n.parse_properties();
