@@ -186,8 +186,8 @@ table Button
 table Layout
 {
     node:Node;
-    type:LayoutType,
-    resizeMode:ResizeMode
+    type:LayoutType;
+    resizeMode:ResizeMode;
 }
 
 table ProgressBar

@@ -34,6 +34,8 @@ struct Scene;
 
 struct Button;
 
+struct Layout;
+
 struct ProgressBar;
 
 struct ScrollView;
@@ -312,6 +314,37 @@ inline const char **EnumNamesColliderType() {
 }
 
 inline const char *EnumNameColliderType(ColliderType e) { return EnumNamesColliderType()[static_cast<int>(e)]; }
+
+enum LayoutType {
+  LayoutType_None = 0,
+  LayoutType_Horizontal = 1,
+  LayoutType_Vertical = 2,
+  LayoutType_Grid = 3,
+  LayoutType_MIN = LayoutType_None,
+  LayoutType_MAX = LayoutType_Grid
+};
+
+inline const char **EnumNamesLayoutType() {
+  static const char *names[] = { "None", "Horizontal", "Vertical", "Grid", nullptr };
+  return names;
+}
+
+inline const char *EnumNameLayoutType(LayoutType e) { return EnumNamesLayoutType()[static_cast<int>(e)]; }
+
+enum ResizeMode {
+  ResizeMode_None = 0,
+  ResizeMode_Container = 1,
+  ResizeMode_Children = 2,
+  ResizeMode_MIN = ResizeMode_None,
+  ResizeMode_MAX = ResizeMode_Children
+};
+
+inline const char **EnumNamesResizeMode() {
+  static const char *names[] = { "None", "Container", "Children", nullptr };
+  return names;
+}
+
+inline const char *EnumNameResizeMode(ResizeMode e) { return EnumNamesResizeMode()[static_cast<int>(e)]; }
 
 enum AnyNode {
   AnyNode_NONE = 0,
@@ -1528,6 +1561,50 @@ inline flatbuffers::Offset<Button> CreateButtonDirect(flatbuffers::FlatBufferBui
     const char *disabledSpriteFrameName = nullptr,
     bool ignoreContentAdaptWithSize = false) {
   return CreateButton(_fbb, node, transition, zoomScale, spriteFrameName ? _fbb.CreateString(spriteFrameName) : 0, pressedSpriteFrameName ? _fbb.CreateString(pressedSpriteFrameName) : 0, disabledSpriteFrameName ? _fbb.CreateString(disabledSpriteFrameName) : 0, ignoreContentAdaptWithSize);
+}
+
+struct Layout FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum {
+    VT_NODE = 4,
+    VT_TYPE = 6,
+    VT_RESIZEMODE = 8
+  };
+  const Node *node() const { return GetPointer<const Node *>(VT_NODE); }
+  LayoutType type() const { return static_cast<LayoutType>(GetField<int8_t>(VT_TYPE, 0)); }
+  ResizeMode resizeMode() const { return static_cast<ResizeMode>(GetField<int8_t>(VT_RESIZEMODE, 0)); }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_NODE) &&
+           verifier.VerifyTable(node()) &&
+           VerifyField<int8_t>(verifier, VT_TYPE) &&
+           VerifyField<int8_t>(verifier, VT_RESIZEMODE) &&
+           verifier.EndTable();
+  }
+};
+
+struct LayoutBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_node(flatbuffers::Offset<Node> node) { fbb_.AddOffset(Layout::VT_NODE, node); }
+  void add_type(LayoutType type) { fbb_.AddElement<int8_t>(Layout::VT_TYPE, static_cast<int8_t>(type), 0); }
+  void add_resizeMode(ResizeMode resizeMode) { fbb_.AddElement<int8_t>(Layout::VT_RESIZEMODE, static_cast<int8_t>(resizeMode), 0); }
+  LayoutBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
+  LayoutBuilder &operator=(const LayoutBuilder &);
+  flatbuffers::Offset<Layout> Finish() {
+    auto o = flatbuffers::Offset<Layout>(fbb_.EndTable(start_, 3));
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<Layout> CreateLayout(flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<Node> node = 0,
+    LayoutType type = LayoutType_None,
+    ResizeMode resizeMode = ResizeMode_None) {
+  LayoutBuilder builder_(_fbb);
+  builder_.add_node(node);
+  builder_.add_resizeMode(resizeMode);
+  builder_.add_type(type);
+  return builder_.Finish();
 }
 
 struct ProgressBar FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
