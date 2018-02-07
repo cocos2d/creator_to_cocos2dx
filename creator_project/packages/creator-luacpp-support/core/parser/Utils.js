@@ -249,6 +249,7 @@ let create_node = function (node_type, node_data) {
     const Prefab = require('./Prefab');
     const DragonBones = require('./DragonBones');
     const MotionStreak = require('./MotionStreak');
+    const Layout = require('./Layout');
 
     let n = null;
 
@@ -275,6 +276,7 @@ let create_node = function (node_type, node_data) {
         'cc.Prefab': Prefab,
         'dragonBones.ArmatureDisplay': DragonBones,
         'cc.MotionStreak': MotionStreak,
+        'cc.Layout': Layout,
     };
 
     n = new classMap[node_type](node_data);
