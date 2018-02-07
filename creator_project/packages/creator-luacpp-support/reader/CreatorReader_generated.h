@@ -370,12 +370,13 @@ enum AnyNode {
   AnyNode_Mask = 20,
   AnyNode_DragonBones = 21,
   AnyNode_MotionStreak = 22,
+  AnyNode_Layout = 23,
   AnyNode_MIN = AnyNode_NONE,
-  AnyNode_MAX = AnyNode_MotionStreak
+  AnyNode_MAX = AnyNode_Layout
 };
 
 inline const char **EnumNamesAnyNode() {
-  static const char *names[] = { "NONE", "Scene", "Sprite", "Label", "Particle", "TileMap", "Node", "Button", "ProgressBar", "ScrollView", "CreatorScene", "EditBox", "RichText", "SpineSkeleton", "VideoPlayer", "WebView", "Slider", "Toggle", "ToggleGroup", "PageView", "Mask", "DragonBones", "MotionStreak", nullptr };
+  static const char *names[] = { "NONE", "Scene", "Sprite", "Label", "Particle", "TileMap", "Node", "Button", "ProgressBar", "ScrollView", "CreatorScene", "EditBox", "RichText", "SpineSkeleton", "VideoPlayer", "WebView", "Slider", "Toggle", "ToggleGroup", "PageView", "Mask", "DragonBones", "MotionStreak", "Layout", nullptr };
   return names;
 }
 
@@ -471,6 +472,10 @@ template<> struct AnyNodeTraits<DragonBones> {
 
 template<> struct AnyNodeTraits<MotionStreak> {
   static const AnyNode enum_value = AnyNode_MotionStreak;
+};
+
+template<> struct AnyNodeTraits<Layout> {
+  static const AnyNode enum_value = AnyNode_Layout;
 };
 
 inline bool VerifyAnyNode(flatbuffers::Verifier &verifier, const void *union_obj, AnyNode type);
@@ -4115,6 +4120,7 @@ inline bool VerifyAnyNode(flatbuffers::Verifier &verifier, const void *union_obj
     case AnyNode_Mask: return verifier.VerifyTable(reinterpret_cast<const Mask *>(union_obj));
     case AnyNode_DragonBones: return verifier.VerifyTable(reinterpret_cast<const DragonBones *>(union_obj));
     case AnyNode_MotionStreak: return verifier.VerifyTable(reinterpret_cast<const MotionStreak *>(union_obj));
+    case AnyNode_Layout: return verifier.VerifyTable(reinterpret_cast<const Layout *>(union_obj));
     default: return false;
   }
 }

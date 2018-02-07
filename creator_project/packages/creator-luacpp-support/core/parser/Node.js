@@ -47,7 +47,7 @@ class Node {
 
     static guess_type_from_components(components) {
         // ScrollView, Button & ProgressBar should be before Sprite
-        let supported_components = ['cc.Button', 'cc.ProgressBar', 'cc.ScrollView',
+        let supported_components = ['cc.Button', 'cc.ProgressBar', 'cc.ScrollView', 'cc.Layout',
             'cc.EditBox', 'cc.Label', 'sp.Skeleton', 'cc.Sprite',
             'cc.ParticleSystem', 'cc.TiledMap', 'cc.Canvas', 'cc.RichText',
             'cc.VideoPlayer', 'cc.WebView', 'cc.Slider', 'cc.Toggle', 'cc.ToggleGroup',

@@ -25,7 +25,7 @@ enum ResizeMode:byte { None = 0, Container = 1, Children = 2 }
 // no more than 255 union objects can be added
 union AnyNode {Scene, Sprite, Label, Particle, TileMap, Node, Button, ProgressBar, ScrollView, CreatorScene,
                EditBox, RichText, SpineSkeleton, VideoPlayer, WebView, Slider, Toggle, ToggleGroup, PageView,
-               Mask, DragonBones, MotionStreak}
+               Mask, DragonBones, MotionStreak, Layout}
 
 table SceneGraph
 {

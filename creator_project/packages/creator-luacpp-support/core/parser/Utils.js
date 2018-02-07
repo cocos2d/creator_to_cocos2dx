@@ -251,7 +251,7 @@ let create_node = function (node_type, node_data) {
     const MotionStreak = require('./MotionStreak');
     const Layout = require('./Layout');
 
-    let n = null;
+    let classType = null;
 
     const classMap = {
         'cc.Node': Node,
@@ -279,9 +279,13 @@ let create_node = function (node_type, node_data) {
         'cc.Layout': Layout,
     };
 
-    n = new classMap[node_type](node_data);
+    classType = classMap[node_type]
 
-    if (n != null)
+    let n = null;
+    Utils.log("node_type: "+node_type);
+
+    if (typeof(classType) !== "undefined")
+        n = new classType(node_data);
         n.parse_properties();
 
     return n;
