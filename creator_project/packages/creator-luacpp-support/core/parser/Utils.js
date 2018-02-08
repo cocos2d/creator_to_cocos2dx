@@ -282,11 +282,14 @@ let create_node = function (node_type, node_data) {
     classType = classMap[node_type]
 
     let n = null;
-    Utils.log("node_type: "+node_type);
+    Utils.log(`node_type being parsed: ${node_type}`);
 
-    if (typeof(classType) !== "undefined")
+    let isValid = typeof(classType) !== "undefined";
+    if (isValid)
+    {
         n = new classType(node_data);
         n.parse_properties();
+    }
 
     return n;
 }

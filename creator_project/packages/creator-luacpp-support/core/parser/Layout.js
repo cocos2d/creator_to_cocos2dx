@@ -9,6 +9,7 @@ class Layout extends Node {
     }
 
     parse_properties() {
+        super.parse_node_properties();
         super.parse_properties();
 
         let spr_component = Node.get_node_component_of_type(this._node_data, 'cc.Sprite');
