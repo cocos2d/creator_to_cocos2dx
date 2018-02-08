@@ -68,6 +68,7 @@ function _checkProject(opt) {
 // 'profile' may be null
 function _build(opt) {
     if (_buildState !== 'sleep' && _buildState !== 'finish') {
+        //FIXME this never gets cleared, giving the impression that the plugin is constantly running
         Editor.warn('[LuaCpp Support] Building in progress');
         return;
     }
