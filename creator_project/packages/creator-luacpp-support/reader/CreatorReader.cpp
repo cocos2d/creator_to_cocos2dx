@@ -340,6 +340,9 @@ cocos2d::Node* CreatorReader::createTree(const buffers::NodeTree* tree) const
             node = createButton(static_cast<const buffers::Button*>(buffer));
             parsing_button = true;
             break;
+        case buffers::AnyNode_Layout:
+            node = createLayout(static_cast<const buffers::Layout*>(buffer));
+            break;
         case buffers::AnyNode_EditBox:
             node = createEditBox(static_cast<const buffers::EditBox*>(buffer));
             break;
@@ -976,6 +979,29 @@ void CreatorReader::parseButton(cocos2d::ui::Button* button, const buffers::Butt
         button->setZoomScale(buttonBuffer->zoomScale() - 1);
         button->setPressedActionEnabled(true);
     }
+}
+
+cocos2d::ui::Layout* CreatorReader::createLayout(const buffers::Layout* layoutBuffer) const
+{
+    
+    ui::Layout* layout = nullptr;
+    
+    layout = ui::Layout::create();
+
+    parseLayout(layout, layoutBuffer);
+    return layout;
+}
+
+void CreatorReader::parseLayout(cocos2d::ui::Layout* layout, const buffers::Layout* layoutBuffer) const
+{
+    const auto& nodeBuffer = layoutBuffer->node();
+    parseNode(layout, nodeBuffer);
+
+    //TODO create resize and layout types (ie stretch, vertical)
+    //NONE, HORIZONTAL, VERTICAL, RELATIVE/GRID
+    cocos2d::ui::Layout::Type layout_type = static_cast<cocos2d::ui::Layout::Type>(layoutBuffer->type());
+    CCLOG("layout_type %i", (int)layout_type);
+    layout->setLayoutType(layout_type);
 }
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID || CC_TARGET_PLATFORM == CC_PLATFORM_IOS)

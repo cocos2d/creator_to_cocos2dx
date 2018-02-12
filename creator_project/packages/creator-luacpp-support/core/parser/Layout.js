@@ -9,13 +9,15 @@ class Layout extends Node {
     }
 
     parse_properties() {
-        super.parse_node_properties();
         super.parse_properties();
+        this._properties = {node: this._properties};
 
         let spr_component = Node.get_node_component_of_type(this._node_data, 'cc.Sprite');
-        let lay_component = Node.get_node_component_of_type(this._node_data, 'cc.Layout');
 
-        this._properties = {node: this._properties};
+        //TODO use these components in this._properties ie vertical layout
+        let lay_component = Node.get_node_component_of_type(this._node_data, 'cc.Layout');
+        this._properties.type = lay_component._N$layoutType;
+
     }
 }
 

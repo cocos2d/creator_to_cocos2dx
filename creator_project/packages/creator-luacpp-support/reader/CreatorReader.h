@@ -116,6 +116,9 @@ protected:
     cocos2d::ui::Button* createButton(const buffers::Button* buttonBuffer) const;
     void parseButton(cocos2d::ui::Button* button, const buffers::Button* buttonBuffer) const;
 
+    cocos2d::ui::Layout* createLayout(const buffers::Layout* buttonBuffer) const;
+    void parseLayout(cocos2d::ui::Layout* button, const buffers::Layout* buttonBuffer) const;
+
     spine::SkeletonAnimation* createSpineSkeleton(const buffers::SpineSkeleton* spineBuffer) const;
     void parseSpineSkeleton(spine::SkeletonAnimation* button, const buffers::SpineSkeleton* spineBuffer) const;
     

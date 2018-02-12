@@ -150,7 +150,7 @@ class Node(object):
     @classmethod
     def guess_type_from_components(cls, components):
         # ScrollView, Button & ProgressBar should be before Sprite
-        supported_components = ('cc.Button', 'cc.ProgressBar', 'cc.ScrollView',
+        supported_components = ('cc.Button', 'cc.ProgressBar', 'cc.ScrollView', 'cc.Layout',
                 'cc.EditBox', 'cc.Label', 'sp.Skeleton', 'cc.Sprite',
                 'cc.ParticleSystem', 'cc.TiledMap', 'cc.Canvas', 'cc.RichText'
                 )
@@ -194,6 +194,8 @@ class Node(object):
             n = ScrollView(state._json_data[node_idx])
         elif node_type == 'sp.Skeleton':
             n = SpineSkeleton(state._json_data[node_idx])
+        elif node_type == 'cc.Layout':
+            n = Layout(state._json_data[node_idx])
 
         if n is not None:
             n.parse_properties()
@@ -639,6 +641,30 @@ class Button(Node):
 
         self._properties['spriteFrameName'] = Node.get_filepath_from_uuid(but_component['_N$normalSprite']['__uuid__'])
         self._properties['ignoreContentAdaptWithSize'] = False
+
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+# Node: Layout
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+class Layout(Node):
+    #  Composition:
+    #  - Sprite component
+    #  - Layout component
+    #
+    # custom properties
+    # Layout Type
+    # Resize Type
+
+    def __init__(self, data):
+        super(Layout, self).__init__(data)
+        self._jsonNode['object_type'] = 'Layout'
+
+    def parse_properties(self):
+        super(Layout, self).parse_properties()
+
+        # Move Node properties into 'node' and clean _properties
+        self._properties = {'node': self._properties}
+
+        # TODO: implement layout and resize support
 
 
 #=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
