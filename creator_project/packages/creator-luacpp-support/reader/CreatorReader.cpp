@@ -997,11 +997,17 @@ void CreatorReader::parseLayout(cocos2d::ui::Layout* layout, const buffers::Layo
     const auto& nodeBuffer = layoutBuffer->node();
     parseNode(layout, nodeBuffer);
 
-    //TODO create resize and layout types (ie stretch, vertical)
-    //NONE, HORIZONTAL, VERTICAL, RELATIVE/GRID
-    cocos2d::ui::Layout::Type layout_type = static_cast<cocos2d::ui::Layout::Type>(layoutBuffer->type());
-    CCLOG("layout_type %i", (int)layout_type);
+    //use layout type
+    //NONE, HORIZONTAL, VERTICAL, RELATIVE(/GRID?)
+    cocos2d::ui::Layout::Type layout_type = static_cast<cocos2d::ui::Layout::Type>(layoutBuffer->layoutType());
     layout->setLayoutType(layout_type);
+
+    //use color from node
+    layout->setBackGroundColor(layout->getColor());
+    layout->setBackGroundColorType(ui::Layout::BackGroundColorType::SOLID);
+
+    //TODO create resize types (ie container, children)
+    auto resizeMode = layoutBuffer->resizeMode();
 }
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID || CC_TARGET_PLATFORM == CC_PLATFORM_IOS)

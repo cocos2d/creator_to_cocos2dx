@@ -32,6 +32,7 @@ class BuildWorker extends WorkerBase {
             this._compileJsonToBinary(function() {
                 this._copyResources(copyReourceInfos);
                 Editor.Ipc.sendToAll('creator-luacpp-support:state-changed', 'finish', 100);
+
                 this._callback();
                 Utils.log('[creator-luacpp-support] build end');
             }.bind(this));

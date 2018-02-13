@@ -77,17 +77,14 @@ class Node {
         let components = Node.get_node_components(node_data);
         if (components) {
             let guessedType = Node.guess_type_from_components(components);
-            Utils.log('guessed type: ' + guessedType);
             return guessedType;
         }
 
         // prefab don't have componets, should guess type from prefab node data
         if (node_data._prefab) {
-            Utils.log('guessed type: prefab');
             return 'cc.Prefab';
         };
 
-        Utils.log('guessed type: null out');
         return null;
     }
 

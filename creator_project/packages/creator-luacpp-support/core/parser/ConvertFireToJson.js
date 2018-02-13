@@ -108,6 +108,7 @@ class FireParser {
                 fs.close(this._json_file);
             }
         });
+
     }
 }
 
