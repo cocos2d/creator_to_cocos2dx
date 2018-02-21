@@ -1005,6 +1005,11 @@ void CreatorReader::parseLayout(cocos2d::ui::Layout* layout, const buffers::Layo
     //use color from node
     layout->setBackGroundColor(layout->getColor());
     layout->setBackGroundColorType(ui::Layout::BackGroundColorType::SOLID);
+    if (layoutBuffer->backgroundVisible()) {
+        layout->setBackGroundColorOpacity(255);
+    } else {
+        layout->setBackGroundColorOpacity(0);
+    };
 
     //TODO create resize types (ie container, children)
     auto resizeMode = layoutBuffer->resizeMode();

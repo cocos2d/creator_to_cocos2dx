@@ -1572,17 +1572,20 @@ struct Layout FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   enum {
     VT_NODE = 4,
     VT_LAYOUTTYPE = 6,
-    VT_RESIZEMODE = 8
+    VT_RESIZEMODE = 8,
+    VT_BACKGROUNDVISIBLE = 10
   };
   const Node *node() const { return GetPointer<const Node *>(VT_NODE); }
   LayoutType layoutType() const { return static_cast<LayoutType>(GetField<int8_t>(VT_LAYOUTTYPE, 0)); }
   ResizeMode resizeMode() const { return static_cast<ResizeMode>(GetField<int8_t>(VT_RESIZEMODE, 0)); }
+  bool backgroundVisible() const { return GetField<uint8_t>(VT_BACKGROUNDVISIBLE, 1) != 0; }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<flatbuffers::uoffset_t>(verifier, VT_NODE) &&
            verifier.VerifyTable(node()) &&
            VerifyField<int8_t>(verifier, VT_LAYOUTTYPE) &&
            VerifyField<int8_t>(verifier, VT_RESIZEMODE) &&
+           VerifyField<uint8_t>(verifier, VT_BACKGROUNDVISIBLE) &&
            verifier.EndTable();
   }
 };
@@ -1593,10 +1596,11 @@ struct LayoutBuilder {
   void add_node(flatbuffers::Offset<Node> node) { fbb_.AddOffset(Layout::VT_NODE, node); }
   void add_layoutType(LayoutType layoutType) { fbb_.AddElement<int8_t>(Layout::VT_LAYOUTTYPE, static_cast<int8_t>(layoutType), 0); }
   void add_resizeMode(ResizeMode resizeMode) { fbb_.AddElement<int8_t>(Layout::VT_RESIZEMODE, static_cast<int8_t>(resizeMode), 0); }
+  void add_backgroundVisible(bool backgroundVisible) { fbb_.AddElement<uint8_t>(Layout::VT_BACKGROUNDVISIBLE, static_cast<uint8_t>(backgroundVisible), 1); }
   LayoutBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
   LayoutBuilder &operator=(const LayoutBuilder &);
   flatbuffers::Offset<Layout> Finish() {
-    auto o = flatbuffers::Offset<Layout>(fbb_.EndTable(start_, 3));
+    auto o = flatbuffers::Offset<Layout>(fbb_.EndTable(start_, 4));
     return o;
   }
 };
@@ -1604,9 +1608,11 @@ struct LayoutBuilder {
 inline flatbuffers::Offset<Layout> CreateLayout(flatbuffers::FlatBufferBuilder &_fbb,
     flatbuffers::Offset<Node> node = 0,
     LayoutType layoutType = LayoutType_None,
-    ResizeMode resizeMode = ResizeMode_None) {
+    ResizeMode resizeMode = ResizeMode_None,
+    bool backgroundVisible = true) {
   LayoutBuilder builder_(_fbb);
   builder_.add_node(node);
+  builder_.add_backgroundVisible(backgroundVisible);
   builder_.add_resizeMode(resizeMode);
   builder_.add_layoutType(layoutType);
   return builder_.Finish();

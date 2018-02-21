@@ -188,6 +188,7 @@ table Layout
     node:Node;
     layoutType:LayoutType;
     resizeMode:ResizeMode;
+    backgroundVisible:bool = true;
 }
 
 table ProgressBar
