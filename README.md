@@ -171,7 +171,7 @@ register_creator_reader_manual(L);
 Use in lua
 
 ```lua
-local creatorReader = cc.CreatorReader:createWithFilename('creator/CreatorSprites.ccreator')
+local creatorReader = creator.CreatorReader:createWithFilename('creator/CreatorSprites.ccreator')
 creatorReader:setup()
 local scene = creatorReader:getSceneGraph()
 cc.Director:getInstance():replaceScene(scene)
