@@ -48,6 +48,24 @@ set(READER_SOURCE
     ui/RichtextStringVisitor.cpp
 )
 
+if(BUILD_LUA_LIBS)
+    list(APPEND READER_HEADER
+        lua-bindings/reader/lua_creator_reader_auto.hpp
+        lua-bindings/reader/lua_creator_reader_manual.hpp
+        lua-bindings/dragonbones/lua_dragonbones_auto.hpp
+        lua-bindings/dragonbones/lua_dragonbones_manual.hpp
+        lua-bindings/creator_reader_bindings.hpp
+    )
+    list(APPEND READER_SOURCE
+        lua-bindings/creator_reader_bindings.cpp
+        lua-bindings/reader/lua_creator_reader_auto.cpp
+        lua-bindings/reader/lua_creator_reader_manual.cpp
+        lua-bindings/dragonbones/lua_dragonbones_manual.cpp
+        lua-bindings/dragonbones/lua_dragonbones_auto.cpp
+    )
+endif()
+
+
 add_library(${LIB_NAME} ${READER_SOURCE} ${READER_HEADER})
 
 set_target_properties(${LIB_NAME}
