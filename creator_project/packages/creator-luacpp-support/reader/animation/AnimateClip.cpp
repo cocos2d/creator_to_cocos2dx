@@ -320,16 +320,15 @@ float AnimateClip::computeElapse() const
     auto elapsed = _elapsed;
     auto duration = _clip->getDuration();
     
-    // if wrap mode is pingpong or pingpongreverse, then _elapsed may be bigger than duration
-    while (elapsed >= duration)
-        elapsed = elapsed - duration;
+    // as the time goes, _elapsed will be bigger than duration when _needStop = false
+    elapsed  = elapsed - static_cast<int>(elapsed / duration) * duration;
     
     const auto wrapMode = _clip->getWrapMode();
     bool oddRound = (static_cast<int>(_elapsed / duration) % 2) == 0;
     if (wrapMode == AnimationClip::WrapMode::Reverse  // reverse mode
         || (wrapMode == AnimationClip::WrapMode::PingPong && !oddRound) // pingpong mode and it is the second round
         || (wrapMode == AnimationClip::WrapMode::PingPongReverse && oddRound) // pingpongreverse mode and it is the first round
-        || (wrapMode == AnimationClip::WrapMode::LoopReverse)  // loop reverse mode, reverse again and again
+        || (wrapMode == AnimationClip::WrapMode::LoopReverse)
         )
         elapsed = duration - elapsed;
     
