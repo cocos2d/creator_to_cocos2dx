@@ -446,20 +446,13 @@ enum AnimWrapMode {
   AnimWrapMode_Default = 0,
   AnimWrapMode_Normal = 1,
   AnimWrapMode_Loop = 2,
-  AnimWrapMode_PingPong = 3,
-  AnimWrapMode_Reverse = 4,
-  AnimWrapMode_LoopReverse = 5,
-  AnimWrapMode_PingPongReverse = 6,
+  AnimWrapMode_PingPong = 22,
+  AnimWrapMode_Reverse = 36,
+  AnimWrapMode_LoopReverse = 38,
+  AnimWrapMode_PingPongReverse = 54,
   AnimWrapMode_MIN = AnimWrapMode_Default,
   AnimWrapMode_MAX = AnimWrapMode_PingPongReverse
 };
-
-inline const char **EnumNamesAnimWrapMode() {
-  static const char *names[] = { "Default", "Normal", "Loop", "PingPong", "Reverse", "LoopReverse", "PingPongReverse", nullptr };
-  return names;
-}
-
-inline const char *EnumNameAnimWrapMode(AnimWrapMode e) { return EnumNamesAnimWrapMode()[static_cast<int>(e)]; }
 
 MANUALLY_ALIGNED_STRUCT(4) Vec2 FLATBUFFERS_FINAL_CLASS {
  private:
