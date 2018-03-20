@@ -329,7 +329,7 @@ float AnimateClip::computeElapse() const
     if (wrapMode == AnimationClip::WrapMode::Reverse  // reverse mode
         || (wrapMode == AnimationClip::WrapMode::PingPong && !oddRound) // pingpong mode and it is the second round
         || (wrapMode == AnimationClip::WrapMode::PingPongReverse && oddRound) // pingpongreverse mode and it is the first round
-        || (wrapMode == AnimationClip::WrapMode::LoopReverse && oddRound)
+        || (wrapMode == AnimationClip::WrapMode::LoopReverse)  // loop reverse mode, reverse again and again
         )
         elapsed = duration - elapsed;
     
