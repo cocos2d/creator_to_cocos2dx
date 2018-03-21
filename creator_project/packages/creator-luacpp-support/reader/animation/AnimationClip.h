@@ -33,9 +33,7 @@ NS_CCR_BEGIN
 class AnimationClip: public cocos2d::Ref
 {
 public:
-
-    // refer to: https://github.com/cocos-creator/engine/blob/master/cocos2d/animation/types.js#L28
-    enum class WrapMode {Default = 0, Normal = 1, Loop = 2, PingPong = 22, Reverse = 36, LoopReverse = 38, PingPongReverse = 54};
+    enum class WrapMode {Default, Normal, Loop, PingPong, Reverse, LoopReverse, PingPongReverse};
 
     static AnimationClip* create();
     virtual ~AnimationClip();

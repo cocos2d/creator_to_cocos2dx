@@ -60,8 +60,7 @@ private:
     float computeElapse() const;
 
     AnimationClip* _clip;
-
-    // the time elapsed since the animation start
+    
     float _elapsed;
     cocos2d::Node *_rootTarget;
     

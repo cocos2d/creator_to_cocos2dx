@@ -373,8 +373,7 @@ table DragonBones
 //
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-// refer to: https://github.com/cocos-creator/engine/blob/master/cocos2d/animation/types.js#L28
-enum AnimWrapMode:byte {Default = 0, Normal = 1, Loop = 2, PingPong = 22, Reverse = 36, LoopReverse = 38, PingPongReverse = 54}
+enum AnimWrapMode:byte {Default, Normal, Loop, PingPong, Reverse, LoopReverse, PingPongReverse}
 
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 // Animation Clip
