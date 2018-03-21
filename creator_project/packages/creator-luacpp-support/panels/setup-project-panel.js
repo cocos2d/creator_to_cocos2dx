@@ -88,6 +88,12 @@ Editor.Panel.extend({
                     this.profileProject.save();
                 },
 
+                _onChangeExportResourceUnused(event) {
+                    event.stopPropagation();
+                    this.profileProject.data.exportResourceUnused = event.target.value;
+                    this.profileProject.save();
+                },
+
                 _onChangeAutoBuild(event) {
                     event.stopPropagation();
                     this.profileProject.data.autoBuild = event.target.value;

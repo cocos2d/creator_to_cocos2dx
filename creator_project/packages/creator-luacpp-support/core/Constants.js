@@ -42,7 +42,8 @@ Constants.PROFILE_DEFAULTS = {
     setup: false,
     path: '',
     autoBuild: false,
-    exportResourceOnly: false
+    exportResourceOnly: false,
+    exportResourceUnused: false
 };
 
 module.exports = Constants;
