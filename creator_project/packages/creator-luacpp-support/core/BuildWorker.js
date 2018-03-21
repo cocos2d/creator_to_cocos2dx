@@ -14,6 +14,8 @@ const parse_utils = require('./parser/Utils')
 
 const {WorkerBase, registerWorker} = require('./WorkerBase');
 
+const plugin_profile = 'profile://project/creator-luacpp-support.json';
+
 class BuildWorker extends WorkerBase {
     run(state, callback) {
         Utils.recordBuild();
@@ -110,7 +112,7 @@ class BuildWorker extends WorkerBase {
             });
         }
 
-        let state = Editor.remote.Profile.load('profile://project/creator-luacpp-support.json', Constants.PROFILE_DEFAULTS);
+        let state = Editor.remote.Profile.load(plugin_profile, Constants.PROFILE_DEFAULTS);
         if (state.data.exportResourceOnly)
             return;
 
@@ -176,6 +178,10 @@ class BuildWorker extends WorkerBase {
 
     // dynamically load resources located at assets/resources folder
     _getDynamicLoadRes(uuidmap, collectedResources) {
+        let state = Editor.remote.Profile.load(plugin_profile, Constants.PROFILE_DEFAULTS);
+        if (!state.data.exportDynamicallyLoadResource)
+            return;
+        
         let dynamicLoadRes = {};
         let resourcesPath = Path.join(Constants.ASSETS_PATH, 'resources');
 
