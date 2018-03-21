@@ -10,6 +10,7 @@ const Constants = require('./Constants');
 const Fs = require('fire-fs');
 const Del = require('del')
 const parse_fire = require('./parser/ConvertFireToJson');
+const parse_utils = require('./parser/Utils')
 
 const {WorkerBase, registerWorker} = require('./WorkerBase');
 
@@ -29,6 +30,8 @@ class BuildWorker extends WorkerBase {
 
         Utils.getAssetsInfo(function(uuidmap) {
             let copyReourceInfos = this._convertFireToJson(uuidmap);
+            let dynamicLoadRes = this._getDynamicLoadRes(uuidmap);
+            Object.assign(copyReourceInfos, dynamicLoadRes);
             this._compileJsonToBinary(function() {
                 this._copyResources(copyReourceInfos);
                 Editor.Ipc.sendToAll('creator-luacpp-support:state-changed', 'finish', 100);
@@ -39,7 +42,7 @@ class BuildWorker extends WorkerBase {
     }
 
     _convertFireToJson(uuidmap) {
-        let fireFiles = this._getFireList();  
+        let fireFiles = this._getFireList();
         let copyReourceInfos = parse_fire(fireFiles, 'creator', Constants.JSON_PATH, uuidmap);
 
         return copyReourceInfos;
@@ -72,7 +75,6 @@ class BuildWorker extends WorkerBase {
         // - resources in assets and folder
         // - all files in reader
         // - lua binding codes(currently is missing)
-
         let projectRoot = this._state.path;
         
         // root path of resources
@@ -170,6 +172,21 @@ class BuildWorker extends WorkerBase {
             }
         });
         return foundFiles;
+    }
+
+    // dynamically load resources located at assets/resources folder
+    _getDynamicLoadRes(uuidmap, collectedResources) {
+        let dynamicLoadRes = {};
+        let resourcesPath = Path.join(Constants.ASSETS_PATH, 'resources');
+
+        Object.keys(uuidmap).forEach(function(uuid) {
+            if(uuidmap[uuid].indexOf(resourcesPath) < 0)
+                return true;
+            
+            dynamicLoadRes[uuid] = parse_utils.get_relative_full_path_by_uuid(uuid);
+        });
+
+        return dynamicLoadRes;
     }
 }
 
