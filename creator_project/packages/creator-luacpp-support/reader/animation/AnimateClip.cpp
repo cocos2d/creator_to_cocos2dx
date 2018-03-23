@@ -209,15 +209,14 @@ bool AnimateClip::initWithAnimationClip(cocos2d::Node* rootTarget, AnimationClip
     if (_clip)
     {
         _clip->retain();
+        _durationToStop = _clip->getDuration();
 
         auto wrapMode = clip->getWrapMode();
-        if (wrapMode == AnimationClip::WrapMode::Loop || wrapMode == AnimationClip::WrapMode::LoopReverse)
+        if (wrapMode == AnimationClip::WrapMode::Loop
+            || wrapMode == AnimationClip::WrapMode::LoopReverse
+            || wrapMode == AnimationClip::WrapMode::PingPong  // PingPong and PingPongReverse are loop animations
+            || wrapMode == AnimationClip::WrapMode::PingPongReverse)
             _needStop = false;
-
-        _durationToStop = _clip->getDuration();
-        if (wrapMode == AnimationClip::WrapMode::PingPong || wrapMode == AnimationClip::WrapMode::PingPongReverse)
-            _needStop = false;
-            _durationToStop = _clip->getDuration() * 2;
 
         // assign it to be used in anonymous namespace
         g_clip = _clip;
