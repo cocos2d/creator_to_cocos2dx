@@ -179,7 +179,7 @@ class BuildWorker extends WorkerBase {
     // dynamically load resources located at assets/resources folder
     _getDynamicLoadRes(uuidmap, collectedResources) {
         let state = Editor.remote.Profile.load(plugin_profile, Constants.PROFILE_DEFAULTS);
-        if (!state.data.exportDynamicallyLoadResource)
+        if (!state.data.exportResourceDynamicallyLoaded)
             return;
         
         let dynamicLoadRes = {};

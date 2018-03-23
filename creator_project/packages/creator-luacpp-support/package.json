@@ -26,7 +26,7 @@
                 "path": "",
                 "autoBuild": false,
                 "exportResourceOnly": false,
-                "exportDynamicallyLoadResource": false
+                "exportResourceDynamicallyLoaded": false
             }
         }
     }

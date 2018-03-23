@@ -88,9 +88,9 @@ Editor.Panel.extend({
                     this.profileProject.save();
                 },
 
-                _onChangeexportDynamicallyLoadResource(event) {
+                _onChangeExportDynamicallyLoadResource(event) {
                     event.stopPropagation();
-                    this.profileProject.data.exportDynamicallyLoadResource = event.target.value;
+                    this.profileProject.data.exportResourceDynamicallyLoaded = event.target.value;
                     this.profileProject.save();
                 },
 

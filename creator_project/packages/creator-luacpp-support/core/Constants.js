@@ -43,7 +43,7 @@ Constants.PROFILE_DEFAULTS = {
     path: '',
     autoBuild: false,
     exportResourceOnly: false,
-    exportDynamicallyLoadResource: false
+    exportResourceDynamicallyLoaded: false
 };
 
 module.exports = Constants;
