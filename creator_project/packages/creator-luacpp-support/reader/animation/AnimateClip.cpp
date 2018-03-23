@@ -322,7 +322,7 @@ float AnimateClip::computeElapse() const
     auto duration = _clip->getDuration();
 
     // as the time goes, _elapsed will be bigger than duration when _needStop = false
-    elapsed  = elapsed - static_cast<int>(elapsed / duration) * duration;
+    elapsed = fmodf(elapsed, duration);
 
     const auto wrapMode = _clip->getWrapMode();
     bool oddRound = (static_cast<int>(_elapsed / duration) % 2) == 0;
