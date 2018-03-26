@@ -168,6 +168,10 @@ AnimateClip::AnimateClip()
 
 AnimateClip::~AnimateClip()
 {
+    // a loop animate might keep running until destruction, memory will leak if not stop it
+    if(_running)
+        stopAnimate();
+
     CC_SAFE_RELEASE(_clip);
     CC_SAFE_RELEASE(_rootTarget);
 }
@@ -180,6 +184,9 @@ void AnimateClip::startAnimate()
 
 void AnimateClip::stopAnimate()
 {
+    if (_endCallback)
+        _endCallback();
+
     unscheduleUpdate();
     // release self
     _running = false;
@@ -231,8 +238,6 @@ void AnimateClip::update(float dt) {
     if (_needStop && _elapsed >= _durationToStop)
     {
         stopAnimate();
-        if (_endCallback)
-            _endCallback();
 
         return;
     }
