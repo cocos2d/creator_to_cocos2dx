@@ -168,6 +168,10 @@ AnimateClip::AnimateClip()
 
 AnimateClip::~AnimateClip()
 {
+    // a loop animate might keep running until destruction, memory will leak if not stop it
+    if(_running)
+        stopAnimate();
+
     CC_SAFE_RELEASE(_clip);
     CC_SAFE_RELEASE(_rootTarget);
 }
@@ -180,6 +184,9 @@ void AnimateClip::startAnimate()
 
 void AnimateClip::stopAnimate()
 {
+    if (_endCallback)
+        _endCallback();
+
     unscheduleUpdate();
     // release self
     _running = false;
@@ -209,15 +216,15 @@ bool AnimateClip::initWithAnimationClip(cocos2d::Node* rootTarget, AnimationClip
     if (_clip)
     {
         _clip->retain();
-        
-        auto wrapMode = clip->getWrapMode();
-        if (wrapMode == AnimationClip::WrapMode::Loop || wrapMode == AnimationClip::WrapMode::LoopReverse)
-            _needStop = false;
-        
         _durationToStop = _clip->getDuration();
-        if (wrapMode == AnimationClip::WrapMode::PingPong || wrapMode == AnimationClip::WrapMode::PingPongReverse)
-            _durationToStop = _clip->getDuration() * 2;
-        
+
+        auto wrapMode = clip->getWrapMode();
+        if (wrapMode == AnimationClip::WrapMode::Loop
+            || wrapMode == AnimationClip::WrapMode::LoopReverse
+            || wrapMode == AnimationClip::WrapMode::PingPong  // PingPong and PingPongReverse are loop animations
+            || wrapMode == AnimationClip::WrapMode::PingPongReverse)
+            _needStop = false;
+
         // assign it to be used in anonymous namespace
         g_clip = _clip;
     }
@@ -231,9 +238,6 @@ void AnimateClip::update(float dt) {
     if (_needStop && _elapsed >= _durationToStop)
     {
         stopAnimate();
-        if (_endCallback)
-            _endCallback();
-        
         return;
     }
     
@@ -319,11 +323,10 @@ float AnimateClip::computeElapse() const
 {
     auto elapsed = _elapsed;
     auto duration = _clip->getDuration();
-    
-    // if wrap mode is pingpong or pingpongreverse, then _elapsed may be bigger than duration
-    while (elapsed >= duration)
-        elapsed = elapsed - duration;
-    
+
+    // as the time goes, _elapsed will be bigger than duration when _needStop = false
+    elapsed = fmodf(elapsed, duration);
+
     const auto wrapMode = _clip->getWrapMode();
     bool oddRound = (static_cast<int>(_elapsed / duration) % 2) == 0;
     if (wrapMode == AnimationClip::WrapMode::Reverse  // reverse mode

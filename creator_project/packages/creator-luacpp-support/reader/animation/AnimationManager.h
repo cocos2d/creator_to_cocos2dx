@@ -50,6 +50,8 @@ public:
     void stopAnimationClip(cocos2d::Node *target, const std::string &animationClipName);
     void pauseAnimationClip(cocos2d::Node *target, const std::string &animationClipName);
     void resumeAnimationClip(cocos2d::Node *target, const std::string &animationClipName);
+    // if a "Play On Load" animation is a loop animation, please stop it manually.
+    void stopPlayOnLoad();
 private:
     friend class CreatorReader;
     
@@ -59,7 +61,7 @@ private:
     // functions invoked by CreatorReader only
     void addAnimation(const AnimationInfo& animationInfo);
     void playOnLoad();
-    
+
     void runAnimationClip(cocos2d::Node *target, AnimationClip* animationClip);
     // AnimateClip will be released
     void removeAnimateClip(cocos2d::Node *target, const std::string &animationClipName);

@@ -27,6 +27,15 @@ void AnimationManager::playOnLoad()
     }
 }
 
+void AnimationManager::stopPlayOnLoad()
+{
+    for (auto& animationInfo : _animations)
+    {
+        if (animationInfo.playOnLoad && animationInfo.defaultClip)
+            stopAnimationClip(animationInfo.target, animationInfo.defaultClip->getName());
+    }
+}
+
 void AnimationManager::playAnimationClip(cocos2d::Node *target, const std::string &animationClipName)
 {
     bool foundTarget = false;
