@@ -68,6 +68,8 @@ struct AnimationRef;
 
 struct Collider;
 
+struct Widget;
+
 struct DragonBones;
 
 struct AnimationClip;
@@ -882,7 +884,8 @@ struct Node FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     VT_TAG = 38,
     VT_ANIM = 40,
     VT_COLLIDERS = 42,
-    VT_GROUPINDEX = 44
+    VT_WIDGET = 44,
+    VT_GROUPINDEX = 46
   };
   const Size *contentSize() const { return GetStruct<const Size *>(VT_CONTENTSIZE); }
   bool enabled() const { return GetField<uint8_t>(VT_ENABLED, 1) != 0; }
@@ -904,6 +907,7 @@ struct Node FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   int32_t tag() const { return GetField<int32_t>(VT_TAG, 0); }
   const AnimationRef *anim() const { return GetPointer<const AnimationRef *>(VT_ANIM); }
   const flatbuffers::Vector<flatbuffers::Offset<Collider>> *colliders() const { return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<Collider>> *>(VT_COLLIDERS); }
+  const Widget *widget() const { return GetPointer<const Widget *>(VT_WIDGET); }
   int32_t groupIndex() const { return GetField<int32_t>(VT_GROUPINDEX, 0); }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -931,6 +935,8 @@ struct Node FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
            VerifyField<flatbuffers::uoffset_t>(verifier, VT_COLLIDERS) &&
            verifier.Verify(colliders()) &&
            verifier.VerifyVectorOfTables(colliders()) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_WIDGET) &&
+           verifier.VerifyTable(widget()) &&
            VerifyField<int32_t>(verifier, VT_GROUPINDEX) &&
            verifier.EndTable();
   }
@@ -959,11 +965,12 @@ struct NodeBuilder {
   void add_tag(int32_t tag) { fbb_.AddElement<int32_t>(Node::VT_TAG, tag, 0); }
   void add_anim(flatbuffers::Offset<AnimationRef> anim) { fbb_.AddOffset(Node::VT_ANIM, anim); }
   void add_colliders(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Collider>>> colliders) { fbb_.AddOffset(Node::VT_COLLIDERS, colliders); }
+  void add_widget(flatbuffers::Offset<Widget> widget) { fbb_.AddOffset(Node::VT_WIDGET, widget); }
   void add_groupIndex(int32_t groupIndex) { fbb_.AddElement<int32_t>(Node::VT_GROUPINDEX, groupIndex, 0); }
   NodeBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
   NodeBuilder &operator=(const NodeBuilder &);
   flatbuffers::Offset<Node> Finish() {
-    auto o = flatbuffers::Offset<Node>(fbb_.EndTable(start_, 21));
+    auto o = flatbuffers::Offset<Node>(fbb_.EndTable(start_, 22));
     return o;
   }
 };
@@ -989,9 +996,11 @@ inline flatbuffers::Offset<Node> CreateNode(flatbuffers::FlatBufferBuilder &_fbb
     int32_t tag = 0,
     flatbuffers::Offset<AnimationRef> anim = 0,
     flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Collider>>> colliders = 0,
+    flatbuffers::Offset<Widget> widget = 0,
     int32_t groupIndex = 0) {
   NodeBuilder builder_(_fbb);
   builder_.add_groupIndex(groupIndex);
+  builder_.add_widget(widget);
   builder_.add_colliders(colliders);
   builder_.add_anim(anim);
   builder_.add_tag(tag);
@@ -1036,8 +1045,9 @@ inline flatbuffers::Offset<Node> CreateNodeDirect(flatbuffers::FlatBufferBuilder
     int32_t tag = 0,
     flatbuffers::Offset<AnimationRef> anim = 0,
     const std::vector<flatbuffers::Offset<Collider>> *colliders = nullptr,
+    flatbuffers::Offset<Widget> widget = 0,
     int32_t groupIndex = 0) {
-  return CreateNode(_fbb, contentSize, enabled, name ? _fbb.CreateString(name) : 0, anchorPoint, cascadeOpacityEnabled, color, globalZOrder, localZOrder, opacity, opacityModifyRGB, position, rotationSkewX, rotationSkewY, scaleX, scaleY, skewX, skewY, tag, anim, colliders ? _fbb.CreateVector<flatbuffers::Offset<Collider>>(*colliders) : 0, groupIndex);
+  return CreateNode(_fbb, contentSize, enabled, name ? _fbb.CreateString(name) : 0, anchorPoint, cascadeOpacityEnabled, color, globalZOrder, localZOrder, opacity, opacityModifyRGB, position, rotationSkewX, rotationSkewY, scaleX, scaleY, skewX, skewY, tag, anim, colliders ? _fbb.CreateVector<flatbuffers::Offset<Collider>>(*colliders) : 0, widget, groupIndex);
 }
 
 struct Sprite FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
@@ -2760,6 +2770,109 @@ inline flatbuffers::Offset<Collider> CreateColliderDirect(flatbuffers::FlatBuffe
     const std::vector<const Vec2 *> *points = nullptr,
     float radius = 0.0f) {
   return CreateCollider(_fbb, type, offset, size, points ? _fbb.CreateVector<const Vec2 *>(*points) : 0, radius);
+}
+
+struct Widget FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum {
+    VT_ISALIGNONCE = 4,
+    VT_LEFT = 6,
+    VT_RIGHT = 8,
+    VT_TOP = 10,
+    VT_BOTTOM = 12,
+    VT_VERTICALCENTER = 14,
+    VT_HORIZONTALCENTER = 16,
+    VT_ISABSLEFT = 18,
+    VT_ISABSRIGHT = 20,
+    VT_ISABSTOP = 22,
+    VT_ISABSBOTTOM = 24,
+    VT_ISABSHORIZONTALCENTER = 26,
+    VT_ISABSVERTICALCENTER = 28
+  };
+  bool isAlignOnce() const { return GetField<uint8_t>(VT_ISALIGNONCE, 0) != 0; }
+  float left() const { return GetField<float>(VT_LEFT, 0.0f); }
+  float right() const { return GetField<float>(VT_RIGHT, 0.0f); }
+  float top() const { return GetField<float>(VT_TOP, 0.0f); }
+  float bottom() const { return GetField<float>(VT_BOTTOM, 0.0f); }
+  float verticalCenter() const { return GetField<float>(VT_VERTICALCENTER, 0.0f); }
+  float horizontalCenter() const { return GetField<float>(VT_HORIZONTALCENTER, 0.0f); }
+  bool isAbsLeft() const { return GetField<uint8_t>(VT_ISABSLEFT, 0) != 0; }
+  bool isAbsRight() const { return GetField<uint8_t>(VT_ISABSRIGHT, 0) != 0; }
+  bool isAbsTop() const { return GetField<uint8_t>(VT_ISABSTOP, 0) != 0; }
+  bool isAbsBottom() const { return GetField<uint8_t>(VT_ISABSBOTTOM, 0) != 0; }
+  bool isAbsHorizontalCenter() const { return GetField<uint8_t>(VT_ISABSHORIZONTALCENTER, 0) != 0; }
+  bool isAbsVerticalCenter() const { return GetField<uint8_t>(VT_ISABSVERTICALCENTER, 0) != 0; }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<uint8_t>(verifier, VT_ISALIGNONCE) &&
+           VerifyField<float>(verifier, VT_LEFT) &&
+           VerifyField<float>(verifier, VT_RIGHT) &&
+           VerifyField<float>(verifier, VT_TOP) &&
+           VerifyField<float>(verifier, VT_BOTTOM) &&
+           VerifyField<float>(verifier, VT_VERTICALCENTER) &&
+           VerifyField<float>(verifier, VT_HORIZONTALCENTER) &&
+           VerifyField<uint8_t>(verifier, VT_ISABSLEFT) &&
+           VerifyField<uint8_t>(verifier, VT_ISABSRIGHT) &&
+           VerifyField<uint8_t>(verifier, VT_ISABSTOP) &&
+           VerifyField<uint8_t>(verifier, VT_ISABSBOTTOM) &&
+           VerifyField<uint8_t>(verifier, VT_ISABSHORIZONTALCENTER) &&
+           VerifyField<uint8_t>(verifier, VT_ISABSVERTICALCENTER) &&
+           verifier.EndTable();
+  }
+};
+
+struct WidgetBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_isAlignOnce(bool isAlignOnce) { fbb_.AddElement<uint8_t>(Widget::VT_ISALIGNONCE, static_cast<uint8_t>(isAlignOnce), 0); }
+  void add_left(float left) { fbb_.AddElement<float>(Widget::VT_LEFT, left, 0.0f); }
+  void add_right(float right) { fbb_.AddElement<float>(Widget::VT_RIGHT, right, 0.0f); }
+  void add_top(float top) { fbb_.AddElement<float>(Widget::VT_TOP, top, 0.0f); }
+  void add_bottom(float bottom) { fbb_.AddElement<float>(Widget::VT_BOTTOM, bottom, 0.0f); }
+  void add_verticalCenter(float verticalCenter) { fbb_.AddElement<float>(Widget::VT_VERTICALCENTER, verticalCenter, 0.0f); }
+  void add_horizontalCenter(float horizontalCenter) { fbb_.AddElement<float>(Widget::VT_HORIZONTALCENTER, horizontalCenter, 0.0f); }
+  void add_isAbsLeft(bool isAbsLeft) { fbb_.AddElement<uint8_t>(Widget::VT_ISABSLEFT, static_cast<uint8_t>(isAbsLeft), 0); }
+  void add_isAbsRight(bool isAbsRight) { fbb_.AddElement<uint8_t>(Widget::VT_ISABSRIGHT, static_cast<uint8_t>(isAbsRight), 0); }
+  void add_isAbsTop(bool isAbsTop) { fbb_.AddElement<uint8_t>(Widget::VT_ISABSTOP, static_cast<uint8_t>(isAbsTop), 0); }
+  void add_isAbsBottom(bool isAbsBottom) { fbb_.AddElement<uint8_t>(Widget::VT_ISABSBOTTOM, static_cast<uint8_t>(isAbsBottom), 0); }
+  void add_isAbsHorizontalCenter(bool isAbsHorizontalCenter) { fbb_.AddElement<uint8_t>(Widget::VT_ISABSHORIZONTALCENTER, static_cast<uint8_t>(isAbsHorizontalCenter), 0); }
+  void add_isAbsVerticalCenter(bool isAbsVerticalCenter) { fbb_.AddElement<uint8_t>(Widget::VT_ISABSVERTICALCENTER, static_cast<uint8_t>(isAbsVerticalCenter), 0); }
+  WidgetBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
+  WidgetBuilder &operator=(const WidgetBuilder &);
+  flatbuffers::Offset<Widget> Finish() {
+    auto o = flatbuffers::Offset<Widget>(fbb_.EndTable(start_, 13));
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<Widget> CreateWidget(flatbuffers::FlatBufferBuilder &_fbb,
+    bool isAlignOnce = false,
+    float left = 0.0f,
+    float right = 0.0f,
+    float top = 0.0f,
+    float bottom = 0.0f,
+    float verticalCenter = 0.0f,
+    float horizontalCenter = 0.0f,
+    bool isAbsLeft = false,
+    bool isAbsRight = false,
+    bool isAbsTop = false,
+    bool isAbsBottom = false,
+    bool isAbsHorizontalCenter = false,
+    bool isAbsVerticalCenter = false) {
+  WidgetBuilder builder_(_fbb);
+  builder_.add_horizontalCenter(horizontalCenter);
+  builder_.add_verticalCenter(verticalCenter);
+  builder_.add_bottom(bottom);
+  builder_.add_top(top);
+  builder_.add_right(right);
+  builder_.add_left(left);
+  builder_.add_isAbsVerticalCenter(isAbsVerticalCenter);
+  builder_.add_isAbsHorizontalCenter(isAbsHorizontalCenter);
+  builder_.add_isAbsBottom(isAbsBottom);
+  builder_.add_isAbsTop(isAbsTop);
+  builder_.add_isAbsRight(isAbsRight);
+  builder_.add_isAbsLeft(isAbsLeft);
+  builder_.add_isAlignOnce(isAlignOnce);
+  return builder_.Finish();
 }
 
 struct DragonBones FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
