@@ -228,8 +228,8 @@ class Node {
 
     parse_widget() {
         let component = Node.get_node_components_of_type(this._node_data, 'cc.Widget');
-        if(component){
-            this._properties.widget = Widget.parse(component);
+        if(component.length === 1) {
+            this._properties.widget = Widget.parse(component[0]);
         }
     }
 
