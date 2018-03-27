@@ -220,7 +220,7 @@ let get_tiledmap_path_by_uuid = function (uuid) {
     }
 }
 
-let DEBUG = false;
+let DEBUG = true;
 log = function(s) {
     if (DEBUG)
         Utils.log(s);

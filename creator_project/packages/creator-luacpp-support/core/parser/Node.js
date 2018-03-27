@@ -1,5 +1,6 @@
 const state = require('./Global').state;
 const Collider = require('./Collider');
+const Widget = require('./Widget');
 let Utils = require('./Utils');
 const fs = require('fs');
 
@@ -194,6 +195,7 @@ class Node {
 
         this.parse_clip();
         this.parse_colliders();
+        this.parse_widget();
     }
 
     parse_child(node_idx) {
@@ -221,6 +223,13 @@ class Node {
             let collider_component = collider_components[i];
             let collider_info = Collider.parse(collider_component);
             this._properties.colliders.push(collider_info);
+        }
+    }
+
+    parse_widget() {
+        let component = Node.get_node_components_of_type(this._node_data, 'cc.Widget');
+        if(component){
+            this._properties.widget = Widget.parse(component);
         }
     }
 
