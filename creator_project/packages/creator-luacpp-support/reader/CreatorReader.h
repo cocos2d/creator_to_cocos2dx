@@ -51,7 +51,7 @@ public:
     cocos2d::Scene* getSceneGraph() const;
     
     /**
-     Return the CollisionManager. It is added as a child of the Scene to simplify the codes.
+     Return the AnimationManager. It is added as a child of the Scene to simplify the codes.
      @return The `AnimationManager` of the scene
      */
     AnimationManager* getAnimationManager() const;
