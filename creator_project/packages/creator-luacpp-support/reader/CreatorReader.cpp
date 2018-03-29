@@ -127,6 +127,7 @@ namespace {
 //
 CreatorReader::CreatorReader()
 : _version("")
+, _isExistWidget(false)
 , _positionDiffDesignResolution(0, 0)
 {
     _animationManager = new AnimationManager();
@@ -396,11 +397,19 @@ cocos2d::Node* CreatorReader::createTree(const buffers::NodeTree* tree) const
                 auto button = static_cast<cocos2d::ui::Button*>(node);
                 auto label = static_cast<cocos2d::Label*>(child);
                 button->setTitleLabel(label);
+                // insert layout Node, wrong!!!!!! no parent Node
+                if (_isExistWidget) {
+                    node = adjustWidget(button->getParent(), dynamic_cast<ui::Widget*>(button));
+                }
             }
             else
             {
                 node->addChild(child);
                 adjustPosition(child);
+                // insert layout Node, wrong!!!!!! no parent Node
+                if (_isExistWidget) {
+                    node = adjustWidget(node, dynamic_cast<ui::Widget*>(child));
+                }
             }
         }
     }
@@ -469,6 +478,8 @@ void CreatorReader::parseNode(cocos2d::Node* node, const buffers::Node* nodeBuff
     parseNodeAnimation(node, nodeBuffer);
     
     parseColliders(node, nodeBuffer);
+
+    parseWidget(node, nodeBuffer);
 }
 
 void CreatorReader::parseNodeAnimation(cocos2d::Node* node, const buffers::Node* nodeBuffer) const
@@ -601,6 +612,23 @@ void CreatorReader::parseColliders(cocos2d::Node* node, const buffers::Node* nod
     
     if (collider)
         _collisionManager->addCollider(collider);
+}
+
+void CreatorReader::parseWidget(cocos2d::Node *node, const buffers::Node *nodeBuffer) const
+{
+    const auto& info = nodeBuffer->widget();
+    if ((info != nullptr) && (dynamic_cast<ui::Widget*>(node) != nullptr)) {
+        const auto& margin = ui::Margin(info->left(),info->top(),info->right(), info->bottom());
+        auto parameter = ui::LayoutParameter::create();
+        parameter->setMargin(margin);
+        dynamic_cast<ui::Widget*>(node)->setLayoutParameter(parameter);
+
+        _isExistWidget = true;
+    }
+    else
+    {
+        _isExistWidget = _isExistWidget || false;
+    }
 }
 
 cocos2d::Sprite* CreatorReader::createSprite(const buffers::Sprite* spriteBuffer) const
@@ -1456,6 +1484,21 @@ void CreatorReader::adjustPosition(cocos2d::Node* node) const
         const auto new_pos = node->getPosition() + offset;
         node->setPosition(new_pos);
     }
+}
+
+cocos2d::ui::Layout* CreatorReader::adjustWidget(cocos2d::Node* parent, cocos2d::ui::Widget* child) const
+{
+    auto layout = ui::Layout::create();
+    layout->setLayoutType(ui::LayoutType::HORIZONTAL);
+    layout->setContentSize(parent->getContentSize());
+    layout->setName(child->getName() + "-Widget");
+
+    // insert layout node
+    child->removeFromParentAndCleanup(false);
+    layout->addChild(child);
+
+    _isExistWidget = false;
+    return layout;
 }
 
 //

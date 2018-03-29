@@ -88,6 +88,7 @@ protected:
     void parseNode(cocos2d::Node* node, const buffers::Node* nodeBuffer) const;
     void parseNodeAnimation(cocos2d::Node* node, const buffers::Node* nodeBuffer) const;
     void parseColliders(cocos2d::Node* node, const buffers::Node* nodeBuffer) const;
+    void parseWidget(cocos2d::Node* node, const buffers::Node* nodeBuffer) const;
 
     cocos2d::Sprite* createSprite(const buffers::Sprite* spriteBuffer) const;
     void parseSprite(cocos2d::Sprite* sprite, const buffers::Sprite* spriteBuffer) const;
@@ -157,9 +158,19 @@ protected:
      this function adjust that */
     void adjustPosition(cocos2d::Node* node) const;
 
+    /** Widget in creator is a component used to do Layout,
+     but in cocos2d-x is a Base class for all ui widgets.
+     To preduce the similar effect, we have to add a Layout between parent Node and child Node.
+     */
+    cocos2d::ui::Layout* adjustWidget(cocos2d::Node* parent, cocos2d::ui::Widget* child) const;
+
     // variables
     cocos2d::Data _data;
     std::string _version;
+
+    // FIXME: wrong method, we need a map to storage related info <Node, WidgetComINfo>
+    // true if exist Widget Component in current Node, false otherwise
+    mutable bool _isExistWidget;
     
     AnimationManager *_animationManager;
     ColliderManager *_collisionManager;
@@ -167,7 +178,7 @@ protected:
     // creator will make scene at the center of screen when apply design solution strategy, cocos2d-x doesn't do it like this
     // this value record the diff
     cocos2d::Vec2 _positionDiffDesignResolution;
-    
+
     CREATOR_DISALLOW_COPY_ASSIGN_AND_MOVE(CreatorReader);
 };
 
