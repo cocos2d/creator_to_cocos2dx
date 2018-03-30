@@ -31,17 +31,45 @@
 
 NS_CCR_BEGIN
 
-class WidgetAdapter
+class WidgetAdapter : public cocos2d::Ref
 {
+
 public:
 
+    static WidgetAdapter* create();
+    WidgetAdapter();
+    virtual ~WidgetAdapter();
+
+    bool init();
+
+    void setAdaptNode(cocos2d::Node* needAdaptNode);
+    void setWidgetData(const creator::buffers::Widget *const widgetData);
+    // set after known AdaptNode's parent
+    void setLayoutTarget(cocos2d::Node* layoutTarget);
+    // adapt layout depend on _widgetData and _layoutTarget
+    void doAlignOnce();
 private:
-    // the node's parent must existed
-    cocos2d::Node* _nodeNeedWidget;
+    // widget layout target, it's a Node
+    cocos2d::Node* _layoutTarget;
+    // _layoutTarget must existed, the default target is _needAdaptNode's parent
+    cocos2d::Node* _needAdaptNode;
     // insert the _layout between _nodeNeedWidget and its parent
-    cocos2d::ui::Layout* _layout;
+    cocos2d::ui::Layout* _layoutNode;
     // layout information source，exported from the creator
-    creator::buffers::Widget* _widgetData;
+    const creator::buffers::Widget* const _widgetData;
+    // change the node relationship to insert Layout.
+    void insertLayoutNode();
 };
+
+//class WidgetManager : public cocos2d::Ref
+//{
+//public:
+//    void addWidgetInfo(cocos2d::Node* parent, creator::WidgetAdapter* adapter);
+//private:
+//    // <target's parent Node, WidgetAdapter>
+//    std::map<cocos2d::Node*, creator::WidgetAdapter*> _widgetInfoMap;
+//
+//    CREATOR_DISALLOW_COPY_ASSIGN_AND_MOVE(WidgetManager);
+//}
 
 NS_CCR_END

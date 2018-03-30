@@ -34,6 +34,7 @@
 #include "collider/ColliderManager.h"
 #include "dragonbones/DragonBonesHeaders.h"
 #include "dragonbones/cocos2dx/CCDragonBonesHeaders.h"
+#include "ui/WidgetAdapter.h"
 
 
 
@@ -162,16 +163,14 @@ protected:
      but in cocos2d-x is a Base class for all ui widgets.
      To preduce the similar effect, we have to add a Layout between parent Node and child Node.
      */
-    cocos2d::ui::Layout* adjustWidget(cocos2d::Node* parent, cocos2d::ui::Widget* child) const;
+    void adjustWidgets() const;
 
     // variables
     cocos2d::Data _data;
     std::string _version;
 
-    // FIXME: wrong method, we need a map to storage related info <Node, WidgetComINfo>
-    // true if exist Widget Component in current Node, false otherwise
-    mutable bool _isExistWidget;
-    
+    mutable cocos2d::Vector<WidgetAdapter*> _needAdaptWidgets;
+
     AnimationManager *_animationManager;
     ColliderManager *_collisionManager;
     
