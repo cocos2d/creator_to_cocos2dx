@@ -613,18 +613,26 @@ void CreatorReader::parseWidget(cocos2d::Node *node, const buffers::Node *nodeBu
     const auto& info = nodeBuffer->widget();
     auto widgetNode = dynamic_cast<ui::Widget*>(node);
     if ((info != nullptr) && (widgetNode != nullptr)) {
-        // meaningful?
+        // save the widget component info
         const auto& margin = ui::Margin(info->left(),info->top(),info->right(), info->bottom());
         auto parameter = ui::LinearLayoutParameter::create();
         parameter->setMargin(margin);
-        if (info->left() != 0) {
-//            parameter->setGravity(ui::LinearLayoutParameter::LinearGravity::)
+        if (info->left() > MATH_EPSILON) {
+            parameter->setGravity(ui::LinearLayoutParameter::LinearGravity::LEFT);
+        } else if (info->top() > MATH_EPSILON){
+            parameter->setGravity(ui::LinearLayoutParameter::LinearGravity::TOP);
+        } else if (info->right() > MATH_EPSILON){
+            parameter->setGravity(ui::LinearLayoutParameter::LinearGravity::RIGHT);
+        } else if (info->bottom() > MATH_EPSILON){
+            parameter->setGravity(ui::LinearLayoutParameter::LinearGravity::BOTTOM);
+        } else if (info->verticalCenter() > MATH_EPSILON){
+            parameter->setGravity(ui::LinearLayoutParameter::LinearGravity::CENTER_VERTICAL);
+        } else if (info->horizontalCenter() > MATH_EPSILON){
+            parameter->setGravity(ui::LinearLayoutParameter::LinearGravity::CENTER_HORIZONTAL);
         }
         widgetNode->setLayoutParameter(parameter);
-        // save the widget component info
         auto widgetInfo = WidgetAdapter::create();
         widgetInfo->setAdaptNode(widgetNode);
-//        widgetInfo->setWidgetData(info);
         _needAdaptWidgets.pushBack(widgetInfo);
     }
 }
