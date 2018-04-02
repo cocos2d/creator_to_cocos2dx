@@ -21,7 +21,7 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
  ****************************************************************************/
-#include "WidgetAdapter.h"
+#include "WidgetExport.h"
 
 
 NS_CCR_BEGIN
@@ -39,13 +39,15 @@ WidgetAdapter* WidgetAdapter::create()
 bool WidgetAdapter::init()
 {
     _layoutNode = cocos2d::ui::Layout::create();
-    CC_SAFE_RETAIN(_layoutNode);
+    _layoutNode->setLayoutType(cocos2d::ui::Layout::Type::RELATIVE);
 
+    CC_SAFE_RETAIN(_layoutNode);
     return true;
 }
 
 WidgetAdapter::WidgetAdapter()
-: _layoutTarget(nullptr)
+: _isAlignOnce(true)
+, _layoutTarget(nullptr)
 , _needAdaptNode(nullptr)
 {
 
@@ -56,14 +58,13 @@ WidgetAdapter::~WidgetAdapter()
     CC_SAFE_RELEASE(_layoutNode);
 }
 
+void WidgetAdapter::setIsAlignOnce(bool isAlignOnce)
+{
+    _isAlignOnce = isAlignOnce;
+}
 void WidgetAdapter::setAdaptNode(cocos2d::Node* needAdaptNode)
 {
     _needAdaptNode = needAdaptNode;
-}
-
-void WidgetAdapter::setWidgetData(const creator::buffers::Widget *const widgetData)
-{
-//    _widgetData = widgetData;
 }
 
 void WidgetAdapter::setLayoutTarget(cocos2d::Node* layoutTarget)
@@ -71,14 +72,13 @@ void WidgetAdapter::setLayoutTarget(cocos2d::Node* layoutTarget)
     _layoutTarget = layoutTarget;
 }
 
-void WidgetAdapter::doAlignOnce()
+void WidgetAdapter::configLayoutNode()
 {
     if (_layoutTarget == nullptr) {
         _layoutTarget = _needAdaptNode->getParent();
     }
     CCASSERT(_layoutTarget != nullptr, "layout target can't be null");
 
-    _layoutNode->setLayoutType(cocos2d::ui::Layout::Type::RELATIVE);
     _layoutNode->setContentSize(_layoutTarget->getContentSize());
     _layoutNode->setAnchorPoint(_layoutTarget->getAnchorPoint());
     _layoutNode->setPosition(_layoutTarget->getPosition());
@@ -95,5 +95,26 @@ void WidgetAdapter::insertLayoutNode()
     _needAdaptNode->removeFromParentAndCleanup(false);
     _layoutNode->addChild(_needAdaptNode);
     parent->addChild(_layoutNode);
+
+    _layoutNode->forceDoLayout();
+}
+
+void WidgetManager::update(float dt)
+{
+    for (auto& adapter:_needAdaptWidgets) {
+        auto layout = dynamic_cast<cocos2d::ui::Layout*>(adapter->_needAdaptNode->getParent());
+        if(!(adapter->_isAlignOnce) && layout != nullptr)
+        {
+            layout->setContentSize(adapter->_layoutTarget->getContentSize());
+        }
+    }
+}
+
+void WidgetManager::setupWidgets()
+{
+    for (auto& adapter:_needAdaptWidgets) {
+        adapter->configLayoutNode();
+    }
+//    scheduleUpdate();
 }
 NS_CCR_END

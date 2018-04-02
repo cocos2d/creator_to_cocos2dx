@@ -34,7 +34,7 @@
 #include "collider/ColliderManager.h"
 #include "dragonbones/DragonBonesHeaders.h"
 #include "dragonbones/cocos2dx/CCDragonBonesHeaders.h"
-#include "ui/WidgetAdapter.h"
+#include "ui/WidgetExport.h"
 
 
 
@@ -159,20 +159,15 @@ protected:
      this function adjust that */
     void adjustPosition(cocos2d::Node* node) const;
 
-    /** Widget in creator is a component used to do Layout,
-     but in cocos2d-x is a Base class for all ui widgets.
-     To preduce the similar effect, we have to add a Layout between parent Node and child Node.
-     */
-    void adjustWidgets() const;
-
     // variables
     cocos2d::Data _data;
     std::string _version;
 
-    mutable cocos2d::Vector<WidgetAdapter*> _needAdaptWidgets;
-
     AnimationManager *_animationManager;
     ColliderManager *_collisionManager;
+
+    // Widget in creator is a component used to do Layout
+    WidgetManager *_widgetManager;
     
     // creator will make scene at the center of screen when apply design solution strategy, cocos2d-x doesn't do it like this
     // this value record the diff

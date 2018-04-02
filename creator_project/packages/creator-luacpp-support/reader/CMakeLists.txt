@@ -31,7 +31,7 @@ set(READER_HEADER
     Macros.h
     ui/RichtextStringVisitor.h
     ui/PageView.h
-    ui/WidgetAdapter.h
+    ui/WidgetExport.h
 )
 
 set(READER_SOURCE
@@ -47,7 +47,7 @@ set(READER_SOURCE
     CreatorReader.cpp
     ui/PageView.cpp
     ui/RichtextStringVisitor.cpp
-    ui/WidgetAdapter.cpp
+    ui/WidgetExport.cpp
 )
 
 if(BUILD_LUA_LIBS)

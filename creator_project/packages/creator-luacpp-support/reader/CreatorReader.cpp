@@ -131,10 +131,13 @@ CreatorReader::CreatorReader()
 {
     _animationManager = new AnimationManager();
     _collisionManager = new ColliderManager();
+    _widgetManager = new WidgetManager();
     _animationManager->autorelease();
     _collisionManager->autorelease();
+    _widgetManager->autorelease();
     CC_SAFE_RETAIN(_animationManager);
     CC_SAFE_RETAIN(_collisionManager);
+    CC_SAFE_RETAIN(_widgetManager);
 }
 
 CreatorReader::~CreatorReader()
@@ -278,13 +281,13 @@ cocos2d::Scene* CreatorReader::getSceneGraph() const
             child->setPosition(child->getPosition() + _positionDiffDesignResolution);
     
     _animationManager->playOnLoad();
-    
+
     node->addChild(_collisionManager);
     node->addChild(_animationManager);
     _collisionManager->start();
 
-    // insert widget-layout node
-    adjustWidgets();
+    _widgetManager->setupWidgets();
+    node->addChild(_widgetManager);
 
     return static_cast<cocos2d::Scene*>(node);
 }
@@ -613,6 +616,8 @@ void CreatorReader::parseWidget(cocos2d::Node *node, const buffers::Node *nodeBu
     const auto& info = nodeBuffer->widget();
     auto widgetNode = dynamic_cast<ui::Widget*>(node);
     if ((info != nullptr) && (widgetNode != nullptr)) {
+        // debug
+        CCLOG("%s", widgetNode->getName().c_str());
         // the creator scene file didn't include the info about align which side
         bool isAlignLeft = fabs(info->left()) > MATH_EPSILON ? true : false;
         bool isAlignTop = fabs(info->top()) > MATH_EPSILON ? true : false;
@@ -648,7 +653,8 @@ void CreatorReader::parseWidget(cocos2d::Node *node, const buffers::Node *nodeBu
         widgetNode->setLayoutParameter(parameter);
         auto widgetInfo = WidgetAdapter::create();
         widgetInfo->setAdaptNode(widgetNode);
-        _needAdaptWidgets.pushBack(widgetInfo);
+        widgetInfo->setIsAlignOnce(info->isAlignOnce());
+        _widgetManager->_needAdaptWidgets.pushBack(widgetInfo);
     }
 }
 
@@ -1504,14 +1510,6 @@ void CreatorReader::adjustPosition(cocos2d::Node* node) const
         const auto offset = cocos2d::Vec2(p_ap.x * p_cs.width, p_ap.y * p_cs.height);
         const auto new_pos = node->getPosition() + offset;
         node->setPosition(new_pos);
-    }
-}
-
-void CreatorReader::adjustWidgets() const
-{
-    for(auto& adapter : _needAdaptWidgets){
-        adapter->doAlignOnce();
-        CCLOG("adjustWidgets Once");
     }
 }
 

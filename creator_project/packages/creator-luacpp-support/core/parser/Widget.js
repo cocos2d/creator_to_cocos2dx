@@ -15,7 +15,7 @@ class Widget {
         result.top = data._top;
         result.bottom = data._bottom;
         result.verticalCenter = data._verticalCenter;
-        result.horizontalCenter = data._verticalCenter;
+        result.horizontalCenter = data._horizontalCenter;
 
         // If true, value is pixel, otherwise is percentage (0 - 1)
         result.isAbsLeft = data._isAbsLeft;
@@ -26,7 +26,6 @@ class Widget {
         result.isAbsVerticalCenter = data._isAbsVerticalCenter;
 
         Utils.log("parse widget result value:" + JSON.stringify(result));
-        debugger;
 
         return result;
     }
