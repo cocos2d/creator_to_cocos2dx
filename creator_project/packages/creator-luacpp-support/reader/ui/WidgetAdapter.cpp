@@ -47,7 +47,6 @@ bool WidgetAdapter::init()
 WidgetAdapter::WidgetAdapter()
 : _layoutTarget(nullptr)
 , _needAdaptNode(nullptr)
-, _widgetData(nullptr)
 {
 
 }
@@ -79,16 +78,11 @@ void WidgetAdapter::doAlignOnce()
     }
     CCASSERT(_layoutTarget != nullptr, "layout target can't be null");
 
-    _layoutNode->setLayoutType(cocos2d::ui::Layout::Type::HORIZONTAL);
+    _layoutNode->setLayoutType(cocos2d::ui::Layout::Type::RELATIVE);
     _layoutNode->setContentSize(_layoutTarget->getContentSize());
-    _layoutNode->setBackGroundColorType(cocos2d::ui::Layout::BackGroundColorType::SOLID);
     _layoutNode->setAnchorPoint(_layoutTarget->getAnchorPoint());
     _layoutNode->setPosition(_layoutTarget->getPosition());
-    _layoutNode->setName(_needAdaptNode->getName() + " Layout");
-
-    // debug info
-    _layoutNode->setBackGroundColor(cocos2d::Color3B(128, 128, 128));
-    _layoutNode->setOpacity(128);
+    _layoutNode->setName(PLUGIN_EXTRA_LAYOUT_NAME);
 
     insertLayoutNode();
 }

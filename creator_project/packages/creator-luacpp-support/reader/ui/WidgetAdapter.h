@@ -31,6 +31,8 @@
 
 NS_CCR_BEGIN
 
+#define PLUGIN_EXTRA_LAYOUT_NAME "Creator Widget to Cocos2d-x Layout"
+
 class WidgetAdapter : public cocos2d::Ref
 {
 
@@ -46,7 +48,7 @@ public:
     void setWidgetData(const creator::buffers::Widget *const widgetData);
     // set after known AdaptNode's parent
     void setLayoutTarget(cocos2d::Node* layoutTarget);
-    // adapt layout depend on _widgetData and _layoutTarget
+    // adapt layout depend and _layoutTarget
     void doAlignOnce();
 private:
     // widget layout target, it's a Node
@@ -55,21 +57,7 @@ private:
     cocos2d::Node* _needAdaptNode;
     // insert the _layout between _nodeNeedWidget and its parent
     cocos2d::ui::Layout* _layoutNode;
-    // layout information source，exported from the creator
-    const creator::buffers::Widget* const _widgetData;
-    // change the node relationship to insert Layout.
+    // insert Layout to support widget component.
     void insertLayoutNode();
 };
-
-//class WidgetManager : public cocos2d::Ref
-//{
-//public:
-//    void addWidgetInfo(cocos2d::Node* parent, creator::WidgetAdapter* adapter);
-//private:
-//    // <target's parent Node, WidgetAdapter>
-//    std::map<cocos2d::Node*, creator::WidgetAdapter*> _widgetInfoMap;
-//
-//    CREATOR_DISALLOW_COPY_ASSIGN_AND_MOVE(WidgetManager);
-//}
-
 NS_CCR_END

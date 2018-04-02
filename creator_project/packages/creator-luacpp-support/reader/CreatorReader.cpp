@@ -613,22 +613,37 @@ void CreatorReader::parseWidget(cocos2d::Node *node, const buffers::Node *nodeBu
     const auto& info = nodeBuffer->widget();
     auto widgetNode = dynamic_cast<ui::Widget*>(node);
     if ((info != nullptr) && (widgetNode != nullptr)) {
+        // the creator scene file didn't include the info about align which side
+        bool isAlignLeft = fabs(info->left()) > MATH_EPSILON ? true : false;
+        bool isAlignTop = fabs(info->top()) > MATH_EPSILON ? true : false;
+        bool isAlignRight = fabs(info->right()) > MATH_EPSILON ? true : false;
+        bool isAlignBottom = fabs(info->bottom()) > MATH_EPSILON ? true : false;
+        bool isAlignVerticalCenter = fabs(info->verticalCenter()) > MATH_EPSILON ? true : false;
+        bool isAlignHorizontalCenter = fabs(info->horizontalCenter()) > MATH_EPSILON ? true : false;
         // save the widget component info
         const auto& margin = ui::Margin(info->left(),info->top(),info->right(), info->bottom());
-        auto parameter = ui::LinearLayoutParameter::create();
+        auto parameter = ui::RelativeLayoutParameter::create();
         parameter->setMargin(margin);
-        if (info->left() > MATH_EPSILON) {
-            parameter->setGravity(ui::LinearLayoutParameter::LinearGravity::LEFT);
-        } else if (info->top() > MATH_EPSILON){
-            parameter->setGravity(ui::LinearLayoutParameter::LinearGravity::TOP);
-        } else if (info->right() > MATH_EPSILON){
-            parameter->setGravity(ui::LinearLayoutParameter::LinearGravity::RIGHT);
-        } else if (info->bottom() > MATH_EPSILON){
-            parameter->setGravity(ui::LinearLayoutParameter::LinearGravity::BOTTOM);
-        } else if (info->verticalCenter() > MATH_EPSILON){
-            parameter->setGravity(ui::LinearLayoutParameter::LinearGravity::CENTER_VERTICAL);
-        } else if (info->horizontalCenter() > MATH_EPSILON){
-            parameter->setGravity(ui::LinearLayoutParameter::LinearGravity::CENTER_HORIZONTAL);
+        // TODO: imp Layout target, how to get the layout target?
+        // parameter->setRelativeToWidgetName(const std::string &name);
+        if (isAlignLeft && isAlignTop) {
+            parameter->setAlign(cocos2d::ui::RelativeLayoutParameter::RelativeAlign::PARENT_TOP_LEFT);
+        } else if (isAlignTop && isAlignRight){
+            parameter->setAlign(cocos2d::ui::RelativeLayoutParameter::RelativeAlign::PARENT_TOP_RIGHT);
+        } else if (isAlignRight && isAlignBottom){
+            parameter->setAlign(cocos2d::ui::RelativeLayoutParameter::RelativeAlign::PARENT_RIGHT_BOTTOM);
+        } else if (isAlignBottom && isAlignLeft){
+            parameter->setAlign(cocos2d::ui::RelativeLayoutParameter::RelativeAlign::PARENT_LEFT_BOTTOM);
+        } else if (isAlignVerticalCenter && isAlignLeft){
+            parameter->setAlign(cocos2d::ui::RelativeLayoutParameter::RelativeAlign::PARENT_LEFT_CENTER_VERTICAL);
+        } else if (isAlignVerticalCenter && isAlignRight){
+            parameter->setAlign(cocos2d::ui::RelativeLayoutParameter::RelativeAlign::PARENT_RIGHT_CENTER_VERTICAL);
+        } else if (isAlignHorizontalCenter && isAlignTop){
+            parameter->setAlign(cocos2d::ui::RelativeLayoutParameter::RelativeAlign::PARENT_TOP_CENTER_HORIZONTAL);
+        } else if (isAlignHorizontalCenter && isAlignBottom){
+            parameter->setAlign(cocos2d::ui::RelativeLayoutParameter::RelativeAlign::PARENT_BOTTOM_CENTER_HORIZONTAL);
+        } else if (isAlignHorizontalCenter && isAlignVerticalCenter){
+            parameter->setAlign(cocos2d::ui::RelativeLayoutParameter::RelativeAlign::CENTER_IN_PARENT);
         }
         widgetNode->setLayoutParameter(parameter);
         auto widgetInfo = WidgetAdapter::create();
