@@ -33,7 +33,15 @@ NS_CCR_BEGIN
 class AnimationClip: public cocos2d::Ref
 {
 public:
-    enum class WrapMode {Default, Normal, Loop, PingPong, Reverse, LoopReverse, PingPongReverse};
+    enum class WrapMode : int {
+        Default = 0,
+        Normal = 1,
+        Loop = 1 << 1,
+        PingPong = 1 << 4 | 1 << 1 | 1 << 2,
+        Reverse = 1 << 5 | 1 << 2,
+        LoopReverse = Loop | Reverse,
+        PingPongReverse = PingPong | Reverse,
+    };
 
     static AnimationClip* create();
     virtual ~AnimationClip();
@@ -68,5 +76,9 @@ private:
     WrapMode _wrapMode;
     std::vector<AnimProperties> _animPropertiesVec;
 };
+
+constexpr AnimationClip::WrapMode operator&(AnimationClip::WrapMode l, AnimationClip::WrapMode r) {
+    return static_cast<AnimationClip::WrapMode>(static_cast<int>(l) & static_cast<int>(r));
+}
 
 NS_CCR_END

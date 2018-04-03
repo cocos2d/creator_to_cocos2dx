@@ -211,11 +211,11 @@ bool AnimateClip::initWithAnimationClip(cocos2d::Node* rootTarget, AnimationClip
         _clip->retain();
         
         auto wrapMode = clip->getWrapMode();
-        if (wrapMode == AnimationClip::WrapMode::Loop || wrapMode == AnimationClip::WrapMode::LoopReverse)
+        if ((wrapMode & AnimationClip::WrapMode::Loop) == AnimationClip::WrapMode::Loop)
             _needStop = false;
-        
+
         _durationToStop = _clip->getDuration();
-        if (wrapMode == AnimationClip::WrapMode::PingPong || wrapMode == AnimationClip::WrapMode::PingPongReverse)
+        if ((wrapMode & AnimationClip::WrapMode::PingPong) == AnimationClip::WrapMode::PingPong)
             _durationToStop = _clip->getDuration() * 2;
         
         // assign it to be used in anonymous namespace
@@ -329,7 +329,7 @@ float AnimateClip::computeElapse() const
     if (wrapMode == AnimationClip::WrapMode::Reverse  // reverse mode
         || (wrapMode == AnimationClip::WrapMode::PingPong && !oddRound) // pingpong mode and it is the second round
         || (wrapMode == AnimationClip::WrapMode::PingPongReverse && oddRound) // pingpongreverse mode and it is the first round
-        || (wrapMode == AnimationClip::WrapMode::LoopReverse && oddRound)
+        || (wrapMode == AnimationClip::WrapMode::LoopReverse)
         )
         elapsed = duration - elapsed;
     
