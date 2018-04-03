@@ -302,6 +302,11 @@ ColliderManager* CreatorReader::getColliderManager() const
     return _collisionManager;
 }
 
+WidgetManager* CreatorReader::getWidgetManager() const
+{
+    return _widgetManager;
+}
+
 std::string CreatorReader::getVersion() const
 {
     return _version;

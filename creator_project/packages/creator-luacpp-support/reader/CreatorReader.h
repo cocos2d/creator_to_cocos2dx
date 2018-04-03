@@ -64,6 +64,12 @@ public:
     ColliderManager* getColliderManager() const;
 
     /**
+     Return the WidgetManager. It is added as a child of the Scene to make Creator Widget component take effect.
+     @return The `WidgetManager` of the scene
+     */
+    WidgetManager* getWidgetManager() const;
+
+    /**
      Returns the FlatBuffers Schema version.
      @return a string containing the flatbuffer's schema version
      */

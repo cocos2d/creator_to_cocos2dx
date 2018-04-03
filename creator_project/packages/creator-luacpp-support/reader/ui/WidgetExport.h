@@ -48,7 +48,7 @@ public:
     // set after known AdaptNode's parent
     void setLayoutTarget(cocos2d::Node* layoutTarget);
     // adapt layout depend and _layoutTarget
-    void configLayoutNode();
+    void syncLayoutProperty();
 private:
     friend class WidgetManager;
     // only do layout once if true
@@ -67,10 +67,15 @@ class WidgetManager : public cocos2d::Node
 {
 public:
     void update(float dt);
+    void forceDoAlign();
 private:
     friend class CreatorReader;
 
+    WidgetManager();
+    virtual ~WidgetManager();
     void setupWidgets();
+    void doAlign();
+    bool _forceAlignDirty;
     cocos2d::Vector<WidgetAdapter*> _needAdaptWidgets;
 };
 NS_CCR_END

@@ -72,7 +72,7 @@ void WidgetAdapter::setLayoutTarget(cocos2d::Node* layoutTarget)
     _layoutTarget = layoutTarget;
 }
 
-void WidgetAdapter::configLayoutNode()
+void WidgetAdapter::syncLayoutProperty()
 {
     if (_layoutTarget == nullptr) {
         _layoutTarget = _needAdaptNode->getParent();
@@ -82,9 +82,6 @@ void WidgetAdapter::configLayoutNode()
     _layoutNode->setContentSize(_layoutTarget->getContentSize());
     _layoutNode->setAnchorPoint(_layoutTarget->getAnchorPoint());
     _layoutNode->setPosition(_layoutTarget->getPosition());
-    _layoutNode->setName(PLUGIN_EXTRA_LAYOUT_NAME);
-
-    insertLayoutNode();
 }
 
 void WidgetAdapter::insertLayoutNode()
@@ -93,28 +90,50 @@ void WidgetAdapter::insertLayoutNode()
     CCASSERT(parent != nullptr, "adaptNode's parent can't be null");
 
     _needAdaptNode->removeFromParentAndCleanup(false);
+    _layoutNode->setName(PLUGIN_EXTRA_LAYOUT_NAME);
     _layoutNode->addChild(_needAdaptNode);
     parent->addChild(_layoutNode);
+}
 
-    _layoutNode->forceDoLayout();
+WidgetManager::WidgetManager()
+: _forceAlignDirty(false)
+{
+
+}
+
+WidgetManager::~WidgetManager()
+{
+    
 }
 
 void WidgetManager::update(float dt)
 {
+    doAlign();
+}
+
+void WidgetManager::forceDoAlign()
+{
+    _forceAlignDirty = true;
+    doAlign();
+}
+
+void WidgetManager::doAlign()
+{
     for (auto& adapter:_needAdaptWidgets) {
-        auto layout = dynamic_cast<cocos2d::ui::Layout*>(adapter->_needAdaptNode->getParent());
-        if(!(adapter->_isAlignOnce) && layout != nullptr)
+        if((_forceAlignDirty || !(adapter->_isAlignOnce)))
         {
-            layout->setContentSize(adapter->_layoutTarget->getContentSize());
+            adapter->syncLayoutProperty();
         }
     }
+    _forceAlignDirty = false;
 }
 
 void WidgetManager::setupWidgets()
 {
     for (auto& adapter:_needAdaptWidgets) {
-        adapter->configLayoutNode();
+        adapter->syncLayoutProperty();
+        adapter->insertLayoutNode();
     }
-//    scheduleUpdate();
+    scheduleUpdate();
 }
 NS_CCR_END
