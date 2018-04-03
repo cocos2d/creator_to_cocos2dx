@@ -74,8 +74,6 @@ void WidgetAdapter::setLayoutTarget(cocos2d::Node* layoutTarget)
 
 void WidgetAdapter::syncLayoutProperty()
 {
-
-
     _layoutNode->setContentSize(_layoutTarget->getContentSize());
     _layoutNode->setAnchorPoint(_layoutTarget->getAnchorPoint());
     _layoutNode->setPosition(_layoutTarget->getPosition());

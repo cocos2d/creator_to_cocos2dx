@@ -4,12 +4,9 @@ class Widget {
     static parse(data) {
         let result = {};
 
-        Utils.log("parse widget init value:" + JSON.stringify(data));
-
-        // meaningful in cocos2d-x?
         result.isAlignOnce = data.isAlignOnce;
 
-        // margin value, pixel or percentage
+        // margin value, only support pixel, didn't support percentage
         result.left = data._left;
         result.right = data._right;
         result.top = data._top;
@@ -18,6 +15,7 @@ class Widget {
         result.horizontalCenter = data._horizontalCenter;
 
         // If true, value is pixel, otherwise is percentage (0 - 1)
+        // invalid value in cocos2d-x
         result.isAbsLeft = data._isAbsLeft;
         result.isAbsRight = data._isAbsRight;
         result.isAbsTop = data._isAbsTop;

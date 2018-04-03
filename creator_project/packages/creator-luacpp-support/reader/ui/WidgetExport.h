@@ -71,7 +71,7 @@ class WidgetManager : public cocos2d::Node
 {
 public:
     // check widget component property AlignOnce every frame, update align if this property set to false
-    virtual void update(float dt);
+    virtual void update(float dt) override;
     // do layout align manually, you should call it when you make layout content size different from scene in Creator.
     void forceDoAlign();
 private:
