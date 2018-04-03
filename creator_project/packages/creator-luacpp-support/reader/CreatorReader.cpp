@@ -621,8 +621,6 @@ void CreatorReader::parseWidget(cocos2d::Node *node, const buffers::Node *nodeBu
     const auto& info = nodeBuffer->widget();
     auto widgetNode = dynamic_cast<ui::Widget*>(node);
     if ((info != nullptr) && (widgetNode != nullptr)) {
-        // debug
-        CCLOG("%s", widgetNode->getName().c_str());
         // the creator scene file didn't include the info about align which side
         bool isAlignLeft = fabs(info->left()) > MATH_EPSILON ? true : false;
         bool isAlignTop = fabs(info->top()) > MATH_EPSILON ? true : false;
@@ -634,8 +632,6 @@ void CreatorReader::parseWidget(cocos2d::Node *node, const buffers::Node *nodeBu
         const auto& margin = ui::Margin(info->left(),info->top(),info->right(), info->bottom());
         auto parameter = ui::RelativeLayoutParameter::create();
         parameter->setMargin(margin);
-        // TODO: imp Layout target, how to get the layout target?
-        // parameter->setRelativeToWidgetName(const std::string &name);
         if (isAlignLeft && isAlignTop) {
             parameter->setAlign(cocos2d::ui::RelativeLayoutParameter::RelativeAlign::PARENT_TOP_LEFT);
         } else if (isAlignTop && isAlignRight){
@@ -655,8 +651,11 @@ void CreatorReader::parseWidget(cocos2d::Node *node, const buffers::Node *nodeBu
         } else if (isAlignHorizontalCenter && isAlignVerticalCenter){
             parameter->setAlign(cocos2d::ui::RelativeLayoutParameter::RelativeAlign::CENTER_IN_PARENT);
         }
-        widgetNode->setLayoutParameter(parameter);
         auto widgetInfo = WidgetAdapter::create();
+        // TODO: support Layout target, how to get the layout target?
+        // parameter->setRelativeToWidgetName(const std::string &name);
+        // widgetInfo->setLayoutTarget(cocos2d::Node *layoutTarget);
+        widgetNode->setLayoutParameter(parameter);
         widgetInfo->setAdaptNode(widgetNode);
         widgetInfo->setIsAlignOnce(info->isAlignOnce());
         _widgetManager->_needAdaptWidgets.pushBack(widgetInfo);

@@ -31,8 +31,10 @@
 
 NS_CCR_BEGIN
 
+// name of extra layout Node
 #define PLUGIN_EXTRA_LAYOUT_NAME "Creator Widget to Cocos2d-x Layout"
 
+// support export the creator widget component to cocos2d-x layout
 class WidgetAdapter : public cocos2d::Ref
 {
 
@@ -45,28 +47,32 @@ public:
     bool init();
     void setIsAlignOnce(bool isAlignOnce);
     void setAdaptNode(cocos2d::Node* needAdaptNode);
-    // set after known AdaptNode's parent
+
+    // TODO: support the align target of a widget component, default target is parent Node
     void setLayoutTarget(cocos2d::Node* layoutTarget);
-    // adapt layout depend and _layoutTarget
-    void syncLayoutProperty();
 private:
     friend class WidgetManager;
-    // only do layout once if true
+    // only do layout align once if true
     bool _isAlignOnce;
-    // widget layout target, it's a Node
+    // widget layout target, it's a Node, default target is _needAdaptNode's parent
     cocos2d::Node* _layoutTarget;
-    // _layoutTarget must existed, the default target is _needAdaptNode's parent
+    // the node include a widget component, it must be a UI Widget?
     cocos2d::Node* _needAdaptNode;
     // insert the _layout between _nodeNeedWidget and its parent
     cocos2d::ui::Layout* _layoutNode;
-    // insert Layout to support widget component.
-    void insertLayoutNode();
+    // insert Layout Node to support widget component.
+    void setupLayout();
+    // adapt layout property depend on _layoutTarget
+    void syncLayoutProperty();
 };
 
+// manager all the widget component align
 class WidgetManager : public cocos2d::Node
 {
 public:
-    void update(float dt);
+    // check widget component property AlignOnce every frame, update align if this property set to false
+    virtual void update(float dt);
+    // do layout align manually, you should call it when you make layout content size different from scene in Creator.
     void forceDoAlign();
 private:
     friend class CreatorReader;

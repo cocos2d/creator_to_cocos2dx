@@ -74,21 +74,22 @@ void WidgetAdapter::setLayoutTarget(cocos2d::Node* layoutTarget)
 
 void WidgetAdapter::syncLayoutProperty()
 {
-    if (_layoutTarget == nullptr) {
-        _layoutTarget = _needAdaptNode->getParent();
-    }
-    CCASSERT(_layoutTarget != nullptr, "layout target can't be null");
+
 
     _layoutNode->setContentSize(_layoutTarget->getContentSize());
     _layoutNode->setAnchorPoint(_layoutTarget->getAnchorPoint());
     _layoutNode->setPosition(_layoutTarget->getPosition());
 }
 
-void WidgetAdapter::insertLayoutNode()
+void WidgetAdapter::setupLayout()
 {
     auto parent = _needAdaptNode->getParent();
     CCASSERT(parent != nullptr, "adaptNode's parent can't be null");
 
+    // set default layout target to parent node
+    if (_layoutTarget == nullptr) {
+        _layoutTarget = parent;
+    }
     _needAdaptNode->removeFromParentAndCleanup(false);
     _layoutNode->setName(PLUGIN_EXTRA_LAYOUT_NAME);
     _layoutNode->addChild(_needAdaptNode);
@@ -120,7 +121,7 @@ void WidgetManager::forceDoAlign()
 void WidgetManager::doAlign()
 {
     for (auto& adapter:_needAdaptWidgets) {
-        if((_forceAlignDirty || !(adapter->_isAlignOnce)))
+        if(_forceAlignDirty || !(adapter->_isAlignOnce))
         {
             adapter->syncLayoutProperty();
         }
@@ -131,8 +132,8 @@ void WidgetManager::doAlign()
 void WidgetManager::setupWidgets()
 {
     for (auto& adapter:_needAdaptWidgets) {
+        adapter->setupLayout();
         adapter->syncLayoutProperty();
-        adapter->insertLayoutNode();
     }
     scheduleUpdate();
 }
