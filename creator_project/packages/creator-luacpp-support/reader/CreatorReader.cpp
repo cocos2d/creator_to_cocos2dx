@@ -144,6 +144,7 @@ CreatorReader::~CreatorReader()
 {
     CC_SAFE_RELEASE_NULL(_collisionManager);
     CC_SAFE_RELEASE_NULL(_animationManager);
+    CC_SAFE_RELEASE_NULL(_widgetManager);
 }
 
 CreatorReader* CreatorReader::createWithFilename(const std::string& filename)
