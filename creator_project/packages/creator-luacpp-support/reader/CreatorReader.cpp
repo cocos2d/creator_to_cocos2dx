@@ -131,6 +131,10 @@ CreatorReader::CreatorReader()
 {
     _animationManager = new AnimationManager();
     _collisionManager = new ColliderManager();
+    _animationManager->autorelease();
+    _collisionManager->autorelease();
+    CC_SAFE_RETAIN(_animationManager);
+    CC_SAFE_RETAIN(_collisionManager);
 }
 
 CreatorReader::~CreatorReader()
