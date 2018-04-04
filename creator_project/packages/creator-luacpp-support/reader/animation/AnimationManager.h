@@ -51,7 +51,7 @@ public:
     void pauseAnimationClip(cocos2d::Node *target, const std::string &animationClipName);
     void resumeAnimationClip(cocos2d::Node *target, const std::string &animationClipName);
     // if a "Play On Load" animation is a loop animation, please stop it manually.
-    void stopAnimationClipRunByPlayOnLoad();
+    void stopAnimationClipsRunByPlayOnLoad();
 private:
     friend class CreatorReader;
     
