@@ -34,11 +34,34 @@ NS_CCR_BEGIN
 // name of extra layout Node
 #define PLUGIN_EXTRA_LAYOUT_NAME "Creator Widget to Cocos2d-x Layout"
 
+// creator align flag, see: https://github.com/cocos-creator/engine/blob/master/cocos2d/core/base-ui/CCWidgetManager.js
+#define CREATOR_ALIGN_TOP    (1 << 0)
+#define CREATOR_ALIGN_MID    (1 << 1)
+#define CREATOR_ALIGN_BOT    (1 << 2)
+#define CREATOR_ALIGN_LEFT   (1 << 3)
+#define CREATOR_ALIGN_CENTER (1 << 4)
+#define CREATOR_ALIGN_RIGHT  (1 << 5)
+
 // support export the creator widget component to cocos2d-x layout
 class WidgetAdapter : public cocos2d::Ref
 {
 
 public:
+    // only 9 creator align combinations are supported by cocos2d-x
+    enum class AlignComb
+    {
+        TOP_LEFT = CREATOR_ALIGN_LEFT | CREATOR_ALIGN_TOP,
+        TOP_CENTER_HORIZONTAL = CREATOR_ALIGN_CENTER | CREATOR_ALIGN_TOP,
+        TOP_RIGHT = CREATOR_ALIGN_TOP | CREATOR_ALIGN_RIGHT,
+        LEFT_CENTER_VERTICAL = CREATOR_ALIGN_MID | CREATOR_ALIGN_LEFT,
+
+        CENTER_IN_PARENT = CREATOR_ALIGN_CENTER | CREATOR_ALIGN_MID,
+
+        RIGHT_CENTER_VERTICAL = CREATOR_ALIGN_MID | CREATOR_ALIGN_RIGHT,
+        LEFT_BOTTOM = CREATOR_ALIGN_BOT | CREATOR_ALIGN_LEFT,
+        BOTTOM_CENTER_HORIZONTAL = CREATOR_ALIGN_CENTER | CREATOR_ALIGN_BOT,
+        RIGHT_BOTTOM = CREATOR_ALIGN_RIGHT | CREATOR_ALIGN_BOT
+    };
 
     static WidgetAdapter* create();
     WidgetAdapter();
