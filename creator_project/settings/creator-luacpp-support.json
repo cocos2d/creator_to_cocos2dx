@@ -1,6 +1,7 @@
 {
   "autoBuild": false,
+  "exportResourceDynamicallyLoaded": false,
   "exportResourceOnly": false,
-  "path": "/Users/minggo/SourceCode/cocos2d-x/tests/lua-empty-test",
+  "path": "/Users/laptop/2d-x/tests/cpp-empty-test",
   "setup": false
 }
