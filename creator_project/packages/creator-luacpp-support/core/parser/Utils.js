@@ -120,6 +120,7 @@ let get_font_path_by_uuid = function(uuid) {
 
             if (type === 'cc.BitmapFont') {
                 // png path
+                let fnt_name = contents_json._name + '.fnt';
                 let png_uuid = contents_json.spriteFrame.__uuid__;
                 let json_png = JSON.parse(fs.readFileSync(uuidinfos[png_uuid]));
                 let png_path_info = get_relative_full_path_by_uuid(json_png.content.texture);
@@ -127,8 +128,8 @@ let get_font_path_by_uuid = function(uuid) {
 
                 // fnt path
                 state._uuid[uuid] = {
-                    fullpath: Utils.replaceExt(png_path_info.fullpath, '.fnt'),
-                    relative_path: Utils.replaceExt(png_path_info.relative_path, '.fnt')
+                    fullpath: Utils.replaceFileName(png_path_info.fullpath, fnt_name),
+                    relative_path: Utils.replaceFileName(png_path_info.relative_path, fnt_name)
                 }
 
                 return state._uuid[uuid].relative_path;
