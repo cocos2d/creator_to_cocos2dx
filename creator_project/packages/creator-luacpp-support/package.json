@@ -1,6 +1,6 @@
 {
     "name": "creator-luacpp-support",
-    "version": "0.3",
+    "version": "0.4",
     "description": "Creator Legact Support for cocos2d-x cpp and Lua",
     "author": "Cocos Creator",
     "main": "main.js",
