@@ -19,15 +19,15 @@
         "width": 640,
         "min-width": 320,
         "height": 480,
-        "min-height": 330,
-        "profiles": {
-            "project": {
-                "setup": false,
-                "path": "",
-                "autoBuild": false,
-                "exportResourceOnly": false,
-                "exportResourceDynamicallyLoaded": false
-            }
+        "min-height": 330 
+    },
+    "profiles": {
+        "project": {
+            "setup": false,
+            "path": "",
+            "autoBuild": false,
+            "exportResourceOnly": false,
+            "exportResourceDynamicallyLoaded": false
         }
     }
 }
