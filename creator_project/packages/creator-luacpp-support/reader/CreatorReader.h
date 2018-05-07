@@ -35,8 +35,6 @@
 #include "dragonbones/DragonBonesHeaders.h"
 #include "dragonbones/cocos2dx/CCDragonBonesHeaders.h"
 
-
-
 NS_CCR_BEGIN
 
 class CreatorReader: public cocos2d::Ref
@@ -49,6 +47,53 @@ public:
      @return A `Scene*`
      */
     cocos2d::Scene* getSceneGraph() const;
+
+    /**
+     Returns the nodegraph contained in the .ccreator file for a particular node
+     @return A `T*`
+     */
+    template <class T>
+    cocos2d::Node* getNodeGraph(const std::string& nodename) const {
+        // NOTE:
+        // Keep in mind that a layer is most of the required cross-scenes.
+        //
+        // Since, Cocos Creator packs everything in a .ccreator file, with Scene as the root node
+        // creating custom class objects for layers is not possible directly, like cocos reader
+        // where layers can be saved as a separate .csb file.
+        // So, we have to pass the node name of the file, that the custom class needs to be attached.
+        // Also, make the node standalone, remove it from it's parent.
+
+        const void* buffer = _data.getBytes();
+
+        auto sceneGraph = buffers::GetSceneGraph(buffer);
+        auto nodeTree = sceneGraph->root();
+        CCLOG("NodeTree: %p", nodeTree);
+
+        cocos2d::Node* searchNode = nullptr;
+        cocos2d::Node* node = createTree(nodeTree);
+
+        // pabitra: change in cocos2d-x, recursively iterates through the children 
+        // to find the node with the name from the root node.
+        if (node) {
+            searchNode = node->getChildByName(nodename);
+            CC_ASSERT(searchNode);
+            if (searchNode) {
+                // NOTE: cleanup shouldn't remove the attached listeners and event dispatchers
+                // so it should always be removeFromParentAndCleanup(false);
+                searchNode->removeFromParentAndCleanup(false);
+                CC_ASSERT(dynamic_cast<T*>(searchNode)); // NOTE: shouldn't hit this assert, expect a clean cast.
+            }
+        }
+
+        _animationManager->playOnLoad();
+
+        searchNode->addChild(_collisionManager);
+        searchNode->addChild(_animationManager);
+
+        _collisionManager->start();
+
+        return searchNode;
+    }
     
     /**
      Return the AnimationManager. It is added as a child of the Scene to simplify the codes.
@@ -74,6 +119,8 @@ public:
      */
     void setup();
 
+    bool inspectForCustomClassFormat(std::string nodename) const;
+
 protected:
     CreatorReader();
     ~CreatorReader();
@@ -81,7 +128,7 @@ protected:
 
     cocos2d::Node* createTree(const buffers::NodeTree* treeBuffer) const;
 
-    cocos2d::Scene* createScene(const buffers::Scene* sceneBuffer) const;
+    virtual cocos2d::Scene* createScene(const buffers::Scene* sceneBuffer) const;
     void parseScene(cocos2d::Scene* scene, const buffers::Scene* sceneBuffer) const;
 
     cocos2d::Node* createNode(const buffers::Node* nodeBuffer) const;
