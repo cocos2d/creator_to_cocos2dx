@@ -76,6 +76,12 @@ Currently support on Mac, iOS, Android and Windows.
 * fill in __Project Path__, it is a c++ or lua project created by cocos2d-x(3.14+) console
 * click __Build__
 
+### Options
+
+* __Export Resource Only__, only resources include Creator scene files will be exported, the reader source code won't. It will be usefull when you don't want to cover the reader code in Cocos2d-x project.
+* __Export Resource Dynamically Loaded__, export the resources that might be used in runtime, those resources located at assets/resources.
+* __Auto Build After Scene Saved__, as the name said, auto build and export resources after Creator scene saved.
+
 You will find:
 
 * all needed source codes are generated into `NATIVE_PROJECT_ROOT/Classes/reader(it is NATIVE_PROJECT_ROOT/frameworks/runtime-src/Classes/reader for lua project)`
