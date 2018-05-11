@@ -448,20 +448,13 @@ enum AnimWrapMode {
   AnimWrapMode_Default = 0,
   AnimWrapMode_Normal = 1,
   AnimWrapMode_Loop = 2,
-  AnimWrapMode_PingPong = 3,
-  AnimWrapMode_Reverse = 4,
-  AnimWrapMode_LoopReverse = 5,
-  AnimWrapMode_PingPongReverse = 6,
+  AnimWrapMode_PingPong = 22,
+  AnimWrapMode_Reverse = 36,
+  AnimWrapMode_LoopReverse = 38,
+  AnimWrapMode_PingPongReverse = 54,
   AnimWrapMode_MIN = AnimWrapMode_Default,
   AnimWrapMode_MAX = AnimWrapMode_PingPongReverse
 };
-
-inline const char **EnumNamesAnimWrapMode() {
-  static const char *names[] = { "Default", "Normal", "Loop", "PingPong", "Reverse", "LoopReverse", "PingPongReverse", nullptr };
-  return names;
-}
-
-inline const char *EnumNameAnimWrapMode(AnimWrapMode e) { return EnumNamesAnimWrapMode()[static_cast<int>(e)]; }
 
 MANUALLY_ALIGNED_STRUCT(4) Vec2 FLATBUFFERS_FINAL_CLASS {
  private:
@@ -2775,20 +2768,22 @@ inline flatbuffers::Offset<Collider> CreateColliderDirect(flatbuffers::FlatBuffe
 struct Widget FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   enum {
     VT_ISALIGNONCE = 4,
-    VT_LEFT = 6,
-    VT_RIGHT = 8,
-    VT_TOP = 10,
-    VT_BOTTOM = 12,
-    VT_VERTICALCENTER = 14,
-    VT_HORIZONTALCENTER = 16,
-    VT_ISABSLEFT = 18,
-    VT_ISABSRIGHT = 20,
-    VT_ISABSTOP = 22,
-    VT_ISABSBOTTOM = 24,
-    VT_ISABSHORIZONTALCENTER = 26,
-    VT_ISABSVERTICALCENTER = 28
+    VT_ALIGNFLAGS = 6,
+    VT_LEFT = 8,
+    VT_RIGHT = 10,
+    VT_TOP = 12,
+    VT_BOTTOM = 14,
+    VT_VERTICALCENTER = 16,
+    VT_HORIZONTALCENTER = 18,
+    VT_ISABSLEFT = 20,
+    VT_ISABSRIGHT = 22,
+    VT_ISABSTOP = 24,
+    VT_ISABSBOTTOM = 26,
+    VT_ISABSHORIZONTALCENTER = 28,
+    VT_ISABSVERTICALCENTER = 30
   };
   bool isAlignOnce() const { return GetField<uint8_t>(VT_ISALIGNONCE, 0) != 0; }
+  int32_t alignFlags() const { return GetField<int32_t>(VT_ALIGNFLAGS, 0); }
   float left() const { return GetField<float>(VT_LEFT, 0.0f); }
   float right() const { return GetField<float>(VT_RIGHT, 0.0f); }
   float top() const { return GetField<float>(VT_TOP, 0.0f); }
@@ -2804,6 +2799,7 @@ struct Widget FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<uint8_t>(verifier, VT_ISALIGNONCE) &&
+           VerifyField<int32_t>(verifier, VT_ALIGNFLAGS) &&
            VerifyField<float>(verifier, VT_LEFT) &&
            VerifyField<float>(verifier, VT_RIGHT) &&
            VerifyField<float>(verifier, VT_TOP) &&
@@ -2824,6 +2820,7 @@ struct WidgetBuilder {
   flatbuffers::FlatBufferBuilder &fbb_;
   flatbuffers::uoffset_t start_;
   void add_isAlignOnce(bool isAlignOnce) { fbb_.AddElement<uint8_t>(Widget::VT_ISALIGNONCE, static_cast<uint8_t>(isAlignOnce), 0); }
+  void add_alignFlags(int32_t alignFlags) { fbb_.AddElement<int32_t>(Widget::VT_ALIGNFLAGS, alignFlags, 0); }
   void add_left(float left) { fbb_.AddElement<float>(Widget::VT_LEFT, left, 0.0f); }
   void add_right(float right) { fbb_.AddElement<float>(Widget::VT_RIGHT, right, 0.0f); }
   void add_top(float top) { fbb_.AddElement<float>(Widget::VT_TOP, top, 0.0f); }
@@ -2839,13 +2836,14 @@ struct WidgetBuilder {
   WidgetBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
   WidgetBuilder &operator=(const WidgetBuilder &);
   flatbuffers::Offset<Widget> Finish() {
-    auto o = flatbuffers::Offset<Widget>(fbb_.EndTable(start_, 13));
+    auto o = flatbuffers::Offset<Widget>(fbb_.EndTable(start_, 14));
     return o;
   }
 };
 
 inline flatbuffers::Offset<Widget> CreateWidget(flatbuffers::FlatBufferBuilder &_fbb,
     bool isAlignOnce = false,
+    int32_t alignFlags = 0,
     float left = 0.0f,
     float right = 0.0f,
     float top = 0.0f,
@@ -2865,6 +2863,7 @@ inline flatbuffers::Offset<Widget> CreateWidget(flatbuffers::FlatBufferBuilder &
   builder_.add_top(top);
   builder_.add_right(right);
   builder_.add_left(left);
+  builder_.add_alignFlags(alignFlags);
   builder_.add_isAbsVerticalCenter(isAbsVerticalCenter);
   builder_.add_isAbsHorizontalCenter(isAbsHorizontalCenter);
   builder_.add_isAbsBottom(isAbsBottom);

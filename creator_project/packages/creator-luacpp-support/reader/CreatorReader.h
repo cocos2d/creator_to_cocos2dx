@@ -35,6 +35,7 @@
 #include "dragonbones/DragonBonesHeaders.h"
 #include "dragonbones/cocos2dx/CCDragonBonesHeaders.h"
 #include "ui/WidgetExport.h"
+//#include "ui/NodeExport.h"
 
 
 
@@ -52,7 +53,7 @@ public:
     cocos2d::Scene* getSceneGraph() const;
     
     /**
-     Return the CollisionManager. It is added as a child of the Scene to simplify the codes.
+     Return the AnimationManager. It is added as a child of the Scene to simplify the codes.
      @return The `AnimationManager` of the scene
      */
     AnimationManager* getAnimationManager() const;
@@ -62,6 +63,12 @@ public:
      @return The `CollisionManager` of the scene
      */
     ColliderManager* getColliderManager() const;
+
+    /**
+     Return the WidgetManager. It is added as a child of the Scene to make Creator Widget component take effect.
+     @return The `WidgetManager` of the scene
+     */
+    WidgetManager* getWidgetManager() const;
 
     /**
      Returns the FlatBuffers Schema version.
@@ -168,6 +175,8 @@ protected:
 
     // Widget in creator is a component used to do Layout
     WidgetManager *_widgetManager;
+
+//	NodeLayoutManager *_nodeLayoutManager;
     
     // creator will make scene at the center of screen when apply design solution strategy, cocos2d-x doesn't do it like this
     // this value record the diff
