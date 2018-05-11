@@ -132,12 +132,15 @@ CreatorReader::CreatorReader()
     _animationManager = new AnimationManager();
     _collisionManager = new ColliderManager();
     _widgetManager = new WidgetManager();
+
     _animationManager->autorelease();
     _collisionManager->autorelease();
     _widgetManager->autorelease();
+
     CC_SAFE_RETAIN(_animationManager);
     CC_SAFE_RETAIN(_collisionManager);
     CC_SAFE_RETAIN(_widgetManager);
+	
 }
 
 CreatorReader::~CreatorReader()
@@ -619,58 +622,61 @@ void CreatorReader::parseColliders(cocos2d::Node* node, const buffers::Node* nod
 
 void CreatorReader::parseWidget(cocos2d::Node *node, const buffers::Node *nodeBuffer) const
 {
-    const auto& info = nodeBuffer->widget();
-    auto widgetNode = dynamic_cast<ui::Widget*>(node);
-    if ((info != nullptr) && (widgetNode != nullptr)) {
-        // save the widget margin info
-        const auto& margin = ui::Margin(info->left(),info->top(),info->right(), info->bottom());
-        auto parameter = ui::RelativeLayoutParameter::create();
-        parameter->setMargin(margin);
+	const auto& info = nodeBuffer->widget();
+	//auto pNode = dynamic_cast<ui::Widget*>(node);
+	auto pNode = dynamic_cast<cocos2d::Node*>(node);
+	if ((info != nullptr) && (pNode != nullptr)) {
+		// save the widget margin info
+		const auto& margin = ui::Margin(info->left(), info->top(), info->right(), info->bottom());
+		auto parameter = ui::RelativeLayoutParameter::create();
+		parameter->setMargin(margin);
 
-        WidgetAdapter::AlignComb alignComb = static_cast<WidgetAdapter::AlignComb>(info->alignFlags());
-        switch (alignComb) {
-            case WidgetAdapter::AlignComb::TOP_LEFT :
-                parameter->setAlign(cocos2d::ui::RelativeLayoutParameter::RelativeAlign::PARENT_TOP_LEFT);
-                break;
-            case WidgetAdapter::AlignComb::TOP_RIGHT :
-                parameter->setAlign(cocos2d::ui::RelativeLayoutParameter::RelativeAlign::PARENT_TOP_RIGHT);
-                break;
-            case WidgetAdapter::AlignComb::RIGHT_BOTTOM :
-                parameter->setAlign(cocos2d::ui::RelativeLayoutParameter::RelativeAlign::PARENT_RIGHT_BOTTOM);
-                break;
-            case WidgetAdapter::AlignComb::LEFT_BOTTOM :
-                parameter->setAlign(cocos2d::ui::RelativeLayoutParameter::RelativeAlign::PARENT_LEFT_BOTTOM);
-                break;
-            case WidgetAdapter::AlignComb::LEFT_CENTER_VERTICAL :
-                parameter->setAlign(cocos2d::ui::RelativeLayoutParameter::RelativeAlign::PARENT_LEFT_CENTER_VERTICAL);
-                break;
-            case WidgetAdapter::AlignComb::RIGHT_CENTER_VERTICAL :
-                parameter->setAlign(cocos2d::ui::RelativeLayoutParameter::RelativeAlign::PARENT_RIGHT_CENTER_VERTICAL);
-                break;
-            case WidgetAdapter::AlignComb::TOP_CENTER_HORIZONTAL :
-                parameter->setAlign(cocos2d::ui::RelativeLayoutParameter::RelativeAlign::PARENT_TOP_CENTER_HORIZONTAL);
-                break;
-            case WidgetAdapter::AlignComb::BOTTOM_CENTER_HORIZONTAL :
-                parameter->setAlign(cocos2d::ui::RelativeLayoutParameter::RelativeAlign::PARENT_BOTTOM_CENTER_HORIZONTAL);
-                break;
-            case WidgetAdapter::AlignComb::CENTER_IN_PARENT :
-                parameter->setAlign(cocos2d::ui::RelativeLayoutParameter::RelativeAlign::CENTER_IN_PARENT);
-                break;
-            default:
-                CCLOG("align combination of UI Node: %s isn't supported", node->getName().c_str());
-                CCASSERT(false, "Only 9 creator align combinations are supported by cocos2d-x");
-                break;
-        }
+		WidgetAdapter::AlignComb alignComb = static_cast<WidgetAdapter::AlignComb>(info->alignFlags());
+		switch (alignComb) {
+		case WidgetAdapter::AlignComb::TOP_LEFT:
+			parameter->setAlign(cocos2d::ui::RelativeLayoutParameter::RelativeAlign::PARENT_TOP_LEFT);
+			break;
+		case WidgetAdapter::AlignComb::TOP_RIGHT:
+			parameter->setAlign(cocos2d::ui::RelativeLayoutParameter::RelativeAlign::PARENT_TOP_RIGHT);
+			break;
+		case WidgetAdapter::AlignComb::RIGHT_BOTTOM:
+			parameter->setAlign(cocos2d::ui::RelativeLayoutParameter::RelativeAlign::PARENT_RIGHT_BOTTOM);
+			break;
+		case WidgetAdapter::AlignComb::LEFT_BOTTOM:
+			parameter->setAlign(cocos2d::ui::RelativeLayoutParameter::RelativeAlign::PARENT_LEFT_BOTTOM);
+			break;
+		case WidgetAdapter::AlignComb::LEFT_CENTER_VERTICAL:
+			parameter->setAlign(cocos2d::ui::RelativeLayoutParameter::RelativeAlign::PARENT_LEFT_CENTER_VERTICAL);
+			break;
+		case WidgetAdapter::AlignComb::RIGHT_CENTER_VERTICAL:
+			parameter->setAlign(cocos2d::ui::RelativeLayoutParameter::RelativeAlign::PARENT_RIGHT_CENTER_VERTICAL);
+			break;
+		case WidgetAdapter::AlignComb::TOP_CENTER_HORIZONTAL:
+			parameter->setAlign(cocos2d::ui::RelativeLayoutParameter::RelativeAlign::PARENT_TOP_CENTER_HORIZONTAL);
+			break;
+		case WidgetAdapter::AlignComb::BOTTOM_CENTER_HORIZONTAL:
+			parameter->setAlign(cocos2d::ui::RelativeLayoutParameter::RelativeAlign::PARENT_BOTTOM_CENTER_HORIZONTAL);
+			break;
+		case WidgetAdapter::AlignComb::CENTER_IN_PARENT:
+			parameter->setAlign(cocos2d::ui::RelativeLayoutParameter::RelativeAlign::CENTER_IN_PARENT);
+			break;
+		default:
+			CCLOG("align combination of UI Node: %s isn't supported", node->getName().c_str());
+			CCASSERT(false, "Only 9 creator align combinations are supported by cocos2d-x");
+			break;
+		}
 
-        auto widgetInfo = WidgetAdapter::create();
-        // TODO: support Layout target, how to get the layout target?
-        // parameter->setRelativeToWidgetName(const std::string &name);
-        // widgetInfo->setLayoutTarget(cocos2d::Node *layoutTarget);
-        widgetNode->setLayoutParameter(parameter);
-        widgetInfo->setAdaptNode(widgetNode);
-        widgetInfo->setIsAlignOnce(info->isAlignOnce());
-        _widgetManager->_needAdaptWidgets.pushBack(widgetInfo);
-    }
+
+
+		auto widgetInfo = WidgetAdapter::create();
+		// TODO: support Layout target, how to get the layout target?
+		// parameter->setRelativeToWidgetName(const std::string &name);
+		// widgetInfo->setLayoutTarget(cocos2d::Node *layoutTarget);
+		widgetInfo->setLayoutParameter(parameter);
+		widgetInfo->setAdaptNode(pNode);
+		widgetInfo->setIsAlignOnce(info->isAlignOnce());
+		_widgetManager->_needAdaptWidgets.pushBack(widgetInfo);
+	}
 }
 
 cocos2d::Sprite* CreatorReader::createSprite(const buffers::Sprite* spriteBuffer) const

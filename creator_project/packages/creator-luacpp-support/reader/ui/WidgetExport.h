@@ -71,6 +71,9 @@ public:
     void setIsAlignOnce(bool isAlignOnce);
     void setAdaptNode(cocos2d::Node* needAdaptNode);
 
+
+	void setLayoutParameter(cocos2d::ui::RelativeLayoutParameter *parameter);
+
     // TODO: support the align target of a widget component, default target is parent Node
     void setLayoutTarget(cocos2d::Node* layoutTarget);
 private:
@@ -82,7 +85,10 @@ private:
     // the node include a widget component, it must be a UI Widget?
     cocos2d::Node* _needAdaptNode;
     // insert the _layout between _nodeNeedWidget and its parent
-    cocos2d::ui::Layout* _layoutNode;
+   // cocos2d::ui::Layout* _layoutNode;
+
+	cocos2d::ui::RelativeLayoutParameter *_parameter;
+
     // insert Layout Node to support widget component.
     void setupLayout();
     // adapt layout property depend on _layoutTarget

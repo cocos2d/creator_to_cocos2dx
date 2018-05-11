@@ -27,7 +27,7 @@ void AnimationManager::playOnLoad()
     }
 }
 
-void AnimationManager::stopPlayOnLoad()
+void AnimationManager::stopAnimationClipsRunByPlayOnLoad()
 {
     for (auto& animationInfo : _animations)
     {

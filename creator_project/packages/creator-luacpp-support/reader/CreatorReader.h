@@ -35,6 +35,7 @@
 #include "dragonbones/DragonBonesHeaders.h"
 #include "dragonbones/cocos2dx/CCDragonBonesHeaders.h"
 #include "ui/WidgetExport.h"
+//#include "ui/NodeExport.h"
 
 
 
@@ -174,6 +175,8 @@ protected:
 
     // Widget in creator is a component used to do Layout
     WidgetManager *_widgetManager;
+
+//	NodeLayoutManager *_nodeLayoutManager;
     
     // creator will make scene at the center of screen when apply design solution strategy, cocos2d-x doesn't do it like this
     // this value record the diff
