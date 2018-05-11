@@ -300,6 +300,29 @@ class Node {
                     });
                 }
 
+                //scale
+                if (props.scale) {
+                    result['scaleX'] = [];
+                    result['scaleY'] = [];
+
+                     props.scale.forEach(function(scl) {
+                        let valueX = {
+                            frame: scl.frame,
+                            value: scl.value['x']
+                        };
+                        parseCurveProperty(scl, valueX);
+                        result['scaleX'].push(valueX)
+
+
+                        let valueY = {
+                            frame: scl.frame,
+                            value: scl.value['y']
+                        };
+                        parseCurveProperty(scl, valueY);
+                        result['scaleY'].push(valueY)
+                    });
+                }
+
                 // color
                 if (props.color) {
                     result.color = [];

@@ -70,7 +70,7 @@ namespace Easing
     // Easing equation function for a cubic (t^3)
     float cubicIn(float k)
     {
-        return k * k * 3;
+        return k * k * k;
     }
     float cubicOut(float k)
     {

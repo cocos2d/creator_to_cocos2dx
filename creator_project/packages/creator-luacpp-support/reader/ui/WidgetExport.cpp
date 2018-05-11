@@ -38,10 +38,10 @@ WidgetAdapter* WidgetAdapter::create()
 
 bool WidgetAdapter::init()
 {
-    _layoutNode = cocos2d::ui::Layout::create();
-    _layoutNode->setLayoutType(cocos2d::ui::Layout::Type::RELATIVE);
+    //_layoutNode = cocos2d::ui::Layout::create();
+   // _layoutNode->setLayoutType(cocos2d::ui::Layout::Type::RELATIVE);
 
-    CC_SAFE_RETAIN(_layoutNode);
+    //CC_SAFE_RETAIN(_layoutNode);
     return true;
 }
 
@@ -55,7 +55,8 @@ WidgetAdapter::WidgetAdapter()
 
 WidgetAdapter::~WidgetAdapter()
 {
-    CC_SAFE_RELEASE(_layoutNode);
+   // CC_SAFE_RELEASE(_layoutNode);
+	CC_SAFE_RELEASE(_parameter);
 }
 
 void WidgetAdapter::setIsAlignOnce(bool isAlignOnce)
@@ -72,49 +73,130 @@ void WidgetAdapter::setLayoutTarget(cocos2d::Node* layoutTarget)
     _layoutTarget = layoutTarget;
 }
 
-void WidgetAdapter::configLayoutNode()
+void WidgetAdapter::setLayoutParameter(cocos2d::ui::RelativeLayoutParameter *parameter)
 {
-    if (_layoutTarget == nullptr) {
-        _layoutTarget = _needAdaptNode->getParent();
-    }
-    CCASSERT(_layoutTarget != nullptr, "layout target can't be null");
-
-    _layoutNode->setContentSize(_layoutTarget->getContentSize());
-    _layoutNode->setAnchorPoint(_layoutTarget->getAnchorPoint());
-    _layoutNode->setPosition(_layoutTarget->getPosition());
-    _layoutNode->setName(PLUGIN_EXTRA_LAYOUT_NAME);
-
-    insertLayoutNode();
+	CC_SAFE_RETAIN(parameter);
+	_parameter = parameter;
 }
 
-void WidgetAdapter::insertLayoutNode()
+void WidgetAdapter::syncLayoutProperty()
+{
+	auto sDesignSize = cocos2d::Director::getInstance()->getOpenGLView()->getDesignResolutionSize();
+	auto adaptSize   = _needAdaptNode->getContentSize();
+	auto anchorPoint = _needAdaptNode->getAnchorPoint();
+	auto targetSize  = _layoutTarget->getContentSize();
+
+
+	if (_needAdaptNode->getName().compare("root") == 0){
+		_needAdaptNode->setContentSize(sDesignSize);
+		return;
+	}
+
+	float x = 0.0f, y = 0.0f;
+	
+	const auto& margin = _parameter->getMargin();
+	auto alignComb = _parameter->getAlign();
+	
+	switch (alignComb) {
+	case cocos2d::ui::RelativeLayoutParameter::RelativeAlign::PARENT_TOP_LEFT:
+		x = margin.left + adaptSize.width*anchorPoint.x;
+		y = targetSize.height - (margin.top + adaptSize.height*(1.0 - anchorPoint.y));
+		break;
+	case cocos2d::ui::RelativeLayoutParameter::RelativeAlign::PARENT_TOP_RIGHT:
+		x = targetSize.width - (margin.right + adaptSize.width*(1.0 - anchorPoint.x));
+		y = targetSize.height - (margin.top + adaptSize.height*(1.0 - anchorPoint.y));
+		break;
+	case cocos2d::ui::RelativeLayoutParameter::RelativeAlign::PARENT_RIGHT_BOTTOM:
+		x = targetSize.width - (margin.right + adaptSize.width*(1.0 - anchorPoint.x));
+		y = margin.bottom + adaptSize.height*anchorPoint.y;
+		break;
+	case cocos2d::ui::RelativeLayoutParameter::RelativeAlign::PARENT_LEFT_BOTTOM:
+		x = margin.left + adaptSize.width*anchorPoint.x;
+		y = margin.bottom + adaptSize.height*anchorPoint.y;
+		break;
+	case cocos2d::ui::RelativeLayoutParameter::RelativeAlign::PARENT_LEFT_CENTER_VERTICAL:
+		x = margin.left + adaptSize.width*anchorPoint.x;
+		y = targetSize.height*0.5 + ((anchorPoint.y - 0.5)*adaptSize.height);
+		break;
+	case cocos2d::ui::RelativeLayoutParameter::RelativeAlign::PARENT_RIGHT_CENTER_VERTICAL:
+		x = targetSize.width - (margin.right + adaptSize.width*(1.0 - anchorPoint.x));
+		y = targetSize.height*0.5 + ((anchorPoint.y - 0.5)*adaptSize.height);
+		break;
+	case cocos2d::ui::RelativeLayoutParameter::RelativeAlign::PARENT_TOP_CENTER_HORIZONTAL:
+
+		x = targetSize.width*0.5 + ((anchorPoint.x - 0.5)*adaptSize.width);
+		y = targetSize.height - (margin.top + adaptSize.height*(1.0 - anchorPoint.y));
+		break;
+	case cocos2d::ui::RelativeLayoutParameter::RelativeAlign::PARENT_BOTTOM_CENTER_HORIZONTAL:
+		x = targetSize.width*0.5 + ((anchorPoint.x - 0.5)*adaptSize.width);
+		y = margin.bottom + adaptSize.height*anchorPoint.y;
+		break;
+	case cocos2d::ui::RelativeLayoutParameter::RelativeAlign::CENTER_IN_PARENT:
+		x = targetSize.width*0.5 + ((anchorPoint.x - 0.5)*adaptSize.width);
+		y = targetSize.height*0.5+ ((anchorPoint.y - 0.5)*adaptSize.height);
+		break;
+	default:
+
+		break;
+	}
+
+	_needAdaptNode->setPosition(x, y);
+}
+
+void WidgetAdapter::setupLayout()
 {
     auto parent = _needAdaptNode->getParent();
     CCASSERT(parent != nullptr, "adaptNode's parent can't be null");
 
-    _needAdaptNode->removeFromParentAndCleanup(false);
-    _layoutNode->addChild(_needAdaptNode);
-    parent->addChild(_layoutNode);
+    // set default layout target to parent node
+    if (_layoutTarget == nullptr) {
+        _layoutTarget = parent;
+    }
+   // _needAdaptNode->removeFromParentAndCleanup(false);
+   // _layoutNode->setName(PLUGIN_EXTRA_LAYOUT_NAME);
+   // _layoutNode->addChild(_needAdaptNode);
+   // parent->addChild(_layoutNode);
+}
 
-    _layoutNode->forceDoLayout();
+WidgetManager::WidgetManager()
+: _forceAlignDirty(false)
+{
+
+}
+
+WidgetManager::~WidgetManager()
+{
+    
 }
 
 void WidgetManager::update(float dt)
 {
+    doAlign();
+}
+
+void WidgetManager::forceDoAlign()
+{
+    _forceAlignDirty = true;
+    doAlign();
+}
+
+void WidgetManager::doAlign()
+{
     for (auto& adapter:_needAdaptWidgets) {
-        auto layout = dynamic_cast<cocos2d::ui::Layout*>(adapter->_needAdaptNode->getParent());
-        if(!(adapter->_isAlignOnce) && layout != nullptr)
+        if(_forceAlignDirty || !(adapter->_isAlignOnce))
         {
-            layout->setContentSize(adapter->_layoutTarget->getContentSize());
+            adapter->syncLayoutProperty();
         }
     }
+    _forceAlignDirty = false;
 }
 
 void WidgetManager::setupWidgets()
 {
     for (auto& adapter:_needAdaptWidgets) {
-        adapter->configLayoutNode();
+        adapter->setupLayout();
+        adapter->syncLayoutProperty();
     }
-//    scheduleUpdate();
+    scheduleUpdate();
 }
 NS_CCR_END

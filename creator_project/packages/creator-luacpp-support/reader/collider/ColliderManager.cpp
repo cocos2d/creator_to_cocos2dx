@@ -150,7 +150,7 @@ void ColliderManager::removeCollider(creator::Collider *collider)
         _colliders.erase(found);
         
         // don't emit exit event as creator since the collider is not running scene
-        for (auto iter = _contracts.begin(), end = _contracts.end(); iter != end;)
+        for (auto iter = _contracts.begin() ; iter != _contracts.end();)
         {
             if ((*iter)->getCollider1() == collider || (*iter)->getCollider2() == collider)
                 iter = _contracts.erase(iter);
