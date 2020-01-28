@@ -1,3 +1,8 @@
+
+__Note:__ This plugin has been **EOL'd**. It does **not** work with **Cocos Creator v2.x**
+
+__Note:__ This plugin works with **Cocos Creator v1.9.3**
+
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
