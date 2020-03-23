@@ -114,7 +114,7 @@ class Utils {
         script.onload = function () {
             document.head.removeChild(script);
 
-            analytics = cocosAnalytics;
+            // analytics = cocosAnalytics;
             if (typeof(analytics) !== 'undefined') {
                 analytics.init({
                     appID: '630639001',
