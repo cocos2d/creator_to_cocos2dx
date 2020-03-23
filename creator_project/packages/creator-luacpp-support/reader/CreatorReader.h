@@ -120,11 +120,11 @@ protected:
     void parseSpineSkeleton(spine::SkeletonAnimation* button, const buffers::SpineSkeleton* spineBuffer) const;
     
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID || CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
-    cocos2d::experimental::ui::VideoPlayer* createVideoPlayer(const buffers::VideoPlayer* videoPlayerBuffer) const;
-    void parseVideoPlayer(cocos2d::experimental::ui::VideoPlayer* videoPlayer, const buffers::VideoPlayer* videoPlayerBuffer) const;
+    cocos2d::ui::VideoPlayer* createVideoPlayer(const buffers::VideoPlayer* videoPlayerBuffer) const;
+    void parseVideoPlayer(cocos2d::ui::VideoPlayer* videoPlayer, const buffers::VideoPlayer* videoPlayerBuffer) const;
     
-    cocos2d::experimental::ui::WebView* createWebView(const buffers::WebView* webViewBuffer) const;
-    void parseWebView(cocos2d::experimental::ui::WebView* webView, const buffers::WebView* webViewBuffer) const;
+    cocos2d::ui::WebView* createWebView(const buffers::WebView* webViewBuffer) const;
+    void parseWebView(cocos2d::ui::WebView* webView, const buffers::WebView* webViewBuffer) const;
 #endif
     
     cocos2d::ui::Slider* createSlider(const buffers::Slider* sliderBuffer) const;

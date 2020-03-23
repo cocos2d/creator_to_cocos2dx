@@ -979,14 +979,14 @@ void CreatorReader::parseButton(cocos2d::ui::Button* button, const buffers::Butt
 }
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID || CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
-cocos2d::experimental::ui::VideoPlayer* CreatorReader::createVideoPlayer(const buffers::VideoPlayer* videoPlayerBuffer) const
+cocos2d::ui::VideoPlayer* CreatorReader::createVideoPlayer(const buffers::VideoPlayer* videoPlayerBuffer) const
 {
-    auto videoPlayer = cocos2d::experimental::ui::VideoPlayer::create();
+    auto videoPlayer = cocos2d::ui::VideoPlayer::create();
     parseVideoPlayer(videoPlayer, videoPlayerBuffer);
     return videoPlayer;
 }
 
-void CreatorReader::parseVideoPlayer(cocos2d::experimental::ui::VideoPlayer* videoPlayer, const buffers::VideoPlayer* videoPlayerBuffer) const
+void CreatorReader::parseVideoPlayer(cocos2d::ui::VideoPlayer* videoPlayer, const buffers::VideoPlayer* videoPlayerBuffer) const
 {
     const auto& nodeBuffer = videoPlayerBuffer->node();
     parseNode(videoPlayer, nodeBuffer);
@@ -1005,14 +1005,14 @@ void CreatorReader::parseVideoPlayer(cocos2d::experimental::ui::VideoPlayer* vid
         videoPlayer->setURL(url->str());
 }
 
-cocos2d::experimental::ui::WebView* CreatorReader::createWebView(const buffers::WebView* webViewBuffer) const
+cocos2d::ui::WebView* CreatorReader::createWebView(const buffers::WebView* webViewBuffer) const
 {
-    auto webView = cocos2d::experimental::ui::WebView::create();
+    auto webView = cocos2d::ui::WebView::create();
     parseWebView(webView, webViewBuffer);
     return webView;
 }
 
-void CreatorReader::parseWebView(cocos2d::experimental::ui::WebView* webView, const buffers::WebView* webViewBuffer) const
+void CreatorReader::parseWebView(cocos2d::ui::WebView* webView, const buffers::WebView* webViewBuffer) const
 {
     const auto& nodeBuffer = webViewBuffer->node();
     parseNode(webView, nodeBuffer);
