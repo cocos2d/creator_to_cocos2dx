@@ -34,6 +34,8 @@ struct Scene;
 
 struct Button;
 
+struct Layout;
+
 struct ProgressBar;
 
 struct ScrollView;
@@ -313,6 +315,37 @@ inline const char **EnumNamesColliderType() {
 
 inline const char *EnumNameColliderType(ColliderType e) { return EnumNamesColliderType()[static_cast<int>(e)]; }
 
+enum LayoutType {
+  LayoutType_None = 0,
+  LayoutType_Horizontal = 1,
+  LayoutType_Vertical = 2,
+  LayoutType_Grid = 3,
+  LayoutType_MIN = LayoutType_None,
+  LayoutType_MAX = LayoutType_Grid
+};
+
+inline const char **EnumNamesLayoutType() {
+  static const char *names[] = { "None", "Horizontal", "Vertical", "Grid", nullptr };
+  return names;
+}
+
+inline const char *EnumNameLayoutType(LayoutType e) { return EnumNamesLayoutType()[static_cast<int>(e)]; }
+
+enum ResizeMode {
+  ResizeMode_None = 0,
+  ResizeMode_Container = 1,
+  ResizeMode_Children = 2,
+  ResizeMode_MIN = ResizeMode_None,
+  ResizeMode_MAX = ResizeMode_Children
+};
+
+inline const char **EnumNamesResizeMode() {
+  static const char *names[] = { "None", "Container", "Children", nullptr };
+  return names;
+}
+
+inline const char *EnumNameResizeMode(ResizeMode e) { return EnumNamesResizeMode()[static_cast<int>(e)]; }
+
 enum AnyNode {
   AnyNode_NONE = 0,
   AnyNode_Scene = 1,
@@ -337,12 +370,13 @@ enum AnyNode {
   AnyNode_Mask = 20,
   AnyNode_DragonBones = 21,
   AnyNode_MotionStreak = 22,
+  AnyNode_Layout = 23,
   AnyNode_MIN = AnyNode_NONE,
-  AnyNode_MAX = AnyNode_MotionStreak
+  AnyNode_MAX = AnyNode_Layout
 };
 
 inline const char **EnumNamesAnyNode() {
-  static const char *names[] = { "NONE", "Scene", "Sprite", "Label", "Particle", "TileMap", "Node", "Button", "ProgressBar", "ScrollView", "CreatorScene", "EditBox", "RichText", "SpineSkeleton", "VideoPlayer", "WebView", "Slider", "Toggle", "ToggleGroup", "PageView", "Mask", "DragonBones", "MotionStreak", nullptr };
+  static const char *names[] = { "NONE", "Scene", "Sprite", "Label", "Particle", "TileMap", "Node", "Button", "ProgressBar", "ScrollView", "CreatorScene", "EditBox", "RichText", "SpineSkeleton", "VideoPlayer", "WebView", "Slider", "Toggle", "ToggleGroup", "PageView", "Mask", "DragonBones", "MotionStreak", "Layout", nullptr };
   return names;
 }
 
@@ -438,6 +472,10 @@ template<> struct AnyNodeTraits<DragonBones> {
 
 template<> struct AnyNodeTraits<MotionStreak> {
   static const AnyNode enum_value = AnyNode_MotionStreak;
+};
+
+template<> struct AnyNodeTraits<Layout> {
+  static const AnyNode enum_value = AnyNode_Layout;
 };
 
 inline bool VerifyAnyNode(flatbuffers::Verifier &verifier, const void *union_obj, AnyNode type);
@@ -1521,6 +1559,56 @@ inline flatbuffers::Offset<Button> CreateButtonDirect(flatbuffers::FlatBufferBui
     const char *disabledSpriteFrameName = nullptr,
     bool ignoreContentAdaptWithSize = false) {
   return CreateButton(_fbb, node, transition, zoomScale, spriteFrameName ? _fbb.CreateString(spriteFrameName) : 0, pressedSpriteFrameName ? _fbb.CreateString(pressedSpriteFrameName) : 0, disabledSpriteFrameName ? _fbb.CreateString(disabledSpriteFrameName) : 0, ignoreContentAdaptWithSize);
+}
+
+struct Layout FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum {
+    VT_NODE = 4,
+    VT_LAYOUTTYPE = 6,
+    VT_RESIZEMODE = 8,
+    VT_BACKGROUNDVISIBLE = 10
+  };
+  const Node *node() const { return GetPointer<const Node *>(VT_NODE); }
+  LayoutType layoutType() const { return static_cast<LayoutType>(GetField<int8_t>(VT_LAYOUTTYPE, 0)); }
+  ResizeMode resizeMode() const { return static_cast<ResizeMode>(GetField<int8_t>(VT_RESIZEMODE, 0)); }
+  bool backgroundVisible() const { return GetField<uint8_t>(VT_BACKGROUNDVISIBLE, 1) != 0; }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_NODE) &&
+           verifier.VerifyTable(node()) &&
+           VerifyField<int8_t>(verifier, VT_LAYOUTTYPE) &&
+           VerifyField<int8_t>(verifier, VT_RESIZEMODE) &&
+           VerifyField<uint8_t>(verifier, VT_BACKGROUNDVISIBLE) &&
+           verifier.EndTable();
+  }
+};
+
+struct LayoutBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_node(flatbuffers::Offset<Node> node) { fbb_.AddOffset(Layout::VT_NODE, node); }
+  void add_layoutType(LayoutType layoutType) { fbb_.AddElement<int8_t>(Layout::VT_LAYOUTTYPE, static_cast<int8_t>(layoutType), 0); }
+  void add_resizeMode(ResizeMode resizeMode) { fbb_.AddElement<int8_t>(Layout::VT_RESIZEMODE, static_cast<int8_t>(resizeMode), 0); }
+  void add_backgroundVisible(bool backgroundVisible) { fbb_.AddElement<uint8_t>(Layout::VT_BACKGROUNDVISIBLE, static_cast<uint8_t>(backgroundVisible), 1); }
+  LayoutBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
+  LayoutBuilder &operator=(const LayoutBuilder &);
+  flatbuffers::Offset<Layout> Finish() {
+    auto o = flatbuffers::Offset<Layout>(fbb_.EndTable(start_, 4));
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<Layout> CreateLayout(flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<Node> node = 0,
+    LayoutType layoutType = LayoutType_None,
+    ResizeMode resizeMode = ResizeMode_None,
+    bool backgroundVisible = true) {
+  LayoutBuilder builder_(_fbb);
+  builder_.add_node(node);
+  builder_.add_backgroundVisible(backgroundVisible);
+  builder_.add_resizeMode(resizeMode);
+  builder_.add_layoutType(layoutType);
+  return builder_.Finish();
 }
 
 struct ProgressBar FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
@@ -4031,6 +4119,7 @@ inline bool VerifyAnyNode(flatbuffers::Verifier &verifier, const void *union_obj
     case AnyNode_Mask: return verifier.VerifyTable(reinterpret_cast<const Mask *>(union_obj));
     case AnyNode_DragonBones: return verifier.VerifyTable(reinterpret_cast<const DragonBones *>(union_obj));
     case AnyNode_MotionStreak: return verifier.VerifyTable(reinterpret_cast<const MotionStreak *>(union_obj));
+    case AnyNode_Layout: return verifier.VerifyTable(reinterpret_cast<const Layout *>(union_obj));
     default: return false;
   }
 }

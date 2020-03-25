@@ -57,6 +57,8 @@ quick_gen_project_*_autogen.sh
 quick_gen_project_*_autogen.sh.meta
 .exvim.app
 *.swp
+*.un~
+tags
 
 #/////////////////////////////////////////////////////////////////////////////
 # webstorm files

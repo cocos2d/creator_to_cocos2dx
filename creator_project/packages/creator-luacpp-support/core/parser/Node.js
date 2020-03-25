@@ -47,20 +47,20 @@ class Node {
 
     static guess_type_from_components(components) {
         // ScrollView, Button & ProgressBar should be before Sprite
-        let supported_components = ['cc.Button', 'cc.ProgressBar', 'cc.ScrollView',
+        let supported_components = ['cc.Button', 'cc.ProgressBar', 'cc.ScrollView', 'cc.Layout',
             'cc.EditBox', 'cc.Label', 'sp.Skeleton', 'cc.Sprite',
             'cc.ParticleSystem', 'cc.TiledMap', 'cc.Canvas', 'cc.RichText',
             'cc.VideoPlayer', 'cc.WebView', 'cc.Slider', 'cc.Toggle', 'cc.ToggleGroup',
             'cc.PageView', 'cc.Mask', 'dragonBones.ArmatureDisplay'];
-    
+
         if (!components)
             return 'cc.Node';
-    
+
         let node_components = components.map(x => x.__type__);
         // special case for object without components
         if (node_components.length == 0)
             return 'cc.Node';
-    
+
         for (let i = 0, len = supported_components.length; i < len; ++i) {
             let supported = supported_components[i];
             if (node_components.includes(supported)) {
@@ -72,16 +72,19 @@ class Node {
         Utils.log('treat all unknown components as cc.Node')
         return 'cc.Node';
     }
-    
+
     static guess_type(node_data) {
         let components = Node.get_node_components(node_data);
-        if (components)
-            return Node.guess_type_from_components(components);
-    
+        if (components) {
+            let guessedType = Node.guess_type_from_components(components);
+            return guessedType;
+        }
+
         // prefab don't have componets, should guess type from prefab node data
-        if (node_data._prefab)
+        if (node_data._prefab) {
             return 'cc.Prefab';
-    
+        };
+
         return null;
     }
 
@@ -147,7 +150,7 @@ class Node {
     parse_properties() {
         // 1st: parse self
         this.parse_node_properties();
-        
+
         // 2nd: parse children
         this.parse_children();
     }
@@ -276,7 +279,7 @@ class Node {
                 addProp(props, 'skewX', result, 'skewX');
                 addProp(props, 'skewY', result, 'skewY');
                 addProp(props, 'opacity', result, 'opacity');
-                
+
 
                 // position -> {x:, y:, curveType?, curveData?}
                 if (props.position) {
@@ -316,7 +319,7 @@ class Node {
                 else
                 {
                     let clip_content = JSON.parse(fs.readFileSync(uuidinfos[clip_uuid]));
-                    
+
                     // parse curveData
                     let animationClip = {
                         name: clip_content._name,
@@ -345,7 +348,7 @@ class Node {
 
                     // parse self animationclip
                     if (curveData.props)
-                        animationClip.curveData.push({props: parseCurveDataProps(curveData.props)}); 
+                        animationClip.curveData.push({props: parseCurveDataProps(curveData.props)});
 
                     anim.clips.push(animationClip);
                     state._clips[clip_uuid] = animationClip;

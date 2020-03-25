@@ -40,7 +40,7 @@ let get_sprite_frame_json_by_uuid = function(uuid) {
 
 let is_sprite_frame_from_texture_packer = function(uuid) {
     let json = get_sprite_frame_json_by_uuid(uuid);
-    if (json) 
+    if (json)
         return json.content.atlas !== '';
     else
         return false;
@@ -86,7 +86,7 @@ let get_sprite_frame_name_by_uuid = function(uuid) {
                 sprite_frame_info.texture_path = path_info.relative_path;
                 sprite_frame_info.is_texture_packer = is_texture_packer;
 
-                let sprite_frame_uuid = sprite_frame_info.uuid; 
+                let sprite_frame_uuid = sprite_frame_info.uuid;
                 state._sprite_frames[sprite_frame_uuid] = sprite_frame_info;
 
                 if (sprite_frame_uuid == uuid) {
@@ -164,16 +164,16 @@ let get_spine_info_by_uuid = function (uuid) {
         let contents = fs.readFileSync(jsonfile);
         let contents_json = JSON.parse(contents);
         let current_dir = path.basename(jsonfile, '.json');
-        
+
         let res_dir = path.join(path.dirname(jsonfile), uuid);
-        
+
         let files = fs.readdirSync(res_dir);
         files.forEach(function(file) {
             let fullpath = path.join(res_dir, file);
             //FIXME: have more than one json file?
             state._uuid[uuid] = {fullpath: fullpath, relative_path: current_dir + '/' + file};
         });
-        
+
         // get atlas path
         state._uuid[uuid].atlas_url = get_relative_full_path_by_uuid(contents_json.atlasUrl.__uuid__);
         // add to _uuid to copy resources
@@ -249,62 +249,53 @@ let create_node = function (node_type, node_data) {
     const Prefab = require('./Prefab');
     const DragonBones = require('./DragonBones');
     const MotionStreak = require('./MotionStreak');
+    const Layout = require('./Layout');
+
+    let classType = null;
+
+    const classMap = {
+        'cc.Node': Node,
+        'cc.Sprite': Sprite,
+        'cc.Canvas': Canvas,
+        'cc.Label': Label,
+        'cc.RichText': RichText,
+        'cc.Button': Button,
+        'cc.ProgressBar': ProgressBar,
+        'cc.ScrollView': ScrollView,
+        'cc.EditBox': EditBox,
+        'cc.TiledMap': TiledMap,
+        'cc.ParticleSystem': ParticleSystem,
+        'sp.Skeleton': SpineSkeleton,
+        'cc.VideoPlayer': VideoPlayer,
+        'cc.WebView': WebView,
+        'cc.Slider': Slider,
+        'cc.Toggle': Toggle,
+        'cc.ToggleGroup': ToggleGroup,
+        'cc.PageView': PageView,
+        'cc.Mask': Mask,
+        'cc.Prefab': Prefab,
+        'dragonBones.ArmatureDisplay': DragonBones,
+        'cc.MotionStreak': MotionStreak,
+        'cc.Layout': Layout,
+    };
+
+    classType = classMap[node_type]
 
     let n = null;
-    if (node_type === 'cc.Node')
-        n = new Node(node_data);
-    else if (node_type === 'cc.Sprite')
-        n = new Sprite(node_data);
-    else if (node_type === 'cc.Canvas')
-        n = new Canvas(node_data);
-    else if (node_type === 'cc.Label')
-        n = new Label(node_data);
-    else if (node_type === 'cc.RichText')
-        n = new RichText(node_data);
-    else if (node_type === 'cc.Button')
-        n = new Button(node_data);
-    else if (node_type === 'cc.ProgressBar')
-        n = new ProgressBar(node_data);
-    else if (node_type === 'cc.ScrollView')
-        n = new ScrollView(node_data);
-    else if (node_type === 'cc.EditBox')
-        n = new EditBox(node_data);
-    else if (node_type === 'cc.TiledMap')
-        n = new TiledMap(node_data);
-    else if (node_type === 'cc.ParticleSystem')
-        n = new ParticleSystem(node_data);
-    else if (node_type === 'sp.Skeleton')
-        n = new SpineSkeleton(node_data);
-    else if (node_type === 'cc.VideoPlayer')
-        n = new VideoPlayer(node_data);
-    else if (node_type === 'cc.WebView')
-        n = new WebView(node_data);
-    else if (node_type === 'cc.Slider')
-        n = new Slider(node_data);
-    else if (node_type === 'cc.Toggle')
-        n = new Toggle(node_data);
-    else if (node_type === 'cc.ToggleGroup')
-        n = new ToggleGroup(node_data);
-    else if (node_type === 'cc.PageView')
-        n = new PageView(node_data);
-    else if (node_type === 'cc.Mask')
-        n = new Mask(node_data);
-    else if (node_type === 'cc.Prefab') 
-        n = new Prefab(node_data);
-    else if (node_type === 'dragonBones.ArmatureDisplay')
-        n = new DragonBones(node_data);
-    else if (node_type === 'cc.MotionStreak')
-        n = new MotionStreak(node_data);
 
-    if (n != null)
+    let isValid = typeof(classType) !== "undefined";
+    if (isValid)
+    {
+        n = new classType(node_data);
         n.parse_properties();
-       
+    }
+
     return n;
 }
 
 /**
  * remove a child from node's children by child's id
- * @param {node} the Node that to be applied to 
+ * @param {node} the Node that to be applied to
  * @param {id} child's id
  */
 let remove_child_by_id = function (node, id) {
