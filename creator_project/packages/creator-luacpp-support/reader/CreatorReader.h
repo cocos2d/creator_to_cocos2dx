@@ -34,6 +34,8 @@
 #include "collider/ColliderManager.h"
 #include "dragonbones/DragonBonesHeaders.h"
 #include "dragonbones/cocos2dx/CCDragonBonesHeaders.h"
+#include "ui/WidgetExport.h"
+//#include "ui/NodeExport.h"
 
 
 
@@ -63,6 +65,12 @@ public:
     ColliderManager* getColliderManager() const;
 
     /**
+     Return the WidgetManager. It is added as a child of the Scene to make Creator Widget component take effect.
+     @return The `WidgetManager` of the scene
+     */
+    WidgetManager* getWidgetManager() const;
+
+    /**
      Returns the FlatBuffers Schema version.
      @return a string containing the flatbuffer's schema version
      */
@@ -88,6 +96,7 @@ protected:
     void parseNode(cocos2d::Node* node, const buffers::Node* nodeBuffer) const;
     void parseNodeAnimation(cocos2d::Node* node, const buffers::Node* nodeBuffer) const;
     void parseColliders(cocos2d::Node* node, const buffers::Node* nodeBuffer) const;
+    void parseWidget(cocos2d::Node* node, const buffers::Node* nodeBuffer) const;
 
     cocos2d::Sprite* createSprite(const buffers::Sprite* spriteBuffer) const;
     void parseSprite(cocos2d::Sprite* sprite, const buffers::Sprite* spriteBuffer) const;
@@ -160,14 +169,19 @@ protected:
     // variables
     cocos2d::Data _data;
     std::string _version;
-    
+
     AnimationManager *_animationManager;
     ColliderManager *_collisionManager;
+
+    // Widget in creator is a component used to do Layout
+    WidgetManager *_widgetManager;
+
+//	NodeLayoutManager *_nodeLayoutManager;
     
     // creator will make scene at the center of screen when apply design solution strategy, cocos2d-x doesn't do it like this
     // this value record the diff
     cocos2d::Vec2 _positionDiffDesignResolution;
-    
+
     CREATOR_DISALLOW_COPY_ASSIGN_AND_MOVE(CreatorReader);
 };
 
