@@ -97,6 +97,10 @@ class Utils {
         return (path.substr(0, path.lastIndexOf(".")) + ext);
     }
 
+    static replaceFileName(path, fileName) {
+        return (path.substr(0, path.lastIndexOf("/")) + "/" + fileName);
+    }
+
     static recordBuild() {
         Utils.initAnalytics(function(analytics){
             analytics.CAEvent.onEvent({ eventName: 'build' });
