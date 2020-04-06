@@ -1164,7 +1164,7 @@ void CreatorReader::parseToggleGroup(cocos2d::ui::RadioButtonGroup* radioGroup, 
 
 cocos2d::ui::PageView* CreatorReader::createPageView(const buffers::PageView* pageViewBuffer) const
 {
-    auto pageview = CreatorPageView::create();
+    auto pageview = ui::PageView::create();
     parsePageView(pageview, pageViewBuffer);
     return pageview;
 }
