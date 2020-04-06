@@ -42,6 +42,9 @@ class Toggle extends Node {
         }
 
         // remove Background and CheckMark
+        // on creator 1.9.x, checkmark and background is brother node, so we need remove both
+        Utils.remove_child_by_id(this, checkmark_component.node.__id__);
+        // on older version, checkmark is the child node of background, so only remove parent is ok
         Utils.remove_child_by_id(this, background_node_id);
 
         // 2nd: parse children
