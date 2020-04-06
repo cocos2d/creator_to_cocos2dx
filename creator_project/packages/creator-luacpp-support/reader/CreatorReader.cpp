@@ -392,6 +392,8 @@ cocos2d::Node* CreatorReader::createTree(const buffers::NodeTree* tree) const
                 auto button = static_cast<cocos2d::ui::Button*>(node);
                 auto label = static_cast<cocos2d::Label*>(child);
                 button->setTitleLabel(label);
+             
+                label->setDimensions(button->getContentSize().width*.98f, 0);
             }
             else
             {
@@ -965,6 +967,9 @@ cocos2d::ui::Button* CreatorReader::createButton(const buffers::Button* buttonBu
 
 void CreatorReader::parseButton(cocos2d::ui::Button* button, const buffers::Button* buttonBuffer) const
 {
+    //NOTE that the title renderer is added after this, in parseTree, where we set its 
+    // location and dimensions based on the parent button
+ 
     const auto& nodeBuffer = buttonBuffer->node();
     parseNode(button, nodeBuffer);
 
